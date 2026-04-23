@@ -5,7 +5,11 @@ import time
 # =========================
 # CONFIG
 # =========================
+
+# Caminhao planilha de base
 ARQUIVO_ENTRADA = r"C:\Users\ronaldo.gontijo\Downloads\Ordens internas.xlsx"
+
+# Caminhao planilha de logs
 ARQUIVO_LOG = r"C:\Users\ronaldo.gontijo\Downloads\Ordens internas_logs.xlsx"
 
 # =========================
@@ -89,7 +93,7 @@ for ordem, grupo in df.groupby('ORDEM'):
         session.findById("wnd[0]/tbar[1]/btn[17]").press()
         time.sleep(2)
 
-        # 🔥 PEGA LINHA UMA VEZ SÓ
+        # PEGA LINHA UMA VEZ SÓ
         linha_global = encontrar_linha_vazia(session)
 
         for index, row in grupo.iterrows():
@@ -139,7 +143,7 @@ for ordem, grupo in df.groupby('ORDEM'):
 
             session.findById("wnd[0]").sendVKey(0)
 
-            # 🔥 AVANÇA LINHA MANUALMENTE
+            # AVANÇA LINHA MANUALMENTE
             linha_global += 1
 
         # SALVAR
