@@ -1,0 +1,2 @@
+Pedido,Status,Mensagem
+0000002221,EXCEPTION,"20 (rc=20): key=RFC_INVALID_PARAMETER, message=field 'UPDATEFLAG' not found [MSG: class=, type=, number=, v1-4:=;;;]"

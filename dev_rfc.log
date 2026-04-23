@@ -1,0 +1,158 @@
+
+**** Log file opened at 2026-02-26 10:00:29.745515 UTC-03:00 (Hora oficial do Brasil), Encoding UTF-8
+NW RFC Library: Kernel variant, Release 750 Patch Level 11
+Compilation date          : Jan 25 2023 01:21:13
+CPIC library              : 753.2022.12.23 version 3
+NI library                : 40
+Kernel Release            : 753 Patch Level 1116
+Current working directory : C:\python_scripts
+Program                   : python
+Process ID                : 08888
+User                      : ronaldo.gontijo
+Hardware                  : PC with Windows NT 14x AMD64 Level 6 (Mod 170 Step 4)
+Operating_system          : Windows NT 10.0
+Hostname                  : NTINM019
+IP address                : 172.17.5.1
+IPv6 address              : fe80::3405:bce3:d95c:1f9c
+Global trace level        : 0
+
+2026-02-26 10:00:29.743836 [18172] >> Info entry
+	Did not find config file C:\python_scripts\sapnwrfc.ini.
+
+**** Log file opened at 2026-02-26 14:00:04.166137 UTC-03:00 (Hora oficial do Brasil), Encoding UTF-8
+NW RFC Library: Kernel variant, Release 750 Patch Level 11
+Compilation date          : Jan 25 2023 01:21:13
+CPIC library              : 753.2022.12.23 version 3
+NI library                : 40
+Kernel Release            : 753 Patch Level 1116
+Current working directory : C:\python_scripts
+Program                   : python
+Process ID                : 29900
+User                      : ronaldo.gontijo
+Hardware                  : PC with Windows NT 14x AMD64 Level 6 (Mod 170 Step 4)
+Operating_system          : Windows NT 10.0
+Hostname                  : NTINM019
+IP address                : 172.17.5.1
+IPv6 address              : fe80::3405:bce3:d95c:1f9c
+Global trace level        : 0
+
+2026-02-26 14:00:04.164955 [13744] >> Error entry
+	Error in receive: 18, no SAP ErrInfo available, 322
+2026-02-26 14:00:04.169308 [13744] >> Error entry
+	[Handle: 1875023238656	ConvID: 43581042	Target: 10.200.3.92	SysID: PS4	SysNr: 00	User: S-SDKRFC	Client: 100	Language: P	Codepage: 4103]
+	RfcABAPMessageException: Key: , Code: RFC_ABAP_MESSAGE, Message: O nome ou a senha não está correto (repetir o logon)
+
+**** Log file opened at 2026-02-26 21:50:01.030539 UTC-03:00 (Hora oficial do Brasil), Encoding UTF-8
+NW RFC Library: Kernel variant, Release 750 Patch Level 11
+Compilation date          : Jan 25 2023 01:21:13
+CPIC library              : 753.2022.12.23 version 3
+NI library                : 40
+Kernel Release            : 753 Patch Level 1116
+Current working directory : C:\python_scripts
+Program                   : python
+Process ID                : 21852
+User                      : ronaldo.gontijo
+Hardware                  : PC with Windows NT 14x AMD64 Level 6 (Mod 170 Step 4)
+Operating_system          : Windows NT 10.0
+Hostname                  : NTINM019
+IP address                : 192.168.15.162
+IPv6 address              : fe80::3405:bce3:d95c:1f9c
+Global trace level        : 0
+
+2026-02-26 21:50:01.028292 [15348] >> Error entry
+	[Handle: 1911821115824	ConvID: 	Target: 	SysID: 	SysNr: 	User: 	Codepage: 4103]
+	RfcCommunicationException: Return Value: 20, Code: RFC_COMMUNICATION_FAILURE, Message: 
+LOCATION    CPIC (TCP/IP) on local host with Unicode
+ERROR       partner '10.200.3.10:3300' not reached
+TIME        Thu Feb 26 21:50:01 2026
+RELEASE     753
+COMPONENT   NI (network interface)
+VERSION     40
+RC          -10
+MODULE      D:/depot/bas/753_REL/src/base/ni/nixxi.cpp
+LINE        3454
+DETAIL      NiPConnect2: 10.200.3.10:3300
+SYSTEM CALL connect
+ERRNO       10060
+ERRNO TEXT  WSAETIMEDOUT: Connection timed out
+COUNTER     2
+
+
+**** Log file opened at 2026-03-16 15:14:11.174822 UTC-03:00 (Hora oficial do Brasil), Encoding UTF-8
+NW RFC Library: Kernel variant, Release 750 Patch Level 11
+Compilation date          : Jan 25 2023 01:21:13
+CPIC library              : 753.2022.12.23 version 3
+NI library                : 40
+Kernel Release            : 753 Patch Level 1116
+Current working directory : C:\python_scripts
+Program                   : python
+Process ID                : 33840
+User                      : ronaldo.gontijo
+Hardware                  : PC with Windows NT 14x AMD64 Level 6 (Mod 170 Step 4)
+Operating_system          : Windows NT 10.0
+Hostname                  : NTINM019
+IP address                : 172.17.5.1
+IPv6 address              : fe80::3405:bce3:d95c:1f9c
+Global trace level        : 0
+
+2026-03-16 15:14:11.172598 [33096] >> Error entry
+	Error in receive: 18, no SAP ErrInfo available, 97
+2026-03-16 15:14:11.180651 [33096] >> Error entry
+	[Handle: 1543881498896	ConvID: 34352077	Target: 10.200.3.10	SysID: 	SysNr: 00	User: S-SDKRFC	Client: 310	Language: P	Codepage: 4103]
+	RfcSystemException: Key: , Code: RFC_ABAP_RUNTIME_FAILURE, Message: 00024error during logon
+
+**** Log file opened at 2026-03-16 15:51:01.400312 UTC-03:00 (Hora oficial do Brasil), Encoding UTF-8
+NW RFC Library: Kernel variant, Release 750 Patch Level 11
+Compilation date          : Jan 25 2023 01:21:13
+CPIC library              : 753.2022.12.23 version 3
+NI library                : 40
+Kernel Release            : 753 Patch Level 1116
+Current working directory : C:\python_scripts
+Program                   : python
+Process ID                : 32068
+User                      : ronaldo.gontijo
+Hardware                  : PC with Windows NT 14x AMD64 Level 6 (Mod 170 Step 4)
+Operating_system          : Windows NT 10.0
+Hostname                  : NTINM019
+IP address                : 172.17.5.1
+IPv6 address              : fe80::3405:bce3:d95c:1f9c
+Global trace level        : 0
+
+2026-03-16 15:51:01.396898 [19996] >> Error entry
+	Error in receive: 18, no SAP ErrInfo available, 322
+2026-03-16 15:51:01.401616 [19996] >> Error entry
+	[Handle: 2349331904592	ConvID: 50907307	Target: 10.200.3.92	SysID: PS4	SysNr: 00	User: S-SDKRFC	Client: 310	Language: P	Codepage: 4103]
+	RfcABAPMessageException: Key: , Code: RFC_ABAP_MESSAGE, Message: O nome ou a senha não está correto (repetir o logon)
+
+**** Log file opened at 2026-03-23 15:47:48.936198 UTC-03:00 (Hora oficial do Brasil), Encoding UTF-8
+NW RFC Library: Kernel variant, Release 750 Patch Level 11
+Compilation date          : Jan 25 2023 01:21:13
+CPIC library              : 753.2022.12.23 version 3
+NI library                : 40
+Kernel Release            : 753 Patch Level 1116
+Current working directory : C:\python_scripts
+Program                   : python
+Process ID                : 55268
+User                      : ronaldo.gontijo
+Hardware                  : PC with Windows NT 14x AMD64 Level 6 (Mod 170 Step 4)
+Operating_system          : Windows NT 10.0
+Hostname                  : NTINM019
+IP address                : 172.17.5.1
+IPv6 address              : fe80::2dca:2645:4f23:b1ee
+Global trace level        : 0
+
+2026-03-23 15:47:48.934878 [04412] >> Error entry
+	[Handle: 1533851315600	ConvID: 	Target: 	SysID: 	SysNr: 	User: 	Codepage: 4103]
+	RfcCommunicationException: Return Value: 20, Code: RFC_COMMUNICATION_FAILURE, Message: 
+LOCATION    CPIC (TCP/IP) on local host with Unicode
+ERROR       hostname 'sap.company.com' unknown
+TIME        Mon Mar 23 15:47:48 2026
+RELEASE     753
+COMPONENT   NI (network interface)
+VERSION     40
+RC          -2
+MODULE      D:/depot/bas/753_REL/src/base/ni/nixxhl.cpp
+LINE        198
+DETAIL      NiHLGetNodeAddr: hostname cached as unknown
+COUNTER     3
+
