@@ -104,7 +104,7 @@ for ordem, grupo in df.groupby('ORDEM'):
 
             ativo, sub = limpar_ativo(receptor)
 
-            # 🔥 SCROLL CORRETO
+            # Ajuste do scroll
             linha = ajustar_scroll(session, linha_global)
 
             # KONTY
