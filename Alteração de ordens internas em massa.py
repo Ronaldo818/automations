@@ -61,7 +61,7 @@ def encontrar_linha_vazia(session):
     return 0
 
 # =========================
-# SCROLL CONTROLADO
+# CONTROLE DO SCROLL
 # =========================
 def ajustar_scroll(session, linha_global):
     tabela = session.findById("wnd[0]/usr/tblSAPLKOBSTC_RULES")
