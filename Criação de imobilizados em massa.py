@@ -6,8 +6,8 @@ import re
 # =========================
 # CONFIG
 # =========================
-ARQUIVO_ENTRADA = r"C:\Users\ronaldo.gontijo\Downloads\Imobilizados_AS01.xlsx"
-ARQUIVO_LOG = r"C:\Users\ronaldo.gontijo\Downloads\Imobilizados_AS01_logs.xlsx"
+ARQUIVO_ENTRADA = r"C:\python_scripts\Planilhas\Imobilizados_AS01.xlsx"
+ARQUIVO_LOG = r"C:\python_scripts\Planilhas\Imobilizados_AS01_logs.xlsx"
 
 # =========================
 # SAP
@@ -32,6 +32,16 @@ def formatar_criterio(valor):
         return ""
     return str(int(float(valor))).zfill(2)
 
+def limpar_valor(valor):
+    if pd.isna(valor):
+        return ""
+    
+    # Se for número (float), remove .0
+    if isinstance(valor, float):
+        return str(int(valor))
+    
+    return str(valor).strip()
+
 # =========================
 # LOOP
 # =========================
@@ -40,11 +50,15 @@ for index, row in df.iterrows():
     try:
         classe = str(row['Classe'])
         descricao = str(row['Denominação'])
+        serie = limpar_valor(row['Serie'])
+        inventario = limpar_valor(row['Inventario'])
         centro_custo = str(row['Centro de custo'])
         centro = str(row['Centro'])
 
         criterio1 = formatar_criterio(row['Criterio_1'])
         criterio2 = formatar_criterio(row['Criterio_2'])
+
+        ordem = str(row['Ordem'])
 
         vida = str(int(row['Vida']))
 
@@ -74,6 +88,30 @@ for index, row in df.iterrows():
             "wnd[0]/usr/subTABSTRIP:SAPLATAB:0100/tabsTABSTRIP100/tabpTAB01/"
             "ssubSUBSC:SAPLATAB:0200/subAREA1:SAPLAIST:1140/txtANLA-TXT50"
         ).text = descricao
+        
+        if serie:
+            try:
+                campo = session.findById(
+                    "wnd[0]/usr/subTABSTRIP:SAPLATAB:0100/tabsTABSTRIP100/tabpTAB01/"
+                    "ssubSUBSC:SAPLATAB:0200/subAREA1:SAPLAIST:1140/txtANLA-SERNR"
+                )
+                campo.setFocus()
+                campo.text = serie
+                campo.caretPosition = len(serie)
+            except:
+                pass
+
+        if inventario:
+            try:
+                campo = session.findById(
+                    "wnd[0]/usr/subTABSTRIP:SAPLATAB:0100/tabsTABSTRIP100/tabpTAB01/"
+                    "ssubSUBSC:SAPLATAB:0200/subAREA1:SAPLAIST:1140/txtANLA-INVNR"
+                )
+                campo.setFocus()
+                campo.text = inventario
+                campo.caretPosition = len(inventario)
+            except:
+                pass
 
         session.findById("wnd[0]").sendVKey(0)
 
@@ -111,6 +149,19 @@ for index, row in df.iterrows():
                 "ssubSUBSC:SAPLATAB:0201/subAREA1:SAPLAIST:1160/ctxtANLA-ORD42"
             ).text = criterio2
 
+        session.findById("wnd[0]").sendVKey(0)
+
+        # =========================
+        # ABA 4 (ORIGEM)
+        # =========================
+        session.findById("wnd[0]/usr/subTABSTRIP:SAPLATAB:0100/tabsTABSTRIP100/tabpTAB04").select()
+        
+        if ordem:
+            session.findById(
+                "wnd[0]/usr/subTABSTRIP:SAPLATAB:0100/tabsTABSTRIP100/tabpTAB04/"
+                "ssubSUBSC:SAPLATAB:0202/subAREA2:SAPLAIST:1182/ctxtANLA-EAUFN"
+            ).text = ordem
+        
         session.findById("wnd[0]").sendVKey(0)
 
         # =========================

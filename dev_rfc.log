@@ -156,3 +156,26 @@ LINE        198
 DETAIL      NiHLGetNodeAddr: hostname cached as unknown
 COUNTER     3
 
+
+**** Log file opened at 2026-04-24 14:58:31.881950 UTC-03:00 (Hora oficial do Brasil), Encoding UTF-8
+NW RFC Library: Kernel variant, Release 750 Patch Level 11
+Compilation date          : Jan 25 2023 01:21:13
+CPIC library              : 753.2022.12.23 version 3
+NI library                : 40
+Kernel Release            : 753 Patch Level 1116
+Current working directory : C:\python_scripts
+Program                   : python
+Process ID                : 54788
+User                      : ronaldo.gontijo
+Hardware                  : PC with Windows NT 14x AMD64 Level 6 (Mod 170 Step 4)
+Operating_system          : Windows NT 10.0
+Hostname                  : NTINM019
+IP address                : 172.17.5.1
+IPv6 address              : fe80::2dca:2645:4f23:b1ee
+Global trace level        : 0
+
+2026-04-24 14:58:31.880186 [34428] >> Error entry
+	Error in receive: 18, no SAP ErrInfo available, 97
+2026-04-24 14:58:31.887449 [34428] >> Error entry
+	[Handle: 1891110772800	ConvID: 51788711	Target: 10.200.3.92	SysID: 	SysNr: 00	User: S-SDKRFC	Client: 300	Language: P	Codepage: 4103]
+	RfcSystemException: Key: , Code: RFC_ABAP_RUNTIME_FAILURE, Message: 00024error during logon

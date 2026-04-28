@@ -5,12 +5,8 @@ import time
 # =========================
 # CONFIG
 # =========================
-
-# Caminhao planilha de base
-ARQUIVO_ENTRADA = r"C:\Users\ronaldo.gontijo\Downloads\Ordens internas.xlsx"
-
-# Caminhao planilha de logs
-ARQUIVO_LOG = r"C:\Users\ronaldo.gontijo\Downloads\Ordens internas_logs.xlsx"
+ARQUIVO_ENTRADA = r"C:\python_scripts\Planilhas\Ordens internas.xlsx"
+ARQUIVO_LOG = r"C:\python_scripts\Planilhas\Ordens internas_logs.xlsx"
 
 # =========================
 # SAP
@@ -29,7 +25,7 @@ df.columns = df.columns.str.strip()
 log = []
 
 # =========================
-# FUNÇÃO ATIVO
+# FUNÇÕES
 # =========================
 def limpar_ativo(valor):
     if pd.isna(valor):
@@ -45,9 +41,24 @@ def limpar_ativo(valor):
 
     return ativo.strip(), sub.strip()
 
-# =========================
-# FUNÇÃO LINHA INICIAL
-# =========================
+
+def formatar_coeficiente(valor):
+    if pd.isna(valor):
+        return ""
+
+    try:
+        # remove decimal (.0)
+        valor = str(int(float(valor)))
+    except:
+        valor = str(valor).strip()
+
+    # garante 10 dígitos (ajuste se necessário)
+    valor = valor.zfill(10)
+
+    # formato SAP: X.XXX.XXX.XXX
+    return f"{valor[0]}.{valor[1:4]}.{valor[4:7]}.{valor[7:10]}"
+
+
 def encontrar_linha_vazia(session):
     for i in range(0, 200):
         try:
@@ -60,19 +71,23 @@ def encontrar_linha_vazia(session):
             return i
     return 0
 
-# =========================
-# CONTROLE DO SCROLL
-# =========================
+
 def ajustar_scroll(session, linha_global):
     tabela = session.findById("wnd[0]/usr/tblSAPLKOBSTC_RULES")
 
-    linhas_visiveis = 12
+    # pega quantidade real de linhas visíveis
+    linhas_visiveis = tabela.visibleRowCount
+
+    # calcula posição do scroll corretamente
     pos_scroll = max(linha_global - linhas_visiveis + 1, 0)
 
     tabela.verticalScrollbar.position = pos_scroll
-    time.sleep(0.3)
+
+    # espera até o SAP realmente atualizar
+    time.sleep(0.5)
 
     return linha_global - pos_scroll
+
 
 # =========================
 # LOOP
@@ -93,7 +108,6 @@ for ordem, grupo in df.groupby('ORDEM'):
         session.findById("wnd[0]/tbar[1]/btn[17]").press()
         time.sleep(2)
 
-        # PEGA LINHA UMA VEZ SÓ
         linha_global = encontrar_linha_vazia(session)
 
         for index, row in grupo.iterrows():
@@ -104,14 +118,15 @@ for ordem, grupo in df.groupby('ORDEM'):
                 continue
 
             percentual = str(int(float(row['Percentual'])))
-            coef = str(row['Coeficiente']).strip()
+            coef = formatar_coeficiente(row['Coeficiente'])
 
             ativo, sub = limpar_ativo(receptor)
 
-            # Ajuste do scroll
             linha = ajustar_scroll(session, linha_global)
 
+            # =========================
             # KONTY
+            # =========================
             campo_konty = session.findById(
                 f"wnd[0]/usr/tblSAPLKOBSTC_RULES/ctxtCOBRB-KONTY[0,{linha}]"
             )
@@ -119,7 +134,9 @@ for ordem, grupo in df.groupby('ORDEM'):
             campo_konty.text = "IMO"
             session.findById("wnd[0]").sendVKey(0)
 
+            # =========================
             # ATIVO
+            # =========================
             campo_ativo = session.findById(
                 f"wnd[0]/usr/tblSAPLKOBSTC_RULES/ctxtDKOBR-EMPGE[1,{linha}]"
             )
@@ -127,26 +144,37 @@ for ordem, grupo in df.groupby('ORDEM'):
             campo_ativo.text = f"{ativo}-{sub}"
             session.findById("wnd[0]").sendVKey(0)
 
+            # =========================
             # %
+            # =========================
             campo_percent = session.findById(
                 f"wnd[0]/usr/tblSAPLKOBSTC_RULES/txtCOBRB-PROZS[3,{linha}]"
             )
             campo_percent.setFocus()
             campo_percent.text = percentual
 
-            # coef
+            # =========================
+            # COEFICIENTE
+            # =========================
             campo_coef = session.findById(
                 f"wnd[0]/usr/tblSAPLKOBSTC_RULES/txtCOBRB-AQZIF[4,{linha}]"
             )
             campo_coef.setFocus()
-            campo_coef.text = coef
 
+            # limpa antes (evita erro de bloqueio)
+            campo_coef.text = ""
+
+            # pequena pausa ajuda SAP não travar
+            time.sleep(0.1)
+
+            campo_coef.text = coef
             session.findById("wnd[0]").sendVKey(0)
 
-            # AVANÇA LINHA MANUALMENTE
             linha_global += 1
 
+        # =========================
         # SALVAR
+        # =========================
         session.findById("wnd[0]/tbar[0]/btn[11]").press()
 
         status = session.findById("wnd[0]/sbar").text
@@ -177,7 +205,9 @@ for ordem, grupo in df.groupby('ORDEM'):
 
         break
 
+# =========================
 # LOG
+# =========================
 pd.DataFrame(log).to_excel(ARQUIVO_LOG, index=False)
 
 print("Execução finalizada.")

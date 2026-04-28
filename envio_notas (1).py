@@ -116,8 +116,8 @@ def executar_envio(usuario, senha, data_ini, data_fim, log_callback=None, contro
             page.select_option("#vobj-unidade","2")
 
         page.click("#ui-id-1")
-        page.click("#ui-id-27")
         page.click("#ui-id-28")
+        page.click("#ui-id-29")
 
         frame = page.frame(name="frameprog")
 
