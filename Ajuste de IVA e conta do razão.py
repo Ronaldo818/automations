@@ -1,12 +1,69 @@
 import win32com.client
 import pandas as pd
+import time
 from datetime import datetime
 
 # =========================
 # CONFIG
 # =========================
-ARQUIVO_ENTRADA = r"C:\python_scripts\Planilhas\Pedidos.xlsx"
-ARQUIVO_LOG = r"C:\python_scripts\Planilhas\Pedidos_log.xlsx"
+ARQUIVO_ENTRADA = r"C:\Users\junio\OneDrive\Área de Trabalho\Documentos\Scripts Github\automations\Planilhas\Pedidos.xlsx"
+ARQUIVO_LOG = r"C:\Users\junio\OneDrive\Área de Trabalho\Documentos\Scripts Github\automations\Planilhas\Pedidos_logs_2.xlsx"
+
+# =========================
+# FUNÇÕES AUXILIARES
+# =========================
+def wait_for_element(session, element_id, timeout=6):
+    for _ in range(timeout * 10):
+        try:
+            return session.findById(element_id)
+        except:
+            time.sleep(0.1)
+    raise Exception(f"Elemento não encontrado: {element_id}")
+
+def try_find(session, element_id):
+    try:
+        return session.findById(element_id)
+    except:
+        return None
+
+def garantir_item_expandido(session):
+    """
+    Verifica se o detalhe do item está expandido.
+    Se não estiver, expande.
+    """
+
+    # Esse elemento só existe quando o item está expandido
+    aba_detalhes = (
+        "wnd[0]/usr/subSUB0:SAPLMEGUI:0019/"
+        "subSUB3:SAPLMEVIEWS:1100/"
+        "subSUB2:SAPLMEVIEWS:1200/"
+        "subSUB1:SAPLMEGUI:1301/"
+        "subSUB2:SAPLMEGUI:1303/"
+        "tabsITEM_DETAIL"
+    )
+
+    # 1. verifica se já está expandido
+    if try_find(session, aba_detalhes):
+        return
+
+    # 2. tenta expandir
+    botao_expandir = try_find(
+        session,
+        "wnd[0]/usr/subSUB0:SAPLMEGUI:0013/"
+        "subSUB3:SAPLMEVIEWS:1100/"
+        "subSUB1:SAPLMEVIEWS:4002/"
+        "btnDYN_4000-BUTTON"
+    )
+
+    if botao_expandir:
+        botao_expandir.press()
+        time.sleep(0.6)
+
+        # valida se expandiu
+        if try_find(session, aba_detalhes):
+            return
+
+    raise Exception("Não foi possível expandir o item")
 
 # =========================
 # SAP
@@ -30,6 +87,9 @@ log = []
 # LOOP
 # =========================
 for index, row in df.iterrows():
+    pedido = ""
+    item = ""
+
     try:
         pedido = str(row["Pedidos"])
         item = str(row["Item"])
@@ -46,28 +106,29 @@ for index, row in df.iterrows():
         # =========================
         # ABRE PEDIDO
         # =========================
-        session.findById("wnd[0]/tbar[1]/btn[17]").press()
-        session.findById(
+        wait_for_element(session, "wnd[0]/tbar[1]/btn[17]").press()
+
+        wait_for_element(
+            session,
             "wnd[1]/usr/subSUB0:SAPLMEGUI:0003/ctxtMEPO_SELECT-EBELN"
         ).text = pedido
-        session.findById("wnd[1]/tbar[0]/btn[0]").press()
+
+        wait_for_element(session, "wnd[1]/tbar[0]/btn[0]").press()
+
+        time.sleep(0.6)
 
         # =========================
-        # SELECIONA ITEM
+        # GARANTE ITEM EXPANDIDO
         # =========================
-        session.findById(
-            "wnd[0]/usr/subSUB0:SAPLMEGUI:0013/"
-            "subSUB3:SAPLMEVIEWS:1100/"
-            "subSUB1:SAPLMEVIEWS:4002/"
-            "btnDYN_4000-BUTTON"
-        ).press()
+        garantir_item_expandido(session)
 
         # =========================
         # IVA
         # =========================
         if modo in ("IVA", "AMBOS") and iva:
 
-            session.findById(
+            wait_for_element(
+                session,
                 "wnd[0]/usr/subSUB0:SAPLMEGUI:0019/"
                 "subSUB3:SAPLMEVIEWS:1100/"
                 "subSUB2:SAPLMEVIEWS:1200/"
@@ -76,8 +137,11 @@ for index, row in df.iterrows():
                 "tabsITEM_DETAIL/tabpTABIDT9"
             ).select()
 
-            campo_iva = session.findById(
-                "wnd[0]/usr/subSUB0:SAPLMEGUI:0015/"
+            time.sleep(0.4)
+
+            campo_iva = wait_for_element(
+                session,
+                "wnd[0]/usr/subSUB0:SAPLMEGUI:0019/"
                 "subSUB3:SAPLMEVIEWS:1100/"
                 "subSUB2:SAPLMEVIEWS:1200/"
                 "subSUB1:SAPLMEGUI:1301/"
@@ -95,8 +159,9 @@ for index, row in df.iterrows():
         # =========================
         if modo in ("RAZAO", "AMBOS") and conta:
 
-            session.findById(
-                "wnd[0]/usr/subSUB0:SAPLMEGUI:0015/"
+            wait_for_element(
+                session,
+                "wnd[0]/usr/subSUB0:SAPLMEGUI:0019/"
                 "subSUB3:SAPLMEVIEWS:1100/"
                 "subSUB2:SAPLMEVIEWS:1200/"
                 "subSUB1:SAPLMEGUI:1301/"
@@ -104,7 +169,10 @@ for index, row in df.iterrows():
                 "tabsITEM_DETAIL/tabpTABIDT16"
             ).select()
 
-            campo_conta = session.findById(
+            time.sleep(0.5)
+
+            campo_conta = wait_for_element(
+                session,
                 "wnd[0]/usr/subSUB0:SAPLMEGUI:0019/"
                 "subSUB3:SAPLMEVIEWS:1100/"
                 "subSUB2:SAPLMEVIEWS:1200/"
@@ -123,10 +191,10 @@ for index, row in df.iterrows():
         # =========================
         # SALVAR
         # =========================
-        session.findById("wnd[0]/tbar[0]/btn[11]").press()
+        wait_for_element(session, "wnd[0]/tbar[0]/btn[11]").press()
 
         try:
-            session.findById("wnd[1]/tbar[0]/btn[0]").press()
+            wait_for_element(session, "wnd[1]/tbar[0]/btn[0]").press()
         except:
             pass
 
@@ -154,7 +222,7 @@ for index, row in df.iterrows():
             "mensagem": str(e)
         })
 
-        break
+        continue
 
 # =========================
 # LOG

@@ -1,119 +1,168 @@
 import os
 import pandas as pd
 from datetime import datetime
-from pyrfc import Connection
-
-# ===== CONFIG =====
-EXCEL_PATH = r"C:\python_scripts\Planilhas\Pedidos.xlsx"
-TESTRUN = False
-
-SAP_CONN = dict(
-    user="S-SDKRFC",
-    passwd="RFC@2026sdk&&15",
-    ashost="10.200.3.10",
-    sysnr="00",
-    client="310",
-    lang="PT"
+from pyrfc import (
+    Connection,
+    ABAPApplicationError,
+    ABAPRuntimeError,
+    CommunicationError,
+    LogonError
 )
 
-def zfill_item(v):
-    return str(int(v)).zfill(5)
+# =========================
+# CONFIGURAÇÕES
+# =========================
+EXCEL_PATH = r"C:\Users\junio\OneDrive\Área de Trabalho\Documentos\Scripts Github\automations\Planilhas\Pedidos - Copia.xlsx"
+SHEET_NAME = 0
+TESTRUN = False  # True = simulação | False = grava no SAP
 
-def bdc_field(fnam, fval):
-    return {"FNAM": fnam, "FVAL": fval}
+SAP_CONN = {
+    "user": "S-SDKRFC",
+    "passwd": "",
+    "ashost": "10.200.3.92",
+    "sysnr": "00",
+    "client": "300",
+    "lang": "PT"
+}
 
-def bdc_dynpro(program, dynpro):
-    return {
-        "PROGRAM": program,
-        "DYNPRO": dynpro,
-        "DYNBEGIN": "X"
-    }
+# =========================
+# FUNÇÕES AUXILIARES
+# =========================
+def zfill_item(value):
+    """Formata item para 5 dígitos (ex: 10 → 00010)"""
+    return str(int(value)).zfill(5)
 
-# ===== MONTA BDC =====
-def montar_bdc_me22n(po, item, nova_conta, novo_iva):
-    bdc = []
 
-    # Tela inicial
-    bdc.append(bdc_dynpro("SAPLMEGUI", "0014"))
-    bdc.append(bdc_field("BDC_OKCODE", "/00"))
-    bdc.append(bdc_field("MEPO_SELECT-EBELN", po))
+def show_return(ret):
+    """Interpreta retorno do SAP"""
+    messages = []
+    error = False
 
-    # Entrar no item
-    bdc.append(bdc_dynpro("SAPLMEGUI", "0014"))
-    bdc.append(bdc_field("BDC_OKCODE", "=ME22N_ITEM"))
-    bdc.append(bdc_field("MEPO1211-EBELP", item))
+    for r in ret or []:
+        line = f"{r['TYPE']} - {r['ID']} {r['NUMBER']}: {r['MESSAGE']}"
+        messages.append(line)
 
-    # Aba imputação
-    bdc.append(bdc_dynpro("SAPLMEGUI", "0014"))
-    bdc.append(bdc_field("BDC_OKCODE", "=KONT"))
+        if r["TYPE"] in ("E", "A"):
+            error = True
 
-    # Alterar conta (SAKTO)
-    if nova_conta:
-        bdc.append(bdc_field("MEPO1211-SAKTO", nova_conta))
+    return error, messages
 
-    # Alterar IVA
-    if novo_iva:
-        bdc.append(bdc_field("MEPO1211-MWSKZ", novo_iva))
 
-    # Salvar
-    bdc.append(bdc_field("BDC_OKCODE", "=BU"))
+def get_tax(conn, po, item5):
+    """Busca código de imposto atual"""
+    print("VALOR:", po)
+    print("TIPO:", type(po))
+    print("REPR:", repr(po))
+    print("TAMANHO:", len(str(po)))
+    print("-" * 30)
 
-    return bdc
+    detail = conn.call(
+        "BAPI_PO_GETDETAIL1",
+        PURCHASEORDER=po
+    )
 
-# ===== LEITURA =====
-df = pd.read_excel(EXCEL_PATH)
-df.columns = [c.strip() for c in df.columns]
+    for item in detail.get("POITEM", []):
+        if item["PO_ITEM"] == item5:
+            return item.get("TAX_CODE")
 
+    return None
+
+
+# =========================
+# LEITURA DO EXCEL
+# =========================
+df = pd.read_excel(EXCEL_PATH, sheet_name=SHEET_NAME)
+
+# Limpa nomes das colunas
+df.columns = [col.strip() for col in df.columns]
+
+# Normalizações
 df["PO_ITEM"] = df["Item"].apply(zfill_item)
+df["Novo"] = df["Novo Código Imposto"].astype(str).str.upper().str.strip()
 df["Pedidos"] = df["Pedidos"].astype(str).str.strip()
-df["NovaConta"] = df.get("Nova Conta Razão", "").astype(str).str.strip()
-df["NovoIVA"] = df.get("Novo Código Imposto", "").astype(str).str.strip()
 
+# =========================
+# CONEXÃO SAP
+# =========================
 conn = Connection(**SAP_CONN)
 
 results = []
 
-# ===== PROCESSAMENTO =====
-for _, row in df.iterrows():
+# =========================
+# PROCESSAMENTO
+# =========================
+for idx, row in df.iterrows():
     po = row["Pedidos"]
     item = row["PO_ITEM"]
-    conta = row["NovaConta"]
-    iva = row["NovoIVA"]
+    new_tax = row["Novo"]
+
+    before = get_tax(conn, po, item)
+
+    poitem = [{
+        "PO_ITEM": item,
+        "TAX_CODE": new_tax
+    }]
+
+    poitemx = [{
+        "PO_ITEM": item,
+        "PO_ITEMX": "X",
+        "TAX_CODE": "X"
+    }]
 
     try:
-        bdcdata = montar_bdc_me22n(po, item, conta, iva)
+        params = {
+            "PURCHASEORDER": po,
+            "POITEM": poitem,
+            "POITEMX": poitemx
+        }
 
-        resp = conn.call(
-            "RFC_CALL_TRANSACTION_USING",
-            TCODE="ME22N",
-            MODE="N",
-            BT_DATA=bdcdata
-        )
+        if TESTRUN:
+            params["TESTRUN"] = "X"
+
+        response = conn.call("BAPI_PO_CHANGE", **params)
+
+        has_error, messages = show_return(response.get("RETURN"))
+
+        after = None
+
+        if not TESTRUN and not has_error:
+            conn.call("BAPI_TRANSACTION_COMMIT", WAIT="X")
+            after = get_tax(conn, po, item)
 
         results.append({
             "Pedido": po,
             "Item": item,
-            "Conta": conta,
-            "IVA": iva,
-            "Status": "OK",
-            "Mensagem": str(resp)
+            "Antes": before,
+            "Novo": new_tax,
+            "Depois": after,
+            "Status": "ERRO" if has_error else "OK",
+            "Mensagens": " | ".join(messages)
         })
 
     except Exception as e:
         results.append({
             "Pedido": po,
             "Item": item,
-            "Conta": conta,
-            "IVA": iva,
-            "Status": "ERRO",
-            "Mensagem": str(e)
+            "Antes": before,
+            "Novo": new_tax,
+            "Depois": None,
+            "Status": "EXCEPTION",
+            "Mensagens": str(e)
         })
 
-# ===== RELATÓRIO =====
-out = pd.DataFrame(results)
-ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-out_path = os.path.join(os.path.dirname(EXCEL_PATH), f"resultado_bdc_{ts}.csv")
+# =========================
+# SAÍDA / RELATÓRIO
+# =========================
+output_df = pd.DataFrame(results)
 
-out.to_csv(out_path, index=False, encoding="utf-8")
+timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-print("Finalizado:", out_path)
+output_path = os.path.join(
+    os.path.dirname(EXCEL_PATH),
+    f"resultado_items_{timestamp}.csv"
+)
+
+output_df.to_csv(output_path, index=False, encoding="utf-8")
+
+print("\nRelatório salvo em:", output_path)
+print(output_df.head(20))
