@@ -1,7 +1,6 @@
 import win32com.client
 import pandas as pd
 import time
-from datetime import datetime
 
 # =========================
 # CONFIG
@@ -20,50 +19,30 @@ def wait_for_element(session, element_id, timeout=6):
             time.sleep(0.1)
     raise Exception(f"Elemento não encontrado: {element_id}")
 
-def try_find(session, element_id):
-    try:
-        return session.findById(element_id)
-    except:
-        return None
-
-def garantir_item_expandido(session):
+def acessar_aba(session, aba_id, tentativas=6):
     """
-    Verifica se o detalhe do item está expandido.
-    Se não estiver, expande.
+    Tenta acessar uma aba.
+    Se não conseguir, tenta expandir o item e tenta novamente.
     """
+    for _ in range(tentativas):
+        try:
+            session.findById(aba_id).select()
+            return True
+        except:
+            # tenta expandir
+            try:
+                session.findById(
+                    "wnd[0]/usr/subSUB0:SAPLMEGUI:0013/"
+                    "subSUB3:SAPLMEVIEWS:1100/"
+                    "subSUB1:SAPLMEVIEWS:4002/"
+                    "btnDYN_4000-BUTTON"
+                ).press()
+            except:
+                pass
 
-    # Esse elemento só existe quando o item está expandido
-    aba_detalhes = (
-        "wnd[0]/usr/subSUB0:SAPLMEGUI:0019/"
-        "subSUB3:SAPLMEVIEWS:1100/"
-        "subSUB2:SAPLMEVIEWS:1200/"
-        "subSUB1:SAPLMEGUI:1301/"
-        "subSUB2:SAPLMEGUI:1303/"
-        "tabsITEM_DETAIL"
-    )
+            time.sleep(0.5)
 
-    # 1. verifica se já está expandido
-    if try_find(session, aba_detalhes):
-        return
-
-    # 2. tenta expandir
-    botao_expandir = try_find(
-        session,
-        "wnd[0]/usr/subSUB0:SAPLMEGUI:0013/"
-        "subSUB3:SAPLMEVIEWS:1100/"
-        "subSUB1:SAPLMEVIEWS:4002/"
-        "btnDYN_4000-BUTTON"
-    )
-
-    if botao_expandir:
-        botao_expandir.press()
-        time.sleep(0.6)
-
-        # valida se expandiu
-        if try_find(session, aba_detalhes):
-            return
-
-    raise Exception("Não foi possível expandir o item")
+    raise Exception(f"Não conseguiu acessar aba")
 
 # =========================
 # SAP
@@ -115,19 +94,14 @@ for index, row in df.iterrows():
 
         wait_for_element(session, "wnd[1]/tbar[0]/btn[0]").press()
 
-        time.sleep(0.6)
-
-        # =========================
-        # GARANTE ITEM EXPANDIDO
-        # =========================
-        garantir_item_expandido(session)
+        time.sleep(0.7)
 
         # =========================
         # IVA
         # =========================
         if modo in ("IVA", "AMBOS") and iva:
 
-            wait_for_element(
+            acessar_aba(
                 session,
                 "wnd[0]/usr/subSUB0:SAPLMEGUI:0019/"
                 "subSUB3:SAPLMEVIEWS:1100/"
@@ -135,7 +109,7 @@ for index, row in df.iterrows():
                 "subSUB1:SAPLMEGUI:1301/"
                 "subSUB2:SAPLMEGUI:1303/"
                 "tabsITEM_DETAIL/tabpTABIDT9"
-            ).select()
+            )
 
             time.sleep(0.4)
 
@@ -159,7 +133,7 @@ for index, row in df.iterrows():
         # =========================
         if modo in ("RAZAO", "AMBOS") and conta:
 
-            wait_for_element(
+            acessar_aba(
                 session,
                 "wnd[0]/usr/subSUB0:SAPLMEGUI:0019/"
                 "subSUB3:SAPLMEVIEWS:1100/"
@@ -167,7 +141,7 @@ for index, row in df.iterrows():
                 "subSUB1:SAPLMEGUI:1301/"
                 "subSUB2:SAPLMEGUI:1303/"
                 "tabsITEM_DETAIL/tabpTABIDT16"
-            ).select()
+            )
 
             time.sleep(0.5)
 

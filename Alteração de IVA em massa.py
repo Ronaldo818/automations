@@ -16,14 +16,14 @@ EXCEL_PATH = r"C:\Users\junio\OneDrive\Área de Trabalho\Documentos\Scripts Gith
 SHEET_NAME = 0
 TESTRUN = False  # True = simulação | False = grava no SAP
 
-SAP_CONN = {
-    "user": "S-SDKRFC",
-    "passwd": "",
-    "ashost": "10.200.3.92",
-    "sysnr": "00",
-    "client": "300",
-    "lang": "PT"
-}
+SAP_CONN = dict(
+    user="S-SDKRFC",
+    passwd="RFC@2026sdk&&15",
+    ashost="10.200.3.92",
+    sysnr="00",
+    client="300",
+    lang="PT"
+)
 
 # =========================
 # FUNÇÕES AUXILIARES
