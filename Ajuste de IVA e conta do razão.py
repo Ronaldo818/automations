@@ -5,8 +5,8 @@ import time
 # =========================
 # CONFIG
 # =========================
-ARQUIVO_ENTRADA = r"C:\Users\junio\OneDrive\Área de Trabalho\Documentos\Scripts Github\automations\Planilhas\Pedidos.xlsx"
-ARQUIVO_LOG = r"C:\Users\junio\OneDrive\Área de Trabalho\Documentos\Scripts Github\automations\Planilhas\Pedidos_logs_2.xlsx"
+ARQUIVO_ENTRADA = r"C:\python_scripts\Planilhas\Pedidos.xlsx"
+ARQUIVO_LOG = r"C:\python_scripts\Planilhas\Pedidos_logs2.xlsx"
 
 # =========================
 # FUNÇÕES AUXILIARES

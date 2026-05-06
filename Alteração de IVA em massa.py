@@ -12,7 +12,7 @@ from pyrfc import (
 # =========================
 # CONFIGURAÇÕES
 # =========================
-EXCEL_PATH = r"C:\Users\junio\OneDrive\Área de Trabalho\Documentos\Scripts Github\automations\Planilhas\Pedidos - Copia.xlsx"
+EXCEL_PATH = r"C:\python_scripts\Planilhas\Pedidos - Copia.xlsx"
 SHEET_NAME = 0
 TESTRUN = False  # True = simulação | False = grava no SAP
 
