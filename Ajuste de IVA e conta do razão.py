@@ -168,9 +168,18 @@ for index, row in df.iterrows():
         wait_for_element(session, "wnd[0]/tbar[0]/btn[11]").press()
 
         try:
-            wait_for_element(session, "wnd[1]/tbar[0]/btn[0]").press()
+            # tenta botão padrão (OK)
+            session.findById("wnd[1]/tbar[0]/btn[0]").press()
         except:
-            pass
+            try:
+                # tenta botão SIM (popup SAP clássico)
+                session.findById("wnd[1]/usr/btnSPOP-VAROPTION1").press()
+            except:
+                try:
+                    # fallback para outro tipo de popup
+                    session.findById("wnd[1]/usr/btnSPOP-OPTION1").press()
+                except:
+                    pass
 
         status = session.findById("wnd[0]/sbar").text
 
