@@ -7,7 +7,7 @@ from openpyxl import Workbook, load_workbook
 
 
 URL_LOGIN = "https://sistema.avivar.com.br/webpro/webpad/acesso"
-XLSX_PATH = r"C:\Users\ronaldo.gontijo\Downloads\envio_notas.xlsx"
+XLSX_PATH = r"C:\Users\junio\Downloads\envio_notas.xlsx"
 
 
 CABECALHO = [
