@@ -5,8 +5,8 @@ import time
 # =========================
 # CONFIG
 # =========================
-ARQUIVO_ENTRADA = r"C:\python_scripts\Planilhas\Pedidos.xlsx"
-ARQUIVO_LOG = r"C:\python_scripts\Planilhas\Pedidos_logs2.xlsx"
+ARQUIVO_ENTRADA = r"C:\python_scripts\PLANILHAS\Pedidos Conta do Razão.xlsx"
+ARQUIVO_LOG = r"C:\python_scripts\PLANILHAS\Pedidos Conta do Razão_logs.xlsx"
 
 # =========================
 # FUNÇÕES AUXILIARES
