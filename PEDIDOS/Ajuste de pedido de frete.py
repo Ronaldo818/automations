@@ -4,7 +4,7 @@ from datetime import datetime
 from pyrfc import Connection, ABAPApplicationError, ABAPRuntimeError, CommunicationError, LogonError
 
 # ====== CONFIG ======
-EXCEL_PATH = r"C:\Users\ronaldo.gontijo\Downloads\Pedidos.xlsx"
+EXCEL_PATH = r"C:\python_scripts\Planilhas\Pedidos - CC.xlsx"
 SHEET_NAME = 0
 TESTRUN = False   # True = simulação | False = grava
 
@@ -14,7 +14,7 @@ SAP_CONN = dict(
     ashost="10.200.3.92",
     sysnr="00",
     client="300",
-    lang="EN"  # recomendado EN
+    lang="EN"
 )
 
 # ===== FUNÇÕES =====
