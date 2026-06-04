@@ -25,7 +25,7 @@ df = pd.read_excel(ARQUIVO_ENTRADA)
 log = []
 
 # =========================
-# FUNÇÃO CRITÉRIO
+# FUNÇÕES
 # =========================
 def formatar_criterio(valor):
     if pd.isna(valor) or str(valor).strip() == "":
@@ -35,11 +35,8 @@ def formatar_criterio(valor):
 def limpar_valor(valor):
     if pd.isna(valor):
         return ""
-    
-    # Se for número (float), remove .0
     if isinstance(valor, float):
         return str(int(valor))
-    
     return str(valor).strip()
 
 # =========================
@@ -58,15 +55,16 @@ for index, row in df.iterrows():
         criterio1 = formatar_criterio(row['Criterio_1'])
         criterio2 = formatar_criterio(row['Criterio_2'])
 
-        ordem = str(row['Ordem'])
+        ordem = limpar_valor(row['Ordem'])
+
+        # NOVOS CAMPOS
+        imob_origem = limpar_valor(row['Imob Origem'])
+        origem_sub = limpar_valor(row['Origem Sub'])
 
         vida = str(int(row['Vida']))
 
-        data_dt = pd.to_datetime(row['Depreciação'])
-        data_dep = data_dt.strftime("%d.%m.%Y")
-
-        data_dt = pd.to_datetime(row['Depreciação_Fiscal'])
-        data_fis = data_dt.strftime("%d.%m.%Y")
+        data_dep = pd.to_datetime(row['Depreciação']).strftime("%d.%m.%Y")
+        data_fis = pd.to_datetime(row['Depreciação_Fiscal']).strftime("%d.%m.%Y")
 
         # =========================
         # INÍCIO
@@ -88,16 +86,14 @@ for index, row in df.iterrows():
             "wnd[0]/usr/subTABSTRIP:SAPLATAB:0100/tabsTABSTRIP100/tabpTAB01/"
             "ssubSUBSC:SAPLATAB:0200/subAREA1:SAPLAIST:1140/txtANLA-TXT50"
         ).text = descricao
-        
+
         if serie:
             try:
                 campo = session.findById(
                     "wnd[0]/usr/subTABSTRIP:SAPLATAB:0100/tabsTABSTRIP100/tabpTAB01/"
                     "ssubSUBSC:SAPLATAB:0200/subAREA1:SAPLAIST:1140/txtANLA-SERNR"
                 )
-                campo.setFocus()
                 campo.text = serie
-                campo.caretPosition = len(serie)
             except:
                 pass
 
@@ -107,9 +103,7 @@ for index, row in df.iterrows():
                     "wnd[0]/usr/subTABSTRIP:SAPLATAB:0100/tabsTABSTRIP100/tabpTAB01/"
                     "ssubSUBSC:SAPLATAB:0200/subAREA1:SAPLAIST:1140/txtANLA-INVNR"
                 )
-                campo.setFocus()
                 campo.text = inventario
-                campo.caretPosition = len(inventario)
             except:
                 pass
 
@@ -133,7 +127,7 @@ for index, row in df.iterrows():
         session.findById("wnd[0]").sendVKey(0)
 
         # =========================
-        # ABA 3 (CRITÉRIOS)
+        # ABA 3
         # =========================
         session.findById("wnd[0]/usr/subTABSTRIP:SAPLATAB:0100/tabsTABSTRIP100/tabpTAB03").select()
 
@@ -155,13 +149,34 @@ for index, row in df.iterrows():
         # ABA 4 (ORIGEM)
         # =========================
         session.findById("wnd[0]/usr/subTABSTRIP:SAPLATAB:0100/tabsTABSTRIP100/tabpTAB04").select()
-        
+
+        # AIBN1
+        if imob_origem:
+            try:
+                session.findById(
+                    "wnd[0]/usr/subTABSTRIP:SAPLATAB:0100/tabsTABSTRIP100/tabpTAB04/"
+                    "ssubSUBSC:SAPLATAB:0202/subAREA1:SAPLAIST:1181/txtANLA-AIBN1"
+                ).text = imob_origem
+            except:
+                pass
+
+        # AIBN2
+        if origem_sub:
+            try:
+                session.findById(
+                    "wnd[0]/usr/subTABSTRIP:SAPLATAB:0100/tabsTABSTRIP100/tabpTAB04/"
+                    "ssubSUBSC:SAPLATAB:0202/subAREA1:SAPLAIST:1181/txtANLA-AIBN2"
+                ).text = origem_sub
+            except:
+                pass
+
+        # EAUFN
         if ordem:
             session.findById(
                 "wnd[0]/usr/subTABSTRIP:SAPLATAB:0100/tabsTABSTRIP100/tabpTAB04/"
                 "ssubSUBSC:SAPLATAB:0202/subAREA2:SAPLAIST:1182/ctxtANLA-EAUFN"
             ).text = ordem
-        
+
         session.findById("wnd[0]").sendVKey(0)
 
         # =========================
@@ -201,9 +216,6 @@ for index, row in df.iterrows():
 
         status = session.findById("wnd[0]/sbar").text
 
-        # =========================
-        # CAPTURA IMOBILIZADO
-        # =========================
         match = re.search(r'\d+', status)
         imobilizado = match.group() if match else ""
 
@@ -227,7 +239,7 @@ for index, row in df.iterrows():
             "mensagem": str(e)
         })
 
-        break  # evita loop infinito
+        break
 
 # =========================
 # LOG
