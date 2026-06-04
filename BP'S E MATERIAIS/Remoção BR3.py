@@ -1,13 +1,14 @@
 import pandas as pd
 import win32com.client
 import time
+import os
 from datetime import datetime
 
 # =============================
 # CONFIG
 # =============================
 CAMINHO_ARQUIVO = r"C:\python_scripts\PLANILHAS\Fornecedores_BR3.xlsx"
-CAMINHO_LOG = r"C:\python_scripts\PLANILHAS\Fornecedores_BR3_logs.xlsx"
+CAMINHO_LOG = r"C:\python_scripts\PLANILHAS\Fornecedores_BR3_logs.csv"
 
 # =============================
 # SAP CONNECTION
@@ -18,7 +19,7 @@ connection = application.Children(0)
 session = connection.Children(0)
 
 # =============================
-# IDs (reaproveitados)
+# IDs
 # =============================
 CAMPO_PN = "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2240/subSCREEN_1010_LEFT_AREA:SAPLBUS_LOCATOR:3100/tabsGS_SCREEN_3100_TABSTRIP/tabpBUS_LOCATOR_TAB_02/ssubSCREEN_3100_TABSTRIP_AREA:SAPLBUS_LOCATOR:3202/subSCREEN_3200_SEARCH_AREA:SAPLBUS_LOCATOR:3211/subSCREEN_3200_SEARCH_FIELDS_AREA:SAPLBUPA_DIALOG_SEARCH:2100/txtBUS_JOEL_SEARCH-PARTNER_NUMBER"
 
@@ -36,13 +37,11 @@ BOTAO_DELETE = "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2000/sub
 def garantir_modo_edicao():
     try:
         campo = session.findById(f"{TABELA_TAX}/ctxtDFKKBPTAXNUM-TAXTYPE[0,0]")
-
         if campo.Changeable:
             return True
     except:
         pass
 
-    # tenta entrar em edição
     session.findById("wnd[0]").sendVKey(6)
     time.sleep(1)
 
@@ -70,7 +69,6 @@ def tratar_popup_sap():
             return msg, "E"
     except:
         pass
-
     return "", ""
 
 
@@ -83,33 +81,27 @@ def remover_br3(lifnr):
     try:
         session.findById("wnd[0]").maximize()
 
-        # abrir BP
         session.findById("wnd[0]/tbar[0]/okcd").text = "bp"
         session.findById("wnd[0]").sendVKey(0)
         time.sleep(2)
 
-        # buscar
         session.findById(CAMPO_PN).text = lifnr
         session.findById("wnd[0]").sendVKey(0)
         time.sleep(2)
 
-        # entrar
         grid = session.findById(GRID_RESULTADO)
         grid.selectedRows = "0"
         grid.doubleClickCurrentCell()
         time.sleep(2)
 
-        # aba TAX
         session.findById(ABA_TAX).select()
         time.sleep(1)
 
-        # modo edição (CRÍTICO)
         if not garantir_modo_edicao():
             raise Exception("Não entrou em modo edição")
 
         encontrou = False
 
-        # varredura
         for linha in range(0, 10):
             try:
                 campo = session.findById(f"{TABELA_TAX}/ctxtDFKKBPTAXNUM-TAXTYPE[0,{linha}]")
@@ -120,7 +112,6 @@ def remover_br3(lifnr):
                     session.findById(BOTAO_DELETE).press()
                     encontrou = True
                     break
-
             except:
                 continue
 
@@ -130,21 +121,19 @@ def remover_br3(lifnr):
 
             return {
                 "LIFNR": lifnr,
-                "STATUS": "NAO_ENCONTRADO",
+                "STATUS": "NAO_LOCALIZADO_BR3",
                 "ERRO": "",
                 "DATA_HORA": inicio.strftime("%Y-%m-%d %H:%M:%S")
             }
 
-        # salvar
         session.findById("wnd[0]/tbar[0]/btn[11]").press()
         time.sleep(2)
 
-        msg_popup, tipo_popup = tratar_popup_sap()
-        msg_status, tipo_status = capturar_mensagem_sap()
+        msg_popup, _ = tratar_popup_sap()
+        msg_status, _ = capturar_mensagem_sap()
 
         mensagem_final = msg_popup if msg_popup else msg_status
 
-        # reset
         session.findById("wnd[0]/tbar[0]/okcd").text = "/n"
         session.findById("wnd[0]").sendVKey(0)
 
@@ -168,19 +157,24 @@ def remover_br3(lifnr):
 
 
 # =============================
-# EXECUÇÃO
+# EXECUÇÃO COM LOG INCREMENTAL
 # =============================
 df = pd.read_excel(CAMINHO_ARQUIVO)
 
-logs = []
-
-for _, row in df.iterrows():
+for i, row in df.iterrows():
     lifnr = str(row["LIFNR"]).zfill(10)
-    print(f"Processando: {lifnr}")
+
+    print(f"[{i+1}/{len(df)}] Processando: {lifnr}")
 
     resultado = remover_br3(lifnr)
-    logs.append(resultado)
 
-pd.DataFrame(logs).to_excel(CAMINHO_LOG, index=False)
+    df_linha = pd.DataFrame([resultado])
+
+    df_linha.to_csv(
+        CAMINHO_LOG,
+        mode="a",
+        header=not os.path.exists(CAMINHO_LOG),
+        index=False
+    )
 
 print("Finalizado!")

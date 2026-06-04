@@ -1,3 +1,6 @@
-2026/03/12-15:58:18.873 69a8 Reusing MANIFEST C:\python_scripts\pw_profile_qas\Default\shared_proto_db/MANIFEST-000001
-2026/03/12-15:58:18.873 69a8 Recovering log #3
-2026/03/12-15:58:18.875 69a8 Reusing old log C:\python_scripts\pw_profile_qas\Default\shared_proto_db/000003.log 
+2026/06/03-12:32:08.598 7db4 Reusing MANIFEST C:\python_scripts\pw_profile_qas\Default\shared_proto_db/MANIFEST-000001
+2026/06/03-12:32:08.598 7db4 Recovering log #3
+2026/06/03-12:32:08.600 7db4 Reusing old log C:\python_scripts\pw_profile_qas\Default\shared_proto_db/000003.log 
+2026/06/03-12:33:16.590 223c Level-0 table #5: started
+2026/06/03-12:33:16.607 223c Level-0 table #5: 72199 bytes OK
+2026/06/03-12:33:16.610 223c Delete type=0 #3
