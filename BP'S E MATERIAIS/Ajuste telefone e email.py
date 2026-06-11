@@ -1,95 +1,197 @@
-from pyrfc import Connection
+import win32com.client
 import pandas as pd
-
-conn = Connection(
-    user="S-SDKRFC",
-    passwd="RFC@2026sdk&&15",
-    ashost="10.200.3.10",
-    sysnr="00",
-    client="310",
-    lang="PT"
-)
+from datetime import datetime
+import time
 
 # =========================
-# CONFIGURAÇÕES
+# CONFIG
 # =========================
-EXCEL_PATH = r"C:\python_scripts\Planilhas\BPs.xlsx"
+ARQUIVO_ENTRADA = r"C:\python_scripts\Planilhas\BPs.xlsx"
+ARQUIVO_LOG = r"C:\python_scripts\Planilhas\BPs_logs.xlsx"
 
 # =========================
-# LEITURA DO EXCEL
+# SAP
 # =========================
-df = pd.read_excel(EXCEL_PATH)
+SapGuiAuto = win32com.client.GetObject("SAPGUI")
+application = SapGuiAuto.GetScriptingEngine
+connection = application.Children(0)
+session = connection.Children(0)
 
-for _, row in df.iterrows():
+# =========================
+# PLANILHA
+# =========================
+df = pd.read_excel(ARQUIVO_ENTRADA, dtype={'BP': str})
 
-    bp = str(row['BP'])
-    address_id = str(row['ADDRESS_ID'])
+log = []
 
-    telefone_novo = str(row['TELEFONE']) if pd.notna(row['TELEFONE']) else ''
-    email_novo = str(row['EMAIL']) if pd.notna(row['EMAIL']) else ''
+# =========================
+# FUNÇÕES
+# =========================
+def limpar_valor(valor):
+    if pd.isna(valor):
+        return ""
+    return str(valor).strip()
 
-    print(f'Processando BP {bp}...')
+def formatar_bp(bp):
+    bp = str(bp)
+    if "." in bp:
+        bp = bp.split(".")[0]
+    return bp.zfill(10)
 
-    # =========================
-    # BUSCAR DADOS ATUAIS
-    # =========================
-    detalhe = conn.call(
-        'BAPI_BUPA_ADDRESS_GETDETAIL',
-        BUSINESSPARTNER=bp,
-        ADDRESSGUID=address_id
-    )
+def salvar_log():
+    pd.DataFrame(log).to_excel(ARQUIVO_LOG, index=False)
 
-    # =========================
-    # TELEFONE
-    # =========================
-    telefone_update = []
+# =========================
+# LOOP
+# =========================
+for index, row in df.iterrows():
 
-    if telefone_novo:  # só entra se tiver valor
-        for tel in detalhe.get('TELEPHONE', []):
-            telefone_update.append({
-                'CONSNUMBER': tel['CONSNUMBER'],
-                'TEL_NO': telefone_novo,
-                'R_3_USER': tel.get('R_3_USER', ''),
-                'MOBILE': tel.get('MOBILE', ''),
-                'VALID_FROM': tel.get('VALID_FROM', '20250101'),
-                'VALID_TO': tel.get('VALID_TO', '99991231')
-            })
+    try:
+        data_hora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
-    # =========================
-    # EMAIL
-    # =========================
-    email_update = []
+        bp = formatar_bp(row['BP'])
+        telefone = limpar_valor(row.get('TELEFONE'))
+        email = limpar_valor(row.get('EMAIL'))
 
-    if email_novo:  # só entra se tiver valor
-        for mail in detalhe.get('E_MAIL', []):
-            email_update.append({
-                'CONSNUMBER': mail['CONSNUMBER'],
-                'E_MAIL': email_novo,
-                'STD_NO': mail.get('STD_NO', 'X'),
-                'VALID_FROM': mail.get('VALID_FROM', '20250101'),
-                'VALID_TO': mail.get('VALID_TO', '99991231')
-            })
+        if not telefone and not email:
+            print(f"BP {bp} ignorado (sem dados)")
+            continue
 
-    # =========================
-    # CHAMAR BAPI (SÓ COM O QUE EXISTE)
-    # =========================
-    parametros = {
-        'BUSINESSPARTNER': bp,
-        'ADDRESSGUID': address_id
-    }
+        print(f"\nProcessando BP {bp}...")
 
-    if telefone_update:
-        parametros['TELEPHONE'] = telefone_update
+        # =========================
+        # ABRIR BP
+        # =========================
+        session.findById("wnd[0]/tbar[0]/okcd").text = "/nBP"
+        session.findById("wnd[0]").sendVKey(0)
+        time.sleep(1)
 
-    if email_update:
-        parametros['E_MAIL'] = email_update
+        # =========================
+        # BUSCAR BP
+        # =========================
+        campo_bp = session.findById(
+            "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2240/"
+            "subSCREEN_1010_LEFT_AREA:SAPLBUS_LOCATOR:3100/"
+            "tabsGS_SCREEN_3100_TABSTRIP/tabpBUS_LOCATOR_TAB_02/"
+            "ssubSCREEN_3100_TABSTRIP_AREA:SAPLBUS_LOCATOR:3202/"
+            "subSCREEN_3200_SEARCH_AREA:SAPLBUS_LOCATOR:3211/"
+            "subSCREEN_3200_SEARCH_FIELDS_AREA:SAPLBUPA_DIALOG_SEARCH:2100/"
+            "txtBUS_JOEL_SEARCH-PARTNER_NUMBER"
+        )
 
-    # Se não tiver nada pra alterar, pula
-    if not telefone_update and not email_update:
-        print(f'BP {bp} ignorado (sem dados)')
-        continue
+        campo_bp.text = bp
+        session.findById("wnd[0]").sendVKey(0)
+        time.sleep(2)
 
-    conn.call('BAPI_BUPA_ADDRESS_CHANGE', **parametros)
-    conn.call('BAPI_TRANSACTION_COMMIT')
+        # Seleciona resultado
+        grid = session.findById(
+            "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2240/"
+            "subSCREEN_1010_LEFT_AREA:SAPLBUS_LOCATOR:3100/"
+            "tabsGS_SCREEN_3100_TABSTRIP/tabpBUS_LOCATOR_TAB_02/"
+            "ssubSCREEN_3100_TABSTRIP_AREA:SAPLBUS_LOCATOR:3202/"
+            "subSCREEN_3200_SEARCH_AREA:SAPLBUS_LOCATOR:3211/"
+            "subSCREEN_3200_RESULT_AREA:SAPLBUPA_DIALOG_JOEL:1060/"
+            "ssubSCREEN_1060_RESULT_AREA:SAPLBUPA_DIALOG_JOEL:1080/"
+            "cntlSCREEN_1080_CONTAINER/shellcont/shell"
+        )
 
-    print(f'BP {bp} atualizado com sucesso')
+        grid.selectedRows = "0"
+        grid.doubleClickCurrentCell()
+        time.sleep(1)
+
+        # =========================
+        # MODO EDIÇÃO
+        # =========================
+        campo_tel = session.findById(
+            "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2000/"
+            "subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/"
+            "ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/"
+            "ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/"
+            "tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/"
+            "ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/"
+            "ssubGENSUB:SAPLBUSS:7016/subA05P01:SAPLBUA0:0400/"
+            "subADDRESS:SAPLSZA1:0300/subCOUNTRY_SCREEN:SAPLSZA1:0301/"
+            "txtSZA1_D0100-TEL_NUMBER"
+        )
+
+        if not campo_tel.Changeable:
+            session.findById("wnd[0]/tbar[1]/btn[6]").press()
+            time.sleep(1)
+
+        alterou = False
+
+        # =========================
+        # TELEFONE
+        # =========================
+        if telefone:
+            campo_tel.text = telefone
+            alterou = True
+
+            session.findById(
+                campo_tel.Id.replace("TEL_NUMBER", "MOB_NUMBER")
+            ).text = telefone
+
+        # =========================
+        # EMAIL
+        # =========================
+        if email:
+            session.findById(
+                "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2000/"
+                "subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/"
+                "ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/"
+                "ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/"
+                "tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/"
+                "ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/"
+                "ssubGENSUB:SAPLBUSS:7016/subA05P01:SAPLBUA0:0400/"
+                "subADDRESS:SAPLSZA1:0300/subCOUNTRY_SCREEN:SAPLSZA1:0301/"
+                "txtSZA1_D0100-SMTP_ADDR"
+            ).text = email
+            alterou = True
+
+        # =========================
+        # SALVAR
+        # =========================
+        if alterou:
+            session.findById("wnd[0]/tbar[0]/btn[11]").press()
+            time.sleep(1)
+
+            # TRATAR POPUP (caso apareça)
+            try:
+                session.findById("wnd[1]/tbar[0]/btn[0]").press()
+                time.sleep(0.5)
+            except:
+                pass
+
+            status = session.findById("wnd[0]/sbar").text
+        else:
+            status = "Nenhuma alteração necessária"
+
+        log.append({
+            "linha": index + 2,
+            "bp": bp,
+            "telefone": telefone,
+            "email": email,
+            "data_hora": data_hora,
+            "status": "SUCESSO",
+            "mensagem": status
+        })
+
+        salvar_log()
+
+        print(f"{bp} processado")
+
+    except Exception as e:
+        print(f"Erro na linha {index + 2}: {str(e)}")
+
+        log.append({
+            "linha": index + 2,
+            "bp": row.get('BP', ''),
+            "data_hora": data_hora,
+            "status": "ERRO",
+            "mensagem": str(e)
+        })
+
+        salvar_log()
+        break
+
+print("Execução finalizada.")

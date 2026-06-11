@@ -271,3 +271,39 @@ Global trace level        : 0
 2026-04-29 22:17:47.075142 [22228] >> Error entry
 	[Handle: 2827246450976	ConvID: 09697218	Target: 10.200.3.92	SysID: 	SysNr: 00	User: S-SDKRFC	Client: 300	Language: P	Codepage: 4103]
 	RfcSystemException: Key: , Code: RFC_ABAP_RUNTIME_FAILURE, Message: 00024error during logon
+
+**** Log file opened at 2026-06-11 12:18:10.677839 UTC-03:00 (Hora oficial do Brasil), Encoding UTF-8
+NW RFC Library: Kernel variant, Release 750 Patch Level 11
+Compilation date          : Jan 25 2023 01:21:13
+CPIC library              : 753.2022.12.23 version 3
+NI library                : 40
+Kernel Release            : 753 Patch Level 1116
+Current working directory : C:\python_scripts
+Program                   : python
+Process ID                : 30268
+User                      : ronaldo.gontijo
+Hardware                  : PC with Windows NT 14x AMD64 Level 6 (Mod 170 Step 4)
+Operating_system          : Windows NT 10.0
+Hostname                  : NTINM019
+IP address                : 172.17.4.74
+IPv6 address              : fe80::2dca:2645:4f23:b1ee
+Global trace level        : 0
+
+2026-06-11 12:18:10.676139 [20492] >> Error entry
+	[Handle: 2110182429200	ConvID: 88510484	Target: vhvvrps4ci.sap.avivar.com.br	SysID: PS4	SysNr: 00	User: S-SDKRFC	Client: 300	Language: E	Codepage: 4103]
+	RfcCommunicationException: Return Value: 20, Code: RFC_COMMUNICATION_FAILURE, Message: 
+LOCATION    CPIC (TCP/IP) on local host with Unicode
+ERROR       connection to partner '10.200.3.92:3300' broken
+TIME        Thu Jun 11 12:18:10 2026
+RELEASE     753
+COMPONENT   NI (network interface)
+VERSION     40
+RC          -6
+MODULE      D:/depot/bas/753_REL/src/base/ni/nixxi.cpp
+LINE        5434
+DETAIL      NiIRead: P=10.200.3.92:3300; L=172.17.4.74:51538
+SYSTEM CALL recv
+ERRNO       10054
+ERRNO TEXT  WSAECONNRESET: Connection reset by peer
+COUNTER     4
+

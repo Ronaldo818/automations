@@ -31,13 +31,12 @@ from playwright.sync_api import sync_playwright, Page, TimeoutError as PWTimeout
 # ============================================================
 # CONFIG
 # ============================================================
-EXCEL_PATH  = r"C:\Users\junio\OneDrive\Área de Trabalho\Documentos\Scripts Github\automations\Planilhas\Partidas.xlsx"
-OUTPUT_PATH = r"C:\Users\junio\OneDrive\Área de Trabalho\Documentos\Scripts Github\automations\Planilhas\Partidas_logs.xlsx"
+EXCEL_PATH  = r"C:\python_scripts\PLANILHAS\Partidas.xlsx"
+OUTPUT_PATH = r"C:\python_scripts\PLANILHAS\Partidas_logs.xlsx"
 
 URLQAS_HOME = "https://s4qas.sap.avivar.com.br/sap/bc/ui2/flp?sap-client=300&sap-language=PT#Shell-home"
 URLPRD_HOME = "https://s4prd.sap.avivar.com.br/sap/bc/ui2/flp?sap-client=300&sap-language=PT#Shell-home"
 
-# URL base da transação (sem empresa/BP — montamos o deep link por linha)
 URLQAS_APP  = "https://s4qas.sap.avivar.com.br/sap/bc/ui2/flp?sap-client=300&sap-language=PT#Supplier-clearOpenItems&/clearing/true/{empresa}/{bp}/undefined/undefined/undefined/undefined"
 URLPRD_APP  = "https://s4prd.sap.avivar.com.br/sap/bc/ui2/flp?sap-client=300&sap-language=PT#Supplier-clearOpenItems&/clearing/true/{empresa}/{bp}/undefined/undefined/undefined/undefined"
 
@@ -46,7 +45,7 @@ PROFILE_DIR_PRD = str(Path.cwd() / "pw_profile_prd")
 
 # True  → clica em Simular (seguro para validar)
 # False → clica em Lançar (executa de verdade)
-MODO_TESTE = True
+MODO_TESTE = False
 
 EMPRESA_PADRAO = "2000"
 
@@ -54,8 +53,7 @@ TIMEOUT = 60_000   # ms — aguarda elementos
 SLOW_MO = 400      # ms — pausa entre ações
 
 # Tempo de pausa após Simular para validação visual (ms)
-# 5000 = 5 segundos — ajuste conforme necessário
-DELAY_SIMULACAO = 5_000
+DELAY_SIMULACAO = 60_000
 
 # ============================================================
 # SELETORES
@@ -65,54 +63,46 @@ SEL_USER         = "#USERNAME_FIELD-inner"
 SEL_PASS         = "#PASSWORD_FIELD-inner"
 SEL_LOGIN_BTN    = "#LOGIN_LINK"
 
-# Tela inicial — botão "Compensar partidas em aberto"
 SEL_BTN_COMPENSAR_PARTIDAS = "bdi#application-Supplier-clearOpenItems-component---PaymentListView--buttonAssignOpenItems-BDI-content"
 
-# Popup de seleção empresa/BP
-SEL_INPUT_EMPRESA   = "#openItemAssSelCompanyCode-inner"
-SEL_INPUT_BP        = "#openItemAssSelAccountID-inner"
-SEL_BTN_OK_POPUP    = "bdi#openItemsAssSelDialogOKButton-BDI-content"
+SEL_INPUT_EMPRESA = "#openItemAssSelCompanyCode-inner"
+SEL_INPUT_BP      = "#openItemAssSelAccountID-inner"
+SEL_BTN_OK_POPUP  = "bdi#openItemsAssSelDialogOKButton-BDI-content"
 
-# Tela de partidas — campo de busca
-SEL_CAMPO_BUSCA     = "#application-Supplier-clearOpenItems-component---ClearingView--openItemSearch-I"
+# Tipo de documento contábil (preenchido com "KP" ao entrar no BP)
+SEL_TIPO_DOC = "#application-Supplier-clearOpenItems-component---ClearingView--acctgDocTypeInput-input-inner"
 
-# Botão "Compensar" em cada linha da grid (o __clone muda — usamos o texto)
+SEL_CAMPO_BUSCA         = "#application-Supplier-clearOpenItems-component---ClearingView--openItemSearch-I"
 SEL_BTN_COMPENSAR_LINHA = "bdi:has-text('Compensar')"
 
-# Aba "Lançar em conta do Razão"
-SEL_ABA_RAZAO = "#application-Supplier-clearOpenItems-component---ClearingView--tabChargeOffDiff-text"
+SEL_ABA_RAZAO  = "#application-Supplier-clearOpenItems-component---ClearingView--tabChargeOffDiff-text"
 
-# Campos GL
-SEL_CONTA_GL    = "#application-Supplier-clearOpenItems-component---ClearingView--glItemGLAccount-application-Supplier-clearOpenItems-component---ClearingView--glItems-0-input-inner"
-SEL_VALOR_DEB   = "#application-Supplier-clearOpenItems-component---ClearingView--glItemDebitAmount-application-Supplier-clearOpenItems-component---ClearingView--glItems-0-input-inner"
-SEL_VALOR_CRED  = "#application-Supplier-clearOpenItems-component---ClearingView--glItemCreditAmount-application-Supplier-clearOpenItems-component---ClearingView--glItems-0-input-inner"
+SEL_CONTA_GL   = "#application-Supplier-clearOpenItems-component---ClearingView--glItemGLAccount-application-Supplier-clearOpenItems-component---ClearingView--glItems-0-input-inner"
+SEL_VALOR_DEB  = "#application-Supplier-clearOpenItems-component---ClearingView--glItemDebitAmount-application-Supplier-clearOpenItems-component---ClearingView--glItems-0-input-inner"
+SEL_VALOR_CRED = "#application-Supplier-clearOpenItems-component---ClearingView--glItemCreditAmount-application-Supplier-clearOpenItems-component---ClearingView--glItems-0-input-inner"
 
-# Botão expandir painel GL (ícone de seta)
-SEL_EXPAND_GL   = "#application-Supplier-clearOpenItems-component---ClearingView--itemPanel-application-Supplier-clearOpenItems-component---ClearingView--glItems-0-expandButton-img"
-
-# Campos dentro do painel GL expandido
-SEL_ATRIBUICAO = "input[aria-labelledby*='codingBlockDetailsGroupElement_AssignmentReference-label']"
+SEL_EXPAND_GL    = "#application-Supplier-clearOpenItems-component---ClearingView--itemPanel-application-Supplier-clearOpenItems-component---ClearingView--glItems-0-expandButton-img"
+SEL_ATRIBUICAO = "input[aria-labelledby*='codingBlockDetailsGroupElement_DocumentItemText-label']"
 SEL_CENTRO_LUCRO = "input[aria-labelledby*='codingBlockGroupElement_ProfitCenter-label']"
 
-# Aba "Lançar em conta (valor BRL)"
-SEL_ABA_ON_ACCOUNT  = "#application-Supplier-clearOpenItems-component---ClearingView--tabOnAccount-text"
-
-# Campo de valor na aba "Lançar em conta"
+SEL_ABA_ON_ACCOUNT   = "#application-Supplier-clearOpenItems-component---ClearingView--tabOnAccount-text"
 SEL_ON_ACCOUNT_VALOR = "#application-Supplier-clearOpenItems-component---ClearingView--onAccountItemCreditAmount-application-Supplier-clearOpenItems-component---ClearingView--onAccountItems-0-input-inner"
 
-# Botão expandir painel "Lançar em conta"
 SEL_EXPAND_ON_ACCOUNT = "#application-Supplier-clearOpenItems-component---ClearingView--APARItemPanel-application-Supplier-clearOpenItems-component---ClearingView--onAccountItems-0-expandButton-img"
+SEL_REFERENCIA        = "#application-Supplier-clearOpenItems-component---ClearingView--OnAccountInputAssignmentReference-application-Supplier-clearOpenItems-component---ClearingView--onAccountItems-0-input-inner"
+SEL_VENCIMENTO        = "#application-Supplier-clearOpenItems-component---ClearingView--OnAccountInputDueCalculationBaseDate-application-Supplier-clearOpenItems-component---ClearingView--onAccountItems-0-datePicker-inner"
 
-# Campos dentro do painel "Lançar em conta" expandido
-SEL_REFERENCIA      = "#application-Supplier-clearOpenItems-component---ClearingView--OnAccountInputAssignmentReference-application-Supplier-clearOpenItems-component---ClearingView--onAccountItems-0-input-inner"
-SEL_VENCIMENTO      = "#application-Supplier-clearOpenItems-component---ClearingView--OnAccountInputDueCalculationBaseDate-application-Supplier-clearOpenItems-component---ClearingView--onAccountItems-0-datePicker-inner"
-
-# Botões finais
 SEL_BTN_SIMULAR = "bdi#application-Supplier-clearOpenItems-component---ClearingView--simulateMenuButton-internalSplitBtn-textButton-BDI-content"
-SEL_BTN_LANCAR  = "bdi#application-Supplier-clearOpenItems-component---ClearingView--buttonPost-BDI-content"
+SEL_BTN_LANCAR = "#application-Supplier-clearOpenItems-component---ClearingView--buttonPost"
+SEL_BTN_LANCAR_FINAL = "bdi#application-AccountingDocument-manage-component---singleGLDocumentDisplay--btnPost-BDI-content"
 
-# Toast de confirmação
+SEL_BTN_OK_CONFIRMACAO = "bdi:has-text('OK')"
+
 SEL_TOAST = ".sapMMessageToast"
+
+# IDs das colunas da grid para identificar onde o valor foi encontrado
+COLID_ATRIBUICAO = "application-Supplier-clearOpenItems-component---ClearingView--assignment"
+COLID_REFERENCIA = "application-Supplier-clearOpenItems-component---ClearingView--documentReference"
 
 # ============================================================
 # HELPERS
@@ -131,16 +121,16 @@ def normalizar_valor(valor_str: str) -> str:
     if not v or v in ("-", ",", "."):
         return "0,00"
     if "," in v and "." in v:
-        v = v.replace(".", "")                      # remove milhar
+        v = v.replace(".", "")
     elif "." in v:
-        v = v.replace(".", ",")                     # ponto decimal → vírgula
+        v = v.replace(".", ",")
     parts = v.split(",")
     inteiro = parts[0].lstrip("0") or "0"
     dec = (parts[1] + "00")[:2] if len(parts) > 1 else "00"
     return f"{inteiro},{dec}"
 
 
-def wait_busy_settle(page: Page, timeout=120_000):
+def wait_busy_settle(page: Page, timeout=60_000):
     """Aguarda sumir todos os indicadores de carregamento UI5."""
     page.wait_for_function(
         """() => {
@@ -159,7 +149,7 @@ def wait_busy_settle(page: Page, timeout=120_000):
 
 def wait_shell(page: Page):
     page.wait_for_load_state("domcontentloaded")
-    page.locator(SEL_SHELL_HEADER).wait_for(state="visible", timeout=120_000)
+    page.locator(SEL_SHELL_HEADER).wait_for(state="visible", timeout=60_000)
 
 
 def login_se_necessario(page: Page, user: str, pwd: str):
@@ -172,8 +162,7 @@ def login_se_necessario(page: Page, user: str, pwd: str):
 
 
 def preencher_campo(page: Page, seletor: str, valor: str, pressionar_enter=False):
-    """Limpa e preenche um campo de input."""
-    campo = page.locator(seletor)
+    campo = page.locator(seletor).first
     campo.wait_for(state="visible", timeout=TIMEOUT)
     campo.click()
     page.keyboard.press("Control+A")
@@ -185,7 +174,6 @@ def preencher_campo(page: Page, seletor: str, valor: str, pressionar_enter=False
 
 
 def clicar_elemento(page: Page, seletor: str, timeout=TIMEOUT):
-    """Aguarda o elemento ficar visível e clica."""
     el = page.locator(seletor).first
     el.wait_for(state="visible", timeout=timeout)
     el.scroll_into_view_if_needed()
@@ -193,14 +181,48 @@ def clicar_elemento(page: Page, seletor: str, timeout=TIMEOUT):
     page.wait_for_timeout(500)
 
 
-def try_get_toast(page: Page) -> str:
+def capturar_resultado(page: Page) -> str:
+    """Tenta capturar mensagem de retorno do SAP após Simular ou Lançar."""
     try:
         t = page.locator(SEL_TOAST)
         if t.count() > 0:
             return t.first.inner_text(timeout=3000).strip()
     except:
         pass
-    return ""
+    try:
+        dialog = page.locator("[role='alertdialog'], .sapMMessageBox, .sapMDialog")
+        if dialog.count() > 0:
+            return dialog.first.inner_text(timeout=2000).strip()
+    except:
+        pass
+    return "sem mensagem capturada"
+
+
+def preencher_tipo_documento(page: Page):
+    try:
+        campo = page.locator(SEL_TIPO_DOC).first
+        campo.wait_for(state="visible", timeout=TIMEOUT)
+        campo.click()
+        page.keyboard.press("Control+A")
+        page.keyboard.press("Backspace")
+        campo.type("KP")
+        page.keyboard.press("Enter")
+        page.wait_for_timeout(800)
+        wait_busy_settle(page)
+        page.keyboard.press("Tab")
+        page.wait_for_timeout(400)
+        wait_busy_settle(page)
+    except Exception as e:
+        raise Exception(f"Falha ao preencher Tipo de Documento com 'KP': {e}")
+
+
+def texto_celula_por_colid(linha, colid: str) -> str:
+    """Retorna o texto de uma célula específica da linha pelo data-sap-ui-colid."""
+    try:
+        cel = linha.locator(f"td[data-sap-ui-colid='{colid}']").first
+        return cel.inner_text(timeout=500).strip()
+    except:
+        return ""
 
 
 def pick_env():
@@ -214,27 +236,51 @@ def pick_env():
                 sys.exit(0)
             return "PRD", URLPRD_HOME, URLPRD_APP, PROFILE_DIR_PRD
 
+def clicar_ok_se_existir(page: Page, timeout=5000):
+    """
+    Clica no botão OK de popup de confirmação, se aparecer.
+    Não quebra o fluxo caso não exista.
+    """
+    try:
+        btn_ok = page.locator(SEL_BTN_OK_CONFIRMACAO)
+        if btn_ok.count() > 0:
+            btn_ok.first.wait_for(state="visible", timeout=timeout)
+            btn_ok.first.click()
+            page.wait_for_timeout(500)
+            wait_busy_settle(page)
+    except:
+        pass
 
 # ============================================================
 # FLUXO PRINCIPAL DE LANÇAMENTO
-# (compartilhado entre ABERTO e COMPENSADO a partir da aba GL)
 # ============================================================
-def preencher_lancamento(page: Page, row: dict):
+def preencher_lancamento(page: Page, row: dict) -> tuple[str, dict]:
     """
-    Executa os passos comuns após entrar na tela de compensação:
-    - Aba GL → conta + valor
-    - Expande painel → atribuição + centro de lucro
-    - Aba "Lançar em conta" → atualiza valor
-    - Expande painel → referência + vencimento
-    - Simula ou Lança
+    Executa os passos comuns após entrar na tela de compensação.
+    Retorna (mensagem_sap, detalhes_log).
     """
-    tipo         = str(row["Tipo"]).strip().upper()          # FATURA | DEVOLUÇÃO
+    tipo         = str(row["Tipo"]).strip().upper()
     valor        = normalizar_valor(row["Valor de crédito/débito"])
     conta_gl     = str(row["Conta do razão"]).strip()
     atribuicao   = str(row["Atribuição"]).strip()
     centro_lucro = str(row["Centro de lucro"]).strip()
     referencia   = str(row["Referência"]).strip()
     vencimento   = str(row["Data de vencimento"]).strip()
+
+    detalhes = {
+        "tipo_lancamento":            "Débito" if tipo == "DEVOLUÇÃO" else "Crédito",
+        "conta_gl":                   conta_gl,
+        "valor_preenchido":           valor,
+        "atribuicao":                 atribuicao,
+        "centro_lucro":               centro_lucro,
+        "referencia":                 referencia,
+        "vencimento":                 vencimento,
+        "valor_on_account_calculado": "não capturado",
+        "mensagem_sap":               "",
+        "modo":                       "SIMULADO" if MODO_TESTE else "LANÇADO",
+        "linha_grid_selecionada":     "",
+        "criterio_match":             "",
+    }
 
     # ── 1. Aba "Lançar em conta do Razão" ────────────────────
     clicar_elemento(page, SEL_ABA_RAZAO)
@@ -244,12 +290,11 @@ def preencher_lancamento(page: Page, row: dict):
     preencher_campo(page, SEL_CONTA_GL, conta_gl, pressionar_enter=True)
     wait_busy_settle(page)
 
-    # ── 3. Valor (débito ou crédito conforme tipo) ────────────
+    # ── 3. Valor ─────────────────────────────────────────────
     if tipo == "DEVOLUÇÃO":
         preencher_campo(page, SEL_VALOR_DEB, valor, pressionar_enter=True)
-    else:  # FATURA
+    else:
         preencher_campo(page, SEL_VALOR_CRED, valor, pressionar_enter=True)
-
     wait_busy_settle(page)
 
     # ── 4. Expande painel GL ──────────────────────────────────
@@ -265,7 +310,13 @@ def preencher_lancamento(page: Page, row: dict):
     clicar_elemento(page, SEL_ABA_ON_ACCOUNT)
     wait_busy_settle(page)
 
-    # ── 7. Clica duas vezes no campo de valor para atualizar ──
+    # ── 7. Captura valor calculado pelo SAP + dblclick ────────
+    try:
+        val_calculado = page.locator(SEL_ON_ACCOUNT_VALOR).first.input_value()
+        detalhes["valor_on_account_calculado"] = val_calculado
+    except:
+        pass
+
     campo_valor = page.locator(SEL_ON_ACCOUNT_VALOR).first
     campo_valor.wait_for(state="visible", timeout=TIMEOUT)
     campo_valor.dblclick()
@@ -285,29 +336,45 @@ def preencher_lancamento(page: Page, row: dict):
     if MODO_TESTE:
         clicar_elemento(page, SEL_BTN_SIMULAR)
         wait_busy_settle(page)
-        page.wait_for_timeout(DELAY_SIMULACAO)  # pausa para validar visualmente
-    else:
-        clicar_elemento(page, SEL_BTN_LANCAR)
-        wait_busy_settle(page)
+        clicar_ok_se_existir(page)
+        page.wait_for_timeout(DELAY_SIMULACAO)
 
-    toast = try_get_toast(page)
-    return toast or "Ação executada (sem toast capturado)"
+    else:
+        # 1️⃣ Sempre simula primeiro
+        clicar_elemento(page, SEL_BTN_SIMULAR)
+        wait_busy_settle(page)
+        clicar_ok_se_existir(page)
+
+        # 2️⃣ Aguarda tela do documento (onde aparece o novo botão Lançar)
+        page.locator(SEL_BTN_LANCAR_FINAL).first.wait_for(state="visible", timeout=TIMEOUT)
+
+        # 3️⃣ Clica no Lançar final
+        clicar_elemento(page, SEL_BTN_LANCAR_FINAL)
+        wait_busy_settle(page)
+        clicar_ok_se_existir(page)
+
+    msg = capturar_resultado(page)
+    detalhes["mensagem_sap"] = msg
+    return msg, detalhes
 
 
 # ============================================================
 # FLUXO: PARTIDA EM ABERTO
 # ============================================================
-def processar_aberto(page: Page, row: dict, app_url_template: str):
+def processar_aberto(page: Page, row: dict, app_url_template: str) -> tuple[str, dict]:
     empresa    = str(row.get("Empresa", EMPRESA_PADRAO)).strip()
     bp         = str(row["Fornecedor"]).strip()
     doc_sap    = str(row["Lançamento contábil"]).strip()
-    referencia = str(row["Referência"]).strip()
-    valor_ref  = normalizar_valor(row["Valor de crédito/débito"])
+    referencia = str(row["Referência"]).strip()  # valor único usado para buscar na grid
 
     url = app_url_template.format(empresa=empresa, bp=bp)
     page.goto(url, wait_until="domcontentloaded", timeout=60_000)
     wait_busy_settle(page)
 
+    # ── Preenche Tipo de Documento com "KP" ──────────────────
+    preencher_tipo_documento(page)
+
+    # ── Pesquisa o documento ──────────────────────────────────
     page.locator(SEL_CAMPO_BUSCA).wait_for(state="visible", timeout=TIMEOUT)
     preencher_campo(page, SEL_CAMPO_BUSCA, doc_sap, pressionar_enter=True)
     wait_busy_settle(page)
@@ -315,29 +382,40 @@ def processar_aberto(page: Page, row: dict, app_url_template: str):
     linhas = page.locator("tr[data-sap-ui-rowindex]")
     linhas.first.wait_for(state="visible", timeout=TIMEOUT)
 
-    btn_compensar = None
+    btn_compensar   = None
+    texto_linha_log = "não capturado"
+    criterio_match  = "não encontrado"
+
     for i in range(linhas.count()):
         linha = linhas.nth(i)
         texto = linha.inner_text()
 
-        # O documento precisa estar na linha
+        # Linha precisa conter o número do documento
         if doc_sap not in texto:
             continue
 
-        # Tenta bater pela referência (coluna Atribuição na grid)
-        if referencia and referencia in texto:
-            btn_compensar = linha.locator("bdi:has-text('Compensar')")
+        # 1ª tentativa: valor da coluna Referência da planilha
+        #               confrontado com a coluna Atribuição da grid
+        cel_atribuicao = texto_celula_por_colid(linha, COLID_ATRIBUICAO)
+        if referencia and referencia in cel_atribuicao:
+            btn_compensar   = linha.locator("bdi:has-text('Compensar')")
+            texto_linha_log = texto.replace("\n", " | ").strip()
+            criterio_match  = f"atribuição (grid) = '{cel_atribuicao}'"
             break
 
-        # Fallback: bate pelo valor formatado
-        if valor_ref and valor_ref in texto:
-            btn_compensar = linha.locator("bdi:has-text('Compensar')")
+        # 2ª tentativa: valor da coluna Referência da planilha
+        #               confrontado com a coluna Referência da grid
+        cel_referencia = texto_celula_por_colid(linha, COLID_REFERENCIA)
+        if referencia and referencia in cel_referencia:
+            btn_compensar   = linha.locator("bdi:has-text('Compensar')")
+            texto_linha_log = texto.replace("\n", " | ").strip()
+            criterio_match  = f"referência (grid) = '{cel_referencia}'"
             break
 
     if btn_compensar is None or btn_compensar.count() == 0:
         raise Exception(
-            f"Documento {doc_sap} não encontrado na grid para BP {bp}. "
-            f"Referência buscada: '{referencia}' | Valor: '{valor_ref}'"
+            f"Valor '{referencia}' não encontrado nas colunas Atribuição nem Referência "
+            f"da grid para o documento {doc_sap} | BP {bp}"
         )
 
     btn_compensar.scroll_into_view_if_needed()
@@ -345,30 +423,35 @@ def processar_aberto(page: Page, row: dict, app_url_template: str):
     page.wait_for_timeout(600)
     wait_busy_settle(page)
 
-    return preencher_lancamento(page, row)
+    msg, detalhes = preencher_lancamento(page, row)
+    detalhes["linha_grid_selecionada"] = texto_linha_log
+    detalhes["criterio_match"]         = criterio_match
+    return msg, detalhes
 
 
 # ============================================================
 # FLUXO: PARTIDA COMPENSADA (nova partida direta)
 # ============================================================
-def processar_compensado(page: Page, row: dict, app_url_template: str):
+def processar_compensado(page: Page, row: dict, app_url_template: str) -> tuple[str, dict]:
     empresa = str(row.get("Empresa", EMPRESA_PADRAO)).strip()
     bp      = str(row["Fornecedor"]).strip()
 
-    # Navega direto pelo deep link
     url = app_url_template.format(empresa=empresa, bp=bp)
-    page.goto(url, wait_until="domcontentloaded", timeout=120_000)
+    page.goto(url, wait_until="domcontentloaded", timeout=60_000)
     wait_busy_settle(page)
 
-    # Aguarda a tela carregar (campo de busca ou aba GL visível)
+    # ── Preenche Tipo de Documento com "KP" ──────────────────
+    preencher_tipo_documento(page)
+
     try:
         page.locator(SEL_ABA_RAZAO).wait_for(state="visible", timeout=TIMEOUT)
     except PWTimeout:
-        # Fallback: aguarda qualquer elemento principal da tela
         page.locator(SEL_CAMPO_BUSCA).wait_for(state="visible", timeout=TIMEOUT)
 
-    # Vai direto para o lançamento (sem buscar documento nem clicar Compensar)
-    return preencher_lancamento(page, row)
+    msg, detalhes = preencher_lancamento(page, row)
+    detalhes["linha_grid_selecionada"] = "N/A — partida compensada, lançamento direto"
+    detalhes["criterio_match"]         = "N/A"
+    return msg, detalhes
 
 
 # ============================================================
@@ -382,7 +465,10 @@ def main():
     df = pd.read_excel(xlsx, dtype=str).fillna("")
     print(f"Total de linhas: {len(df)}")
 
-    for col in ["Status", "Resultado", "Mensagem", "Data/Hora"]:
+    for col in ["Resultado", "Mensagem SAP", "Modo", "Conta GL usada",
+                "Tipo lançamento", "Valor preenchido", "Valor on account calculado",
+                "Referência usada", "Vencimento usado",
+                "Linha grid selecionada", "Critério match", "Data/Hora"]:
         if col not in df.columns:
             df[col] = ""
 
@@ -415,13 +501,11 @@ def main():
         page = context.new_page()
         page.set_viewport_size({"width": 1920, "height": 1080})
 
-        # Login
-        page.goto(home_url, wait_until="domcontentloaded", timeout=120_000)
+        page.goto(home_url, wait_until="domcontentloaded", timeout=60_000)
         if env == "QAS":
             login_se_necessario(page, sap_user, sap_pass)
         wait_shell(page)
 
-        # Loop de linhas
         for idx, row in df.iterrows():
             fornecedor = str(row["Fornecedor"]).strip()
             doc_sap    = str(row.get("Lançamento contábil", "")).strip()
@@ -430,37 +514,50 @@ def main():
 
             print(f"\n[Linha {idx+2}] Fornecedor {fornecedor} | Doc {doc_sap} | {status_doc} | {tipo}")
 
+            resultado = ""
+            msg       = ""
+            detalhes  = {}
+
             try:
                 if status_doc == "ABERTO":
-                    msg = processar_aberto(page, row, app_url_template)
+                    msg, detalhes = processar_aberto(page, row, app_url_template)
                     resultado = "SUCESSO" + (" (SIMULADO)" if MODO_TESTE else "")
 
                 elif status_doc == "COMPENSADO":
-                    msg = processar_compensado(page, row, app_url_template)
+                    msg, detalhes = processar_compensado(page, row, app_url_template)
                     resultado = "SUCESSO" + (" (SIMULADO)" if MODO_TESTE else "")
 
                 else:
-                    msg = f"Status desconhecido: '{status_doc}' — esperado ABERTO ou COMPENSADO"
+                    msg       = f"Status desconhecido: '{status_doc}' — esperado ABERTO ou COMPENSADO"
                     resultado = "IGNORADO"
 
                 print(f"  → {resultado}: {msg}")
 
             except Exception as e:
                 resultado = "ERRO"
-                msg = str(e)[:500]
+                msg       = str(e)[:500]
+                detalhes  = {}
                 print(f"  ✗ ERRO: {msg}")
-
-                # Tenta voltar para uma tela limpa antes da próxima linha
                 try:
                     page.goto(home_url, wait_until="domcontentloaded", timeout=30_000)
                     wait_shell(page)
                 except:
                     pass
 
-            df.at[idx, "Resultado"]  = resultado
-            df.at[idx, "Mensagem"]   = msg
-            df.at[idx, "Data/Hora"]  = now_str()
-            df.to_excel(out, index=False)  # salva o log a cada linha processada
+            # ── Grava log detalhado ───────────────────────────
+            df.at[idx, "Resultado"]                  = resultado
+            df.at[idx, "Mensagem SAP"]               = detalhes.get("mensagem_sap", msg)
+            df.at[idx, "Modo"]                       = detalhes.get("modo", "SIMULADO" if MODO_TESTE else "LANÇADO")
+            df.at[idx, "Conta GL usada"]             = detalhes.get("conta_gl", "")
+            df.at[idx, "Tipo lançamento"]            = detalhes.get("tipo_lancamento", "")
+            df.at[idx, "Valor preenchido"]           = detalhes.get("valor_preenchido", "")
+            df.at[idx, "Valor on account calculado"] = detalhes.get("valor_on_account_calculado", "")
+            df.at[idx, "Referência usada"]           = detalhes.get("referencia", "")
+            df.at[idx, "Vencimento usado"]           = detalhes.get("vencimento", "")
+            df.at[idx, "Linha grid selecionada"]     = detalhes.get("linha_grid_selecionada", "")
+            df.at[idx, "Critério match"]             = detalhes.get("criterio_match", "")
+            df.at[idx, "Data/Hora"]                  = now_str()
+            df.to_excel(out, index=False)
 
         context.close()
 
