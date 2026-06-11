@@ -55,7 +55,7 @@ SLOW_MO = 400      # ms — pausa entre ações
 
 # Tempo de pausa após Simular para validação visual (ms)
 # 5000 = 5 segundos — ajuste conforme necessário
-DELAY_SIMULACAO = 1000000000_000
+DELAY_SIMULACAO = 5_000
 
 # ============================================================
 # SELETORES
@@ -298,43 +298,53 @@ def preencher_lancamento(page: Page, row: dict):
 # FLUXO: PARTIDA EM ABERTO
 # ============================================================
 def processar_aberto(page: Page, row: dict, app_url_template: str):
-    empresa  = str(row.get("Empresa", EMPRESA_PADRAO)).strip()
-    bp       = str(row["Fornecedor"]).strip()
-    doc_sap  = str(row["Lançamento contábil"]).strip()
+    empresa    = str(row.get("Empresa", EMPRESA_PADRAO)).strip()
+    bp         = str(row["Fornecedor"]).strip()
+    doc_sap    = str(row["Lançamento contábil"]).strip()
+    referencia = str(row["Referência"]).strip()
+    valor_ref  = normalizar_valor(row["Valor de crédito/débito"])
 
-    # Navega direto pelo deep link (empresa + BP já na URL)
     url = app_url_template.format(empresa=empresa, bp=bp)
-    page.goto(url, wait_until="domcontentloaded", timeout=120_000)
+    page.goto(url, wait_until="domcontentloaded", timeout=60_000)
     wait_busy_settle(page)
 
-    # Aguarda campo de busca da grid
     page.locator(SEL_CAMPO_BUSCA).wait_for(state="visible", timeout=TIMEOUT)
-
-    # Pesquisa o número do documento
     preencher_campo(page, SEL_CAMPO_BUSCA, doc_sap, pressionar_enter=True)
     wait_busy_settle(page)
 
-    # Localiza e clica no botão "Compensar" da linha correspondente
-    # A grid pode ter múltiplas linhas — busca a linha que contém o número do doc
     linhas = page.locator("tr[data-sap-ui-rowindex]")
     linhas.first.wait_for(state="visible", timeout=TIMEOUT)
 
     btn_compensar = None
     for i in range(linhas.count()):
         linha = linhas.nth(i)
-        if doc_sap in linha.inner_text():
+        texto = linha.inner_text()
+
+        # O documento precisa estar na linha
+        if doc_sap not in texto:
+            continue
+
+        # Tenta bater pela referência (coluna Atribuição na grid)
+        if referencia and referencia in texto:
+            btn_compensar = linha.locator("bdi:has-text('Compensar')")
+            break
+
+        # Fallback: bate pelo valor formatado
+        if valor_ref and valor_ref in texto:
             btn_compensar = linha.locator("bdi:has-text('Compensar')")
             break
 
     if btn_compensar is None or btn_compensar.count() == 0:
-        raise Exception(f"Documento {doc_sap} não encontrado na grid para o BP {bp}.")
+        raise Exception(
+            f"Documento {doc_sap} não encontrado na grid para BP {bp}. "
+            f"Referência buscada: '{referencia}' | Valor: '{valor_ref}'"
+        )
 
     btn_compensar.scroll_into_view_if_needed()
     btn_compensar.click()
     page.wait_for_timeout(600)
     wait_busy_settle(page)
 
-    # A partir daqui o fluxo é idêntico ao COMPENSADO
     return preencher_lancamento(page, row)
 
 
