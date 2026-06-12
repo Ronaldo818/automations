@@ -94,7 +94,7 @@ SEL_VENCIMENTO        = "#application-Supplier-clearOpenItems-component---Cleari
 
 SEL_BTN_SIMULAR = "bdi#application-Supplier-clearOpenItems-component---ClearingView--simulateMenuButton-internalSplitBtn-textButton-BDI-content"
 SEL_BTN_LANCAR = "#application-Supplier-clearOpenItems-component---ClearingView--buttonPost"
-SEL_BTN_LANCAR_FINAL = "bdi#application-AccountingDocument-manage-component---singleGLDocumentDisplay--btnPost-BDI-content"
+SEL_BTN_LANCAR_FINAL = "#application-AccountingDocument-manage-component---singleGLDocumentDisplay--btnPost"
 
 SEL_BTN_OK_CONFIRMACAO = "bdi:has-text('OK')"
 
@@ -202,16 +202,25 @@ def preencher_tipo_documento(page: Page):
     try:
         campo = page.locator(SEL_TIPO_DOC).first
         campo.wait_for(state="visible", timeout=TIMEOUT)
+
+        # Se já estiver KP não mexe e segue
+        valor_atual = campo.input_value()
+        if valor_atual.strip().upper() == "KP":
+            return
+
         campo.click()
         page.keyboard.press("Control+A")
         page.keyboard.press("Backspace")
         campo.type("KP")
-        page.keyboard.press("Enter")
+        page.keyboard.press("ArrowDown")  # abre sugestão do dropdown UI5
+        page.wait_for_timeout(300)
+        page.keyboard.press("Enter")      # confirma seleção
         page.wait_for_timeout(800)
         wait_busy_settle(page)
-        page.keyboard.press("Tab")
+        page.keyboard.press("Tab")        # força perda de foco — dispara o change event
         page.wait_for_timeout(400)
         wait_busy_settle(page)
+
     except Exception as e:
         raise Exception(f"Falha ao preencher Tipo de Documento com 'KP': {e}")
 
