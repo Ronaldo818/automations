@@ -47,13 +47,17 @@ def salvar_log():
 for index, row in df.iterrows():
 
     try:
+
         data_hora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
-        bp = formatar_bp(row['BP'])
-        telefone = limpar_valor(row.get('TELEFONE'))
-        email = limpar_valor(row.get('EMAIL'))
+        bp = formatar_bp(row["BP"])
 
-        if not telefone and not email:
+        telefone = limpar_valor(row.get("TELEFONE"))
+        telefone2 = limpar_valor(row.get("TELEFONE2"))
+        email = limpar_valor(row.get("EMAIL"))
+
+        # Ignora somente se não houver nenhum dado
+        if not telefone and not telefone2 and not email:
             print(f"BP {bp} ignorado (sem dados)")
             continue
 
@@ -83,7 +87,6 @@ for index, row in df.iterrows():
         session.findById("wnd[0]").sendVKey(0)
         time.sleep(2)
 
-        # Seleciona resultado
         grid = session.findById(
             "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2240/"
             "subSCREEN_1010_LEFT_AREA:SAPLBUS_LOCATOR:3100/"
@@ -98,6 +101,36 @@ for index, row in df.iterrows():
         grid.selectedRows = "0"
         grid.doubleClickCurrentCell()
         time.sleep(1)
+
+        # =========================
+        # POPUP DE PERMISSÃO
+        # =========================
+        try:
+
+            popup = session.findById("wnd[1]")
+
+            popup.findById("tbar[0]/btn[0]").press()
+            time.sleep(0.5)
+
+            log.append({
+                "linha": index + 2,
+                "bp": bp,
+                "telefone": telefone,
+                "telefone2": telefone2,
+                "email": email,
+                "data_hora": data_hora,
+                "status": "ERRO",
+                "mensagem": "Sem permissão para alteração do BP"
+            })
+
+            salvar_log()
+
+            print(f"BP {bp} sem permissão para alteração.")
+
+            continue
+
+        except:
+            pass
 
         # =========================
         # MODO EDIÇÃO
@@ -121,20 +154,25 @@ for index, row in df.iterrows():
         alterou = False
 
         # =========================
-        # TELEFONE
+        # TELEFONE / CELULAR
         # =========================
         if telefone:
+
             campo_tel.text = telefone
-            alterou = True
+
+            celular = telefone2 if telefone2 else telefone
 
             session.findById(
                 campo_tel.Id.replace("TEL_NUMBER", "MOB_NUMBER")
-            ).text = telefone
+            ).text = celular
+
+            alterou = True
 
         # =========================
         # EMAIL
         # =========================
         if email:
+
             session.findById(
                 "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2000/"
                 "subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/"
@@ -146,16 +184,17 @@ for index, row in df.iterrows():
                 "subADDRESS:SAPLSZA1:0300/subCOUNTRY_SCREEN:SAPLSZA1:0301/"
                 "txtSZA1_D0100-SMTP_ADDR"
             ).text = email
+
             alterou = True
 
         # =========================
         # SALVAR
         # =========================
         if alterou:
+
             session.findById("wnd[0]/tbar[0]/btn[11]").press()
             time.sleep(1)
 
-            # TRATAR POPUP (caso apareça)
             try:
                 session.findById("wnd[1]/tbar[0]/btn[0]").press()
                 time.sleep(0.5)
@@ -163,6 +202,7 @@ for index, row in df.iterrows():
                 pass
 
             status = session.findById("wnd[0]/sbar").text
+
         else:
             status = "Nenhuma alteração necessária"
 
@@ -170,6 +210,7 @@ for index, row in df.iterrows():
             "linha": index + 2,
             "bp": bp,
             "telefone": telefone,
+            "telefone2": telefone2,
             "email": email,
             "data_hora": data_hora,
             "status": "SUCESSO",
@@ -178,14 +219,18 @@ for index, row in df.iterrows():
 
         salvar_log()
 
-        print(f"{bp} processado")
+        print(f"{bp} processado.")
 
     except Exception as e:
+
         print(f"Erro na linha {index + 2}: {str(e)}")
 
         log.append({
             "linha": index + 2,
-            "bp": row.get('BP', ''),
+            "bp": row.get("BP", ""),
+            "telefone": row.get("TELEFONE", ""),
+            "telefone2": row.get("TELEFONE2", ""),
+            "email": row.get("EMAIL", ""),
             "data_hora": data_hora,
             "status": "ERRO",
             "mensagem": str(e)
