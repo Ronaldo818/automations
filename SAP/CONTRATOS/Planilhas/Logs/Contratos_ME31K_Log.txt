@@ -1,0 +1,8 @@
+========== EXECUÇÃO ==========
+
+Início : 28/07/2026 17:43:25
+Fim    : 28/07/2026 17:43:41
+
+[ERRO] Contrato: 1 | Material: 20000991 | SAP:  | Elemento não carregou a tempo no SAP: wnd[0]/tbar[1]/btn[5]
+[ERRO] Contrato: 1 | Material: 20001626 | SAP:  | Elemento não carregou a tempo no SAP: wnd[0]/tbar[1]/btn[5]
+[ERRO] Contrato: 1 | Material: 20001627 | SAP:  | Elemento não carregou a tempo no SAP: wnd[0]/tbar[1]/btn[5]

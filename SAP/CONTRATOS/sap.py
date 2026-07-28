@@ -14,6 +14,7 @@ from util import (
     possui_valor,
     extrair_numero_contrato
 )
+import pythoncom
 
 # =============================================================================
 # MAPEAMENTO DE IDs (Centralizado)
@@ -30,6 +31,7 @@ ID_GRUPO_COMPRADORES = "wnd[0]/usr/ctxtEKKO-EKGRP"
 ID_CENTRO = "wnd[0]/usr/ctxtRM06E-WERKS"
 ID_FIM_VALIDADE = "wnd[0]/usr/ctxtEKKO-KDATE"
 ID_PAGAMENTO = "wnd[0]/usr/ctxtEKKO-ZTERM"
+ID_DIAS_PAGAMENTO = "wnd[0]/usr/ctxtEKKO-ZBD1T"
 ID_INCOTERMS = "wnd[0]/usr/ctxtMMPUR_INCOTERMS_CONTRACT-INCO1"
 ID_INCOTERMS_LOCAL = "wnd[0]/usr/txtMMPUR_INCOTERMS_CONTRACT-INCO2_L"
 
@@ -58,11 +60,13 @@ class SAPContrato:
     # CONECTAR
     # =====================================================
     def conectar(self):
-        SapGuiAuto = win32com.client.GetObject("SAPGUI")
-        application = SapGuiAuto.GetScriptingEngine
-        connection = application.Children(0)
-        self.session = connection.Children(0)
-        self.session.findById("wnd[0]").maximize()
+            pythoncom.CoInitialize() 
+            
+            SapGuiAuto = win32com.client.GetObject("SAPGUI")
+            application = SapGuiAuto.GetScriptingEngine
+            connection = application.Children(0)
+            self.session = connection.Children(0)
+            self.session.findById("wnd[0]").maximize()
 
     # =====================================================
     # MÉTODOS GENÉRICOS DE INTERAÇÃO (Evita quebra por lentidão)
@@ -105,22 +109,56 @@ class SAPContrato:
     # CABEÇALHO
     # =====================================================
     def preencher_cabecalho(self, dados):
-        self.escrever(ID_FORNECEDOR, inteiro(dados["Fornecedor"]))
-        self.escrever(ID_TIPO_CONTRATO, limpar_texto(dados["Tipo de contrato"]))
-        self.escrever(ID_ORG_COMPRAS, limpar_texto(dados["Organiz.compras"]))
-        self.escrever(ID_GRUPO_COMPRADORES, limpar_texto(dados["Grupo de compradores"]))
+            # ---------------------------------------------------------
+            # TELA 1: INICIAL
+            # ---------------------------------------------------------
+            self.escrever(ID_FORNECEDOR, inteiro(dados["Fornecedor"]))
+            self.escrever(ID_TIPO_CONTRATO, limpar_texto(dados["Tipo de contrato"]))
+            self.escrever(ID_ORG_COMPRAS, limpar_texto(dados["Organiz.compras"]))
+            self.escrever(ID_GRUPO_COMPRADORES, limpar_texto(dados["Grupo de compradores"]))
 
-        if possui_valor(dados["Centro"]):
-            self.escrever(ID_CENTRO, limpar_texto(dados["Centro"]))
+            if possui_valor(dados["Centro"]):
+                self.escrever(ID_CENTRO, limpar_texto(dados["Centro"]))
+            else:
+                self.escrever(ID_CENTRO, "")
 
-        self.pressionar(BTN_SINTESE)
+            self.pressionar(BTN_SINTESE)
 
-        self.escrever(ID_FIM_VALIDADE, data_sap(dados["Fim da validade"]))
-        self.escrever(ID_PAGAMENTO, limpar_texto(dados["Condições de pagamento"]))
-        self.escrever(ID_INCOTERMS, limpar_texto(dados["Incoterms"]))
-        self.escrever(ID_INCOTERMS_LOCAL, limpar_texto(dados["Local Incoterms 1"]))
+            if self.status():
+                self.enter()
 
-        self.pressionar(BTN_SINTESE)
+            # ---------------------------------------------------------
+            # TELA 2: DADOS DO CABEÇALHO
+            # ---------------------------------------------------------
+            # 1. Preenche a data primeiro para "satisfazer" o erro vermelho do SAP
+            self.escrever(ID_FIM_VALIDADE, data_sap(dados["Fim da validade"]))
+            
+            # 2. Tentativa instantânea de limpar os dias. 
+            # Usamos findById direto para não ativar o timeout de 10s caso o SAP o bloqueie.
+            try:
+                self.session.findById(ID_DIAS_PAGAMENTO).text = ""
+            except Exception:
+                pass # Se estiver bloqueado, segue em frente sem quebrar a automação
+            
+            # 3. Preenche TODOS os outros campos em sequência
+            self.escrever(ID_PAGAMENTO, limpar_texto(dados["Condições de pagamento"]))
+            self.escrever(ID_INCOTERMS, limpar_texto(dados["Incoterms"]))
+            self.escrever(ID_INCOTERMS_LOCAL, limpar_texto(dados["Local Incoterms 1"]))
+
+            # 4. Envia o ENTER para disparar a validação de todos os dados juntos
+            self.enter()
+            
+            # 5. Lê a barra de status e trata os avisos amarelos gerados pela validação
+            mensagem = self.status()
+            
+            if "06754" in mensagem or "prestações" in mensagem.lower():
+                self.enter()
+            elif mensagem:
+                # Limpa qualquer outro aviso amarelo que possa surgir
+                self.enter()
+
+            # 6. Avança para a tela de Itens (Tabela)
+            self.pressionar(BTN_SINTESE)
 
     # =====================================================
     # ITEM
