@@ -3,9 +3,9 @@ import logging
 import pandas as pd
 import win32com.client
 
-ARQUIVO_ENTRADA=r"C:\Users\junio\OneDrive\Área de Trabalho\Documentos\Scripts Github\automations\Planilhas\Vinculo_Ativos.xlsx"
-ARQUIVO_LOG_EXCEL=r"C:\Users\junio\OneDrive\Área de Trabalho\Documentos\Scripts Github\automations\Planilhas\Vinculo_Ativos_log.xlsx"
-ARQUIVO_LOG_TXT=r"C:\Users\junio\OneDrive\Área de Trabalho\Documentos\Scripts Github\automations\Planilhas\Vinculo_Ativos_log.txt"
+ARQUIVO_ENTRADA=r"C:\python_scripts\PLANILHAS\Vinculo_Ativos.xlsx"
+ARQUIVO_LOG_EXCEL=r"C:\python_scripts\PLANILHAS\Vinculo_Ativos_logs.xlsx"
+ARQUIVO_LOG_TXT=r"C:\python_scripts\PLANILHAS\Vinculo_Ativos_logs.txt"
 
 logging.basicConfig(filename=ARQUIVO_LOG_TXT,level=logging.INFO,format="%(asctime)s - %(levelname)s - %(message)s",encoding="utf-8")
 
@@ -34,7 +34,9 @@ def preencher(session,row):
     session.findById("wnd[0]").sendVKey(0)
     aguardar(session)
     session.findById("wnd[0]/usr/txtP_PARTNR").text=str(row["Responsável"]).strip()
-    session.findById("wnd[0]/usr/txtP_SETOR").text=str(row["Setor"]).strip()
+    session.findById("wnd[0]/usr/txtP_SETOR").text = (
+    str(row["Setor"]).strip()[:20]
+    )   
     session.findById("wnd[0]/usr/ctxtP_DATA").text=str(row["Data Vínculo"]).strip()
     session.findById("wnd[0]/usr/ctxtP_KOSTL").text=str(row["Centro de custo do responsável"]).strip()
 

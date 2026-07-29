@@ -6,8 +6,8 @@ import time
 # =========================
 # CONFIG
 # =========================
-ARQUIVO_ENTRADA = r"C:\python_scripts\Planilhas\BPs.xlsx"
-ARQUIVO_LOG = r"C:\python_scripts\Planilhas\BPs_logs.xlsx"
+ARQUIVO_ENTRADA = r"C:\Users\junio\OneDrive\Área de Trabalho\Documentos\Scripts Github\automations\Planilhas\BPs.xlsx"
+ARQUIVO_LOG = r"C:\Users\junio\OneDrive\Área de Trabalho\Documentos\Scripts Github\automations\Planilhas\BPs_logs.xlsx"
 
 # =========================
 # SAP
