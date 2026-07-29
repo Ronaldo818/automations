@@ -48,7 +48,7 @@ def data_sap(valor):
     if isinstance(valor, datetime):
         return valor.strftime(FORMATO_DATA_SAP)
     try:
-        data = pd.to_datetime(valor)
+        data = pd.to_datetime(valor, dayfirst=True)
         return data.strftime(FORMATO_DATA_SAP)
     except Exception:
         return str(valor)

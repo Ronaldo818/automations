@@ -1,0 +1,11 @@
+========== RELATÓRIO DE AUDITORIA ==========
+
+Transação : ME31K
+Operador  : Ronaldo (Máquina: PC-JUNIOR)
+Início    : 28/07/2026 22:01:20
+Fim       : 28/07/2026 22:01:31
+============================================
+
+[ERRO] Contrato: 1 | Material: 20000991 | SAP:  | Detalhes: Execução abortada brutalmente pelo usuário. | Avisos SAP: Preencher campo obrigatório "Fim da validade" | Condições de pagamento com pagamento a prestações não são possíveis aqui | Material 20000991 deve ser atribuído (entrar ctg.classificação contábil)
+[ERRO] Contrato: 1 | Material: 20001626 | SAP:  | Detalhes: Execução abortada brutalmente pelo usuário. | Avisos SAP: Preencher campo obrigatório "Fim da validade" | Condições de pagamento com pagamento a prestações não são possíveis aqui | Material 20000991 deve ser atribuído (entrar ctg.classificação contábil)
+[ERRO] Contrato: 1 | Material: 20001627 | SAP:  | Detalhes: Execução abortada brutalmente pelo usuário. | Avisos SAP: Preencher campo obrigatório "Fim da validade" | Condições de pagamento com pagamento a prestações não são possíveis aqui | Material 20000991 deve ser atribuído (entrar ctg.classificação contábil)
