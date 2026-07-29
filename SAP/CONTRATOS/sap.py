@@ -155,33 +155,58 @@ class SAPContrato:
     # ITEM
     # =====================================================
     def preencher_item(self, linha, item):
-            # 1. Preenchemos os campos básicos da tabela SEM enviar o ENTER
-            self.escrever(ID_MATERIAL(linha), inteiro(item["Material"]))
-            self.escrever(ID_QUANTIDADE(linha), decimal(item["Qntde Prev"], 0))
-            self.escrever(ID_PRECO(linha), decimal(item["valor"]))
+            # ---------------------------------------------------------
+            # MOTOR DE PAGINAÇÃO (Baseado no script KO02)
+            # ---------------------------------------------------------
+            tabela = self.session.findById(TABELA)
+            linhas_visiveis = tabela.visibleRowCount
             
-            # 2. Tratamos o KNTTP e executamos a navegação de tela
+            pos_scroll = max(linha - linhas_visiveis + 1, 0)
+            
+            if pos_scroll > 0:
+                try:
+                    tabela.verticalScrollbar.position = pos_scroll
+                    import time
+                    time.sleep(0.3)
+                except Exception:
+                    pass 
+                    
+            try:
+                topo_atual = tabela.verticalScrollbar.position
+            except Exception:
+                topo_atual = 0 
+                
+            linha_visivel = linha - topo_atual
+            
+            if linha_visivel >= linhas_visiveis:
+                linha_visivel = linhas_visiveis - 1
+                
+            # ---------------------------------------------------------
+            # PREENCHIMENTO DOS DADOS BÁSICOS
+            # ---------------------------------------------------------
+            self.escrever(ID_MATERIAL(linha_visivel), inteiro(item["Material"]))
+            self.escrever(ID_QUANTIDADE(linha_visivel), decimal(item["Qntde Prev"], 0))
+            self.escrever(ID_PRECO(linha_visivel), decimal(item["valor"]))
+            
+            # ---------------------------------------------------------
+            # TRATAMENTO DO KNTTP E NAVEGAÇÃO FORÇADA
+            # ---------------------------------------------------------
+            # 1. Escreve o KNTTP na célula apenas se ele existir no Excel
             if possui_valor(item["Classificação Contabil"]):
-                # Se tem KNTTP, preenche na célula e usa o ENTER para validar a linha
-                self.escrever(ID_KNTTP(linha), limpar_texto(item["Classificação Contabil"]))
+                self.escrever(ID_KNTTP(linha_visivel), limpar_texto(item["Classificação Contabil"]))
+                
+            # 2. O PULO DO GATO: Independentemente de ter KNTTP ou não, 
+            # nós SEMPRE damos o duplo clique para validar a linha e 
+            # FORÇAR o SAP a abrir a aba de Detalhes de forma previsível.
+            self.duplo_clique(ID_KNTTP(linha_visivel))
+            
+            # 3. Limpa os avisos amarelos (ex: Data de remessa, Preço efetivo)
+            if self.status():
                 self.enter()
-                
-                # Limpa avisos amarelos (ex: "Preço efetivo é X" ou "Data de remessa")
-                if self.status():
+                if self.status(): 
                     self.enter()
-                    if self.status(): # Duplo check de segurança
-                        self.enter()
-            else:
-                # Se NÃO tem KNTTP, usamos o duplo clique na célula como nosso "avançar"
-                self.duplo_clique(ID_KNTTP(linha))
-                
-                # Limpa avisos amarelos que possam surgir após o duplo clique
-                if self.status():
-                    self.enter()
-                    if self.status():
-                        self.enter()
 
-            # 3. Neste ponto, o robô já está na tela de detalhes (onde fica o imposto)
+            # 4. Preenche o imposto (com a certeza absoluta de estar na tela certa)
             self.preencher_imposto(item["Cód. Imposto"])
             self.voltar_sintese()
 
