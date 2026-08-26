@@ -1,0 +1,80 @@
+<template>
+
+    <div if:true={isLoading}>
+        <lightning-spinner></lightning-spinner>    
+    </div>
+
+    <!-- Modal Alert -->
+    <div if:true={showAlert}>
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-label="Meaningful description of the modal content" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <div class="slds-modal__content slds-p-around_medium slds-modal__content_headless" id="modal-content-id-2">
+                    <span>
+                        <h2 class="slds-text-align_center">Caro cliente, ocorreu um erro ao tentar finalizar a compra:</h2><br>
+                        <p class="slds-text-align_center"> {showAlertMesage} </p>
+                        <span if:true={alertLogId}>
+                            <br>
+                            <h2 class="slds-text-align_center"> LOG ID: {alertLogId}</h2>
+                        </span>
+                    </span>
+                </div>
+                <div class="slds-modal__footer" style="display: flex; align-items: center; justify-content: center;">
+                    <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick={closeAlert}>Ok</button>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </div> 
+
+    <article class="slds-card">
+        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+            <div class="slds-media__body">
+                <div class="title-tax-01">
+                    <h2 class="slds-text-align_center strong-text"> {title} </h2>
+                </div>
+            </div>
+        </header>
+
+    <!-- BODY -->
+    <div class="main">
+        <div class="flex-informations">
+            <p>Subtotal</p>
+            <lightning-formatted-number
+            value={__subtotal}
+            format-style="currency"
+            currency-code="BRL"></lightning-formatted-number>
+        </div>
+        <div class="flex-informations">
+            <p>Promoções</p>
+            <lightning-formatted-number
+            value={__promocao}
+            format-style="currency"
+            currency-code="BRL"></lightning-formatted-number>
+        </div>
+        <div class="flex-informations">
+            <p>Impostos</p>
+            <lightning-formatted-number
+            value={__impostos}
+            format-style="currency"
+            currency-code="BRL"></lightning-formatted-number>
+        </div>
+        <div class="flex-informations">
+            <div if:true={__hasCashback}>
+                <p>Cashback</p>
+                <lightning-formatted-number
+                value={__cashBack}
+                format-style="currency"
+                currency-code="BRL">-</lightning-formatted-number>
+            </div>
+        </div>
+        <div class="flex-informations-total strong-text">
+            <p style="font-size: 16px;">Total</p>
+            <lightning-formatted-number
+            value={__valorTotal}
+            format-style="currency"
+            currency-code="BRL"></lightning-formatted-number>
+        </div>
+    </div>
+</article>
+
+</template>

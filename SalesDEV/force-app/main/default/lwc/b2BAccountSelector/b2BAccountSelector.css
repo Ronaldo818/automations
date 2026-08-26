@@ -1,0 +1,32 @@
+:host {
+    --block-color: #FF5A4F;
+    --default-text-color: rgb(226, 225, 211);
+}
+
+li {
+    cursor: pointer;
+}
+
+li:hover {
+    background-color: var(--dxp-g-root-1, #F1F1F1);;
+    transition: var(--kx-duration-normal, 0.3s);
+}
+
+.destaque-bloqueio {
+    color: var(--block-color);
+    --sds-c-icon-color-foreground-default: var(--block-color);
+}
+
+.sem-destaque {
+    color: var(--default-text-color, rgb(226, 225, 211));
+    --sds-c-icon-color-foreground-default: var(--default-text-color, rgb(226, 225, 211));
+}
+
+@media (max-width: 767px) {
+    .slds-modal__container {
+        width: 95%;
+        height: 80%;
+        top: 12rem;
+        margin: auto;
+    }
+}

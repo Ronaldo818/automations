@@ -1,0 +1,82 @@
+<template>
+    <div class="slds-grid slds-wrap slds-gutters_direct-medium slds-grid_vertical-stretch address-stretch">
+
+        <template if:true={showOrderAlert}>
+            <div class="slds-col slds-size_12-of-12 slds-m-top_medium pedido-alerta" style="">
+                <span style="">Cliente já possui pedido</span>
+            </div>
+        </template>
+
+        <div class="slds-col slds-size_3-of-3 slds-m-top_xx-small">
+            <div>
+                <span style="font-size: 17px; font-weight: bold; padding-right: 5px;">Resumo da Compra</span>
+            </div>
+        </div>
+        <div class="slds-col slds-size_6-of-12 slds-m-top_xx-small">
+            <span style="font-size: 16px;">Total</span>
+        </div>
+        <div class="slds-col slds-size_6-of-12 slds-m-top_xx-small" style="text-align: right">
+            <span style="font-size: 17px;">
+                <lightning-formatted-number value={valorTotal} format-style="currency" currency-code="BRL" minimum-fraction-digits="2"></lightning-formatted-number>
+            </span>
+        </div>
+   
+        <div class="slds-col slds-size_3-of-3 slds-m-top_medium">
+            <div>
+                <span style="font-size: 17px; font-weight: bold; padding-right: 5px;">TEFF</span>
+                <span style="padding-left: 2px; top: -3px; position: relative"><lightning-icon icon-name="utility:choice" size="small" variant={farol}></lightning-icon></span>
+            </div>
+        </div>
+
+        <div class="slds-col slds-size_6-of-12 slds-m-top_xx-small">
+            <span style="font-size: 16px;">Limite Disponível</span>
+        </div>
+        <div class="slds-col slds-size_6-of-12 slds-m-top_xx-small" style="text-align: right">
+            <span style="font-size: 17px;">
+                <lightning-formatted-number value={limiteCredito} format-style="currency" currency-code="BRL" minimum-fraction-digits="2"></lightning-formatted-number>
+            </span>
+        </div>
+        <div class="slds-col slds-size_6-of-12 slds-m-top_xx-small">
+            <span style="font-size: 16px;">Peso Total</span>
+        </div>
+        <div class="slds-col slds-size_6-of-12 slds-m-top_xx-small" style="text-align: right">
+            <span style="font-size: 17px;" class={weightCssClass}>
+                <lightning-formatted-number value={pesoTotal} format-style="decimal" minimum-fraction-digits="2"></lightning-formatted-number>KG
+            </span>
+        </div>
+        <div class="slds-col slds-size_6-of-12 slds-m-top_xx-small">
+            <span style="font-size: 16px;">Desc. Permitido</span>
+        </div>
+        <div class="slds-col slds-size_6-of-12 slds-m-top_xx-small" style="text-align: right">
+            <span style="font-size: 17px;">
+                <lightning-formatted-number value={percentualDescontoEscalonado} format-style="percent" minimum-fraction-digits="2">%</lightning-formatted-number>
+            </span>
+        </div>
+        <div class="slds-col slds-size_6-of-12 slds-m-top_xx-small">
+            <span style="font-size: 16px;">Verba Disponível</span>
+        </div>
+        <div class="slds-col slds-size_6-of-12 slds-m-top_xx-small" style="text-align: right">
+            <span style="font-size: 17px;">
+                <lightning-formatted-number value={verbaDisponivel} format-style="currency" currency-code="BRL" minimum-fraction-digits="2"></lightning-formatted-number>
+            </span>
+        </div>
+        <div class="slds-col slds-size_6-of-12 slds-m-top_xx-small">
+            <span style="font-size: 16px; font-weight: regular;">Verba do Pedido</span>
+        </div>
+        <div class="slds-col slds-size_6-of-12 slds-m-top_xx-small" style="text-align: right">
+            <span style="font-size: 17px; font-weight: regular;">
+                <lightning-formatted-number value={verbaConsumida} format-style="currency" currency-code="BRL" minimum-fraction-digits="2"></lightning-formatted-number>
+            </span>
+        </div>
+
+        <div class="slds-col slds-size_12-of-12 slds-m-top_small" style="text-align: center">
+            <template if:true={showTimer}>
+                <div style="font-size: 16px; text-align:center;">
+                    O carrinho irá expirar em  {timeLeft}
+                </div>
+            </template>
+        </div>
+        
+    </div>
+
+</template>

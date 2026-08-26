@@ -1,0 +1,89 @@
+<template>
+    <div class="container-card">
+
+        <template lwc:if={showSpinner}>
+            <lightning-spinner alternative-text="Carregando" size="medium"></lightning-spinner>
+            <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+        </template>
+
+        <!--
+        ============================================================
+        Campos do Checkin (Tipo / Contato / Comentário) — mantidos
+        comentados conforme combinado, prontos para reativar no futuro.
+        ============================================================
+
+        <template lwc:if={isCheckinPhase}>
+            <div class="slds-form__row slds-var-p-horizontal_medium slds-m-bottom_small">
+                <div class="slds-form__item">
+                    <div class="slds-size_12-of-12">
+                        <lightning-combobox
+                            label="Tipo do Checkin"
+                            value={tipoSelectedValue}
+                            options={tipoOptions}
+                            onchange={handleTipoChange}>
+                        </lightning-combobox>
+                    </div>
+                </div>
+            </div>
+
+            <template lwc:if={hasContatos}>
+                <div class="slds-form__row slds-var-p-horizontal_medium slds-m-bottom_small">
+                    <div class="slds-form__item">
+                        <div class="slds-size_12-of-12">
+                            <lightning-combobox
+                                label="Contato"
+                                value={contatoSelectedValue}
+                                options={contatoOptions}
+                                onchange={handleContatoChange}>
+                            </lightning-combobox>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <div class="slds-form__row slds-var-p-horizontal_medium slds-m-bottom_small">
+                <div class="slds-form__item">
+                    <div class="slds-size_12-of-12">
+                        <lightning-textarea
+                            label="Comentários"
+                            value={comentario}
+                            onchange={handleComentarioChange}>
+                        </lightning-textarea>
+                    </div>
+                </div>
+            </div>
+        </template>
+        -->
+
+        <!--
+        ============================================================
+        Latitude / Longitude — ocultos a pedido, mas mantidos comentados
+        caso o gestor queira voltar a exibir no futuro.
+        ============================================================
+
+        <p class="slds-text-align_center slds-p-vertical_x-small">
+            Latitude: <lightning-formatted-number value={lat} minimum-integer-digits="2" minimum-fraction-digits="7"></lightning-formatted-number>
+            &nbsp;/&nbsp;
+            Longitude: <lightning-formatted-number value={lon} minimum-integer-digits="2" minimum-fraction-digits="7"></lightning-formatted-number>
+        </p>
+        -->
+
+        <div class="checkin-button-wrapper">
+            <button
+                class={buttonClass}
+                type="button"
+                disabled={disableButton}
+                onclick={handleClick}>
+                <template lwc:if={isCompleted}>
+                    <lightning-icon icon-name="utility:check"
+                                    size="small"
+                                    variant="inverse"
+                                    class="slds-m-right_x-small">
+                    </lightning-icon>
+                </template>
+                <span>{buttonLabel}</span>
+            </button>
+        </div>
+
+    </div>
+</template>

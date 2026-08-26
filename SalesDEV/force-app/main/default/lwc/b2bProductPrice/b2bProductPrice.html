@@ -1,0 +1,15 @@
+<template>
+    <div if:true={isLoading}>
+        <lightning-spinner></lightning-spinner>    
+    </div>
+    <div if:true={price}>
+        <div class="slds-p-vertical_small commerce-productPricing_productPricing-host" style="display: flex; align-items: center;">
+            <p style="margin-right: 2%; font-size: 18px;">{fieldLabel}</p>
+            <lightning-formatted-number        
+            value={price}
+            format-style="currency"
+            currency-code="BRL"
+            style="font-size: 28px; color: #000000; font-weight: 700;"></lightning-formatted-number>
+        </div>
+    </div>
+</template>

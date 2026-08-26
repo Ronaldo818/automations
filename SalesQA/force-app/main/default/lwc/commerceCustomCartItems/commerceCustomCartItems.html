@@ -1,0 +1,27 @@
+<template>
+
+    <div class="" style="border-bottom: 1px solid #f3f2f2;">
+        <slot name="region1"></slot>
+    </div>
+
+    <div>
+        <ul>
+            <template for:each={displayItems} for:item="lineItem">
+                <li key={lineItem.cartItem.cartItemId} class="slds-m-vertical_medium ">
+                    <c-commerce-custom-cart-items-item
+                            webstore-id={webstoreId}
+                            account-id={accountId}
+                            cart-item={lineItem}
+                            onrefresh={handleRefresh}
+                            onvalidity={handleValidity} >
+                    </c-commerce-custom-cart-items-item>
+                </li>
+            </template>
+        </ul>
+    </div>
+
+    <div class="sticky-div">
+        <slot name="region2"></slot>
+    </div>
+
+</template>

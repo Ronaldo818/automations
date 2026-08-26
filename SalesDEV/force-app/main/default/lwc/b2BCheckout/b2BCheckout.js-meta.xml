@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>56.0</apiVersion>
+    <isExposed>true</isExposed>
+
+    <masterLabel>Commerce Custom Checkout</masterLabel>
+    <description>Component used on the Checkout page</description>
+    <targets>
+        <target>lightning__RecordPage</target>
+        <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Default</target>
+    </targets>
+
+    <targetConfigs>
+        <targetConfig targets="lightningCommunity__Default">
+            <property name="recordId" type="String" label="Record ID" description="O valor deve ser {!recordId}" default="{!recordId}"/>
+            <property name="minimumOrderValue" type="Decimal" label="Minimum Order Value" description="Valor minimo que a ordem deve possuir para realizar checkout"/>
+            <property name="messageMinimumOrderError" type="String" label="Message Minimum OrderError" description="Mensagem a ser exibida quando o pedido não alcançar o valor minimo" default="Valor do pedido minimo é de R$ 100,00"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

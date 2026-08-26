@@ -1,0 +1,135 @@
+<template>
+
+        <div class="slds-grid slds-wrap slds-grid_align-center">
+            <div class="slds-col slds-size_1-of-1 slds-grid slds-wrap slds-grid_align-center slds-box slds-m-vertical_small">
+                <div class="slds-col slds-size_1-of-1 slds-grid slds-wrap slds-gutters slds-grid_align-center">
+                    <div class="slds-col slds-large-size_1-of-2 slds-size_1-of-1 ">
+                        <div class="slds-form-element slds-hint-parent slds-form-element_readonly slds-form-element_stacked">
+                            <div class="slds-form-element__label" >Número da Mesa de Negociação:</div>
+                            <div lwc:if={masterOrder} class="slds-form-element__control">{masterOrder.Name}</div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-large-size_1-of-2 slds-size_1-of-1">
+                        <div class="slds-form-element slds-hint-parent slds-form-element_readonly slds-form-element_stacked">
+                            <div class="slds-form-element__label" >Status:</div>
+                            <div lwc:if={masterOrder} class="slds-form-element__control">{masterOrder.Status__c}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-grid slds-wrap slds-gutters slds-grid_align-center">
+                    <div class="slds-col slds-large-size_1-of-2 slds-size_1-of-1 ">
+                        <div class="slds-form-element slds-hint-parent slds-form-element_readonly slds-form-element_stacked">
+                            <div class="slds-form-element__label" >Conta:</div>
+                            <div lwc:if={masterOrder} class="slds-form-element__control">{masterOrder.AccountId__r.Name}</div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-large-size_1-of-2 slds-size_1-of-1">
+                        <div lwc:if={masterOrder.AccountId__r.EstruturaVendaForcaVendas__r} class="slds-form-element slds-hint-parent slds-form-element_readonly slds-form-element_stacked">
+                            <div class="slds-form-element__label" >Rede:</div>
+                            <div lwc:if={masterOrder} class="slds-form-element__control">{masterOrder.AccountId__r.EstruturaVendaForcaVendas__r.GrupoClientes1__c}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-grid slds-wrap slds-gutters slds-grid_align-center">
+                    <div class="slds-col slds-large-size_1-of-2 slds-size_1-of-1 ">
+                        <div lwc:if={masterOrder.CommercialCoordinator__r} class="slds-form-element slds-hint-parent slds-form-element_readonly slds-form-element_stacked">
+                            <div class="slds-form-element__label" >Coordenador Comercial:</div>
+                            <div lwc:if={masterOrder} class="slds-form-element__control">{masterOrder.CommercialCoordinator__r.Name}</div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-large-size_1-of-2 slds-size_1-of-1">
+                        <div lwc:if={masterOrder.CommercialManager__r} class="slds-form-element slds-hint-parent slds-form-element_readonly slds-form-element_stacked">
+                            <div class="slds-form-element__label" >Gerente Comercial:</div>
+                            <div lwc:if={masterOrder} class="slds-form-element__control">{masterOrder.CommercialManager__r.Name}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-grid slds-wrap slds-grid_align-center slds-box slds-m-vertical_small">
+                <div class="slds-col slds-size_1-of-1 slds-grid slds-wrap slds-gutters slds-grid_align-center">
+                    <div class="slds-col slds-large-size_1-of-2 slds-size_1-of-1 ">
+                        <div class="slds-form-element slds-hint-parent slds-form-element_readonly slds-form-element_stacked">
+                            <div class="slds-form-element__label" >Representante:</div>
+                            <div lwc:if={masterOrder} class="slds-form-element__control">{masterOrder.RepresentativeId__r.Name}</div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-large-size_1-of-2 slds-size_1-of-1">
+                        <!--
+                        <div class="slds-form-element slds-hint-parent slds-form-element_readonly slds-form-element_stacked">
+                            <div class="slds-form-element__label" >Label</div>
+                            <div class="slds-form-element__control">{masterOrder.Name}</div>
+                        </div>
+                        -->
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-grid slds-wrap slds-gutters slds-grid_align-center">
+                    <div class="slds-col slds-large-size_1-of-2 slds-size_1-of-1 ">
+                        <div class="slds-form-element slds-hint-parent slds-form-element_readonly slds-form-element_stacked">
+                            <div class="slds-form-element__label" >Início:</div>
+                            <div lwc:if={masterOrder} class="slds-form-element__control"> <lightning-formatted-date-time value={masterOrder.StartDate__c}  year="numeric" month="2-digit" day="2-digit" time-zone="UTC"></lightning-formatted-date-time></div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-large-size_1-of-2 slds-size_1-of-1">
+                        <div class="slds-form-element slds-hint-parent slds-form-element_readonly slds-form-element_stacked">
+                            <div class="slds-form-element__label" >Fim:</div>
+                            <div lwc:if={masterOrder} class="slds-form-element__control"><lightning-formatted-date-time value={masterOrder.EndDate__c}  year="numeric" month="2-digit" day="2-digit" time-zone="UTC"></lightning-formatted-date-time></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-grid slds-wrap slds-gutters slds-grid_align-center">
+                    <div class="slds-col slds-size_1-of-1 ">
+                        <div class="slds-form-element slds-hint-parent slds-form-element_readonly slds-form-element_stacked">
+                            <div class="slds-form-element__label" >Comentário:</div>
+                            <div lwc:if={masterOrder} class="slds-form-element__control">{masterOrder.Comment__c}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-grid slds-wrap slds-grid_align-center slds-box slds-m-vertical_small">
+                <div class="slds-col slds-size_1-of-1 slds-grid slds-wrap slds-gutters slds-grid_align-center">
+                    <div class="slds-col slds-large-size_1-of-2 slds-size_1-of-1 ">
+                        <div class="slds-form-element slds-hint-parent slds-form-element_readonly slds-form-element_stacked">
+                            <div class="slds-form-element__label" >Desconto Máximo:</div>
+                            <div lwc:if={masterOrder} class="slds-form-element__control">{masterOrder.MaximumDiscount__c}%</div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-large-size_1-of-2 slds-size_1-of-1">
+                        <div class="slds-form-element slds-hint-parent slds-form-element_readonly slds-form-element_stacked">
+                            <div class="slds-form-element__label" >Items com sobredesconto:</div>
+                            <div lwc:if={masterOrder} class="slds-form-element__control">{masterOrder.ItemsOverDiscountd__c}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-grid slds-wrap slds-gutters slds-grid_align-center">
+                    <div class="slds-col slds-large-size_1-of-2 slds-size_1-of-1 ">
+                        <div class="slds-form-element slds-hint-parent slds-form-element_readonly slds-form-element_stacked">
+                            <div class="slds-form-element__label" >Valor Total Negociado:</div>
+                            <div lwc:if={masterOrder} class="slds-form-element__control"><lightning-formatted-number value={masterOrder.TotalNegotiatedAmount__c} format-style="currency"></lightning-formatted-number></div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-large-size_1-of-2 slds-size_1-of-1">
+                        <div class="slds-form-element slds-hint-parent slds-form-element_readonly slds-form-element_stacked">
+                            <div class="slds-form-element__label" >Valor Total Disponível:</div>
+                            <div lwc:if={masterOrder} class="slds-form-element__control"><lightning-formatted-number value={masterOrder.TotalAvailableAmount__c} format-style="currency"></lightning-formatted-number></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-grid slds-wrap slds-grid_align-center slds-box slds-m-vertical_small">
+                <div class="slds-col slds-size_1-of-1 slds-grid slds-wrap slds-gutters slds-grid_align-center">
+                    <div class="slds-col slds-large-size_1-of-2 slds-size_1-of-1 ">
+                        <div class="slds-form-element slds-hint-parent slds-form-element_readonly slds-form-element_stacked">
+                            <div class="slds-form-element__label" >Criada por:</div>
+                            <div lwc:if={masterOrder} class="slds-form-element__control">{masterOrder.CreatedBy.Name}, <lightning-formatted-date-time value={masterOrder.CreatedDate} year="numeric" month="2-digit" day="2-digit" time-zone="UTC"></lightning-formatted-date-time></div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-large-size_1-of-2 slds-size_1-of-1">
+                        <div class="slds-form-element slds-hint-parent slds-form-element_readonly slds-form-element_stacked">
+                            <div class="slds-form-element__label" >Modificada pela última vez por:</div>
+                            <div lwc:if={masterOrder} class="slds-form-element__control">{masterOrder.LastModifiedBy.Name}, <lightning-formatted-date-time value={masterOrder.LastModifiedDate} year="numeric" month="2-digit" day="2-digit" time-zone="UTC"></lightning-formatted-date-time></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</template>

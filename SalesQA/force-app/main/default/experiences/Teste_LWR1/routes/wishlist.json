@@ -1,0 +1,11 @@
+{
+  "activeViewId" : "6ef313fb-9ac1-4de5-94f0-5fd84b9c12b4",
+  "appPageId" : "068361c5-c471-452a-aad9-0f41d8e658bd",
+  "configurationTags" : [ ],
+  "devName" : "Wishlist",
+  "id" : "a7745f1e-67f0-432f-827c-6e08c8a35ac4",
+  "label" : "Wishlist",
+  "routeType" : "wishlist",
+  "type" : "route",
+  "urlPrefix" : "mylists"
+}

@@ -1,0 +1,158 @@
+<template>
+    <!-- BOTÃO -->
+    <button class="btn-logistica" onclick={abrirModal}>
+        <lightning-icon icon-name="utility:truck" size="x-small" variant="inverse" class="slds-m-right_x-small"></lightning-icon>
+        Detalhamento Logístico
+    </button>
+
+    <!-- MODAL -->
+    <template if:true={isModalOpen}>
+        <section role="dialog" tabindex="-1" aria-modal="true" class="slds-modal slds-fade-in-open slds-modal_small">
+            <div class="slds-modal__container">
+                
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" onclick={fecharModal}>
+                    <lightning-icon icon-name="utility:close" alternative-text="Fechar" variant="inverse" size="small"></lightning-icon>
+                    <span class="slds-assistive-text">Fechar</span>
+                </button>
+                <div class="slds-modal__header" style="background-color: #3e4a36; color: white;">
+                    <h1 class="slds-modal__title slds-hyphenate">Detalhamento Logístico</h1>
+                    <p class="slds-m-top_x-small">Consulte abaixo o status do pedido atual:</p>
+                </div>
+
+                <div class="slds-modal__content slds-p-around_medium" style="min-height: 200px; position: relative;">
+                    
+                    <template if:true={isLoading}>
+                        <lightning-spinner alternative-text="Buscando dados logísticos..." size="medium"></lightning-spinner>
+                        <div class="slds-text-align_center slds-m-top_xx-large slds-text-color_weak">Consultando informações, por favor aguarde...</div>
+                    </template>
+
+                    <template if:true={errorMessage}>
+                        <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+                            <h2>{errorMessage}</h2>
+                        </div>
+                    </template>
+
+                    <template if:true={dadosLogistica}>
+                        
+                        <!-- STATUS ATUAL -->
+                        <div class="slds-grid slds-wrap slds-m-bottom_medium slds-p-bottom_small slds-border_bottom">
+                            <div class="slds-col slds-size_1-of-1 slds-text-align_center">
+                                <p class="label-dado">Status do Pedido</p>
+                                <p class="valor-dado" style="font-size: 18px; font-weight: 700; color: #3e4a36;">{dadosLogistica.statusGeral}</p>
+                            </div>
+                        </div>
+
+                        <!-- IDENTIFICAÇÃO -->
+                        <div class="slds-grid slds-wrap slds-gutters slds-m-bottom_large slds-border_bottom slds-p-bottom_small">
+                            <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                                <p class="label-dado">Ordem de Carga</p>
+                                <p class="valor-dado">{dadosLogistica.ordemCarga}</p>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                                <p class="label-dado">Romaneio</p>
+                                <p class="valor-dado">{dadosLogistica.romaneio}</p>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1">
+                                <p class="label-dado">Nome Rota</p>
+                                <p class="valor-dado">{dadosLogistica.nomeRota}</p>
+                            </div>
+                        </div>
+
+                        <!-- TIMELINE (5 ETAPAS) -->
+                        <div class="slds-m-top_medium slds-p-left_small slds-p-right_small">
+                            <div class="slds-progress slds-progress_vertical">
+                                <ol class="slds-progress__list">
+                                    
+                                    <!-- 1. ROTEIRIZAÇÃO -->
+                                    <li class={dadosLogistica.classS1}>
+                                        <div class="slds-progress__marker">
+                                            <lightning-icon if:true={dadosLogistica.isRoteirizado} icon-name="utility:success" size="xx-small" variant="success"></lightning-icon>
+                                        </div>
+                                        <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                                            <div class="slds-p-left_small">
+                                                <p class="slds-text-heading_small slds-font-weight_bold">Roteirização</p>
+                                            </div>
+                                            <div class="slds-text-color_weak slds-text-align_right slds-p-left_medium" style="min-width: 140px;">
+                                                {dadosLogistica.roteirizacao}
+                                            </div>
+                                        </div>
+                                    </li>
+
+                                    <!-- 2. ATIVAÇÃO DA VIAGEM -->
+                                    <li class={dadosLogistica.classS2}>
+                                        <div class="slds-progress__marker">
+                                            <lightning-icon if:true={dadosLogistica.isAtivado} icon-name="utility:success" size="xx-small" variant="success"></lightning-icon>
+                                        </div>
+                                        <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                                            <div class="slds-p-left_small">
+                                                <p class="slds-text-heading_small slds-font-weight_bold">Ativação da Viagem</p>
+                                            </div>
+                                            <div class="slds-text-color_weak slds-text-align_right slds-p-left_medium" style="min-width: 140px;">
+                                                {dadosLogistica.ativacaoViagem}
+                                            </div>
+                                        </div>
+                                    </li>
+
+                                    <!-- 3. TRÂNSITO -->
+                                    <li class={dadosLogistica.classS3}>
+                                        <div class="slds-progress__marker">
+                                            <lightning-icon if:true={dadosLogistica.isEmTransito} icon-name="utility:success" size="xx-small" variant="success"></lightning-icon>
+                                        </div>
+                                        <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                                            <div class="slds-p-left_small">
+                                                <p class="slds-text-heading_small slds-font-weight_bold">Mercadoria em Trânsito</p>
+                                                <p class="slds-text-color_weak slds-text-body_small">Saída da Origem</p>
+                                            </div>
+                                            <div class="slds-text-color_weak slds-text-align_right slds-p-left_medium" style="min-width: 140px;">
+                                                {dadosLogistica.saidaOrigem}
+                                            </div>
+                                        </div>
+                                    </li>
+
+                                    <!-- 4. DESCARREGAMENTO -->
+                                    <li class={dadosLogistica.classS4}>
+                                        <div class="slds-progress__marker">
+                                            <lightning-icon if:true={dadosLogistica.isDescarregando} icon-name="utility:success" size="xx-small" variant="success"></lightning-icon>
+                                        </div>
+                                        <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                                            <div class="slds-p-left_small">
+                                                <p class="slds-text-heading_small slds-font-weight_bold">Em Descarregamento</p>
+                                                <p class="slds-text-color_weak slds-text-body_small">Chegada no Cliente</p>
+                                            </div>
+                                            <div class="slds-text-color_weak slds-text-align_right slds-p-left_medium" style="min-width: 140px;">
+                                                <template if:true={dadosLogistica.chegadaCliente}>{dadosLogistica.chegadaCliente}</template>
+                                                <template if:false={dadosLogistica.chegadaCliente}>{dadosLogistica.inicioDescarregamento}</template>
+                                            </div>
+                                        </div>
+                                    </li>
+
+                                    <!-- 5. ENTREGUE -->
+                                    <li class={dadosLogistica.classS5}>
+                                        <div class="slds-progress__marker">
+                                            <lightning-icon if:true={dadosLogistica.isEntregue} icon-name="utility:success" size="xx-small" variant="success"></lightning-icon>
+                                        </div>
+                                        <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                                            <div class="slds-p-left_small">
+                                                <p class="slds-text-heading_small slds-font-weight_bold">Entregue</p>
+                                                <p class="slds-text-color_weak slds-text-body_small">Fim do Descarregamento</p>
+                                            </div>
+                                            <div class="slds-text-color_weak slds-text-align_right slds-p-left_medium" style="min-width: 140px;">
+                                                {dadosLogistica.fimDescarregamento}
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ol>
+                            </div>
+                        </div>
+
+                    </template>
+                </div>
+
+                <div class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick={fecharModal}>Fechar</button>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </template>
+</template>

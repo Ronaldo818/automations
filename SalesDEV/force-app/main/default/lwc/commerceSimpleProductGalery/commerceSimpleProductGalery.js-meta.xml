@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>63.0</apiVersion>
+    <isExposed>true</isExposed>
+
+    <masterLabel>PDP - Simple Product Galery</masterLabel>
+    <description>Component used on a page for the Site</description>
+    <targets>
+        <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Default</target>
+    </targets>
+
+    <targetConfigs>
+        <targetConfig targets="lightningCommunity__Default">
+            <property name="mediaGroups" type="String" label="Product Media Group Data Binding" default="{!Product.Details.mediaGroups}"/>
+            <property name="slideTime" type="String" label="Tempo de espera" description="Define o tempo de espera até o próximo slide. O valor precisa está no formato XXXX, ex: 3000 é igual 3 segundos, 5000 é igual 5 segundos, ..."/>
+            <property name="trocaAutomatica" type="Boolean" label="Alterar slides de forma automática?" description="O carrossel irá alterar entre os slides de forma automática." default="true"/>
+            <property name="trocaManual" type="Boolean" label="Alterar slides de forma manual?" description="Permite que o usuário consiga alterar entre os slides clicando nas setas e círculos." default="true"/>
+            <property name="exibirSetas" type="Boolean" label="Exibir setas ao lado do carrossel?" description="Exibe as setas que ficam ao lado do carrossel para que o usuário consiga alterar entre os slides." default="true"/>
+            <property name="exibirCirculos" type="Boolean" label="Exibir círculos abaixo do carrossel?" description="Exibe os círculos que ficam abaixo do carrossel para que o usuário consiga alterar entre os slides, além de informar a quantidade de slides e a posição do slide exibido no momento." default="true"/>
+            <property name="exibirThumbs" type="Boolean" label="Exibir Thumbanails abaixo do carrossel?" description="Exibe as thumbanails que ficam abaixo do carrossel para que o usuário consiga alterar entre os slides, além de informar a quantidade de slides e a posição do slide exibido no momento." default="false"/>
+            <property name="zoomEnable" type="Boolean" label="Ativar Zoom" description="Ao mover o mouse sobre a imagem exibe uma imagem com zoom ao lado" default="false"/>
+            <property name="zoomTop" type="Integer" label="Distancia do topo da janela de zoom" description="Distancia da janela de zoom do topo, em px" default="0"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

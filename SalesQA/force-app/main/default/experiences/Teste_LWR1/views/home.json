@@ -1,0 +1,96 @@
+{
+  "appPageId" : "068361c5-c471-452a-aad9-0f41d8e658bd",
+  "componentName" : "community_layout:sldsFlexibleLayout",
+  "dataProviders" : [ ],
+  "id" : "650c309f-344d-48aa-8b6f-09e321b56218",
+  "label" : "Home",
+  "regions" : [ {
+    "components" : [ {
+      "componentAttributes" : {
+        "backgroundImageConfig" : "",
+        "backgroundImageOverlay" : "rgba(0,0,0,0)",
+        "sectionConfig" : "{\"UUID\":\"f203aff9-4bee-4f93-a60b-c33c9898c8ba\",\"columns\":[{\"UUID\":\"74502cd7-74d0-414a-a8a6-e997fdd49842\",\"columnName\":\"Column 1\",\"columnKey\":\"col1\",\"columnWidth\":\"12\",\"seedComponents\":null}]}"
+      },
+      "componentName" : "community_layout:section",
+      "id" : "f203aff9-4bee-4f93-a60b-c33c9898c8ba",
+      "regions" : [ {
+        "components" : [ {
+          "componentAttributes" : {
+            "bannerLinkHref" : "javascript:void(0)",
+            "bannerLinkTitle" : "Shop Now",
+            "cmsPickerState" : "{\"isFromCms\": true,\"url\": \"/assets/images/home-sustainable.jpg\", \"alt\": \"Pods Banner\"}",
+            "displayBannerLinkAsButton" : true,
+            "heroTextPosition" : "center",
+            "opacity" : 5,
+            "overlay" : false,
+            "showBannerLink" : false,
+            "slogan" : "Expertly crafted with the finest ingredients",
+            "sloganColor" : "#fff",
+            "title" : "Organic bars, gels, and drinks",
+            "titleColor" : "#fff"
+          },
+          "componentName" : "b2c_lite_commerce:heroBannerUi",
+          "id" : "9e086ddc-014b-4d35-94f8-44e593587468",
+          "renderPriority" : "NEUTRAL",
+          "renditionMap" : { },
+          "type" : "component"
+        }, {
+          "componentAttributes" : {
+            "browseStep" : 3,
+            "headerText" : "Shop By Category",
+            "pageSize" : 6
+          },
+          "componentName" : "b2c_lite_commerce:shopCategory",
+          "id" : "43d1faf2-8a7b-4c24-b5ab-bca610a11ee0",
+          "renderPriority" : "NEUTRAL",
+          "renditionMap" : { },
+          "type" : "component"
+        }, {
+          "componentAttributes" : {
+            "browseStep" : 3,
+            "categoryId" : "0ZGxx00000004WfGAI",
+            "headerText" : "Recommended For You",
+            "pageSize" : 6
+          },
+          "componentName" : "b2c_lite_commerce:topSellers",
+          "id" : "7b699a35-31b6-48cc-9e75-d9755bcac76c",
+          "renderPriority" : "NEUTRAL",
+          "renditionMap" : { },
+          "type" : "component"
+        } ],
+        "id" : "74502cd7-74d0-414a-a8a6-e997fdd49842",
+        "regionLabel" : "Column 1",
+        "regionName" : "col1",
+        "renditionMap" : { },
+        "type" : "region"
+      } ],
+      "renderPriority" : "NEUTRAL",
+      "renditionMap" : { },
+      "scopedBrandingSetId" : null,
+      "type" : "component"
+    } ],
+    "id" : "7e6ac55f-f81a-49c9-b774-07b746971ecf",
+    "regionName" : "content",
+    "type" : "region"
+  }, {
+    "components" : [ {
+      "componentAttributes" : {
+        "customHeadTags" : "",
+        "description" : "",
+        "pageTitle" : "Home",
+        "recordId" : "{!recordId}"
+      },
+      "componentName" : "community_builder:seoAssistant",
+      "id" : "0bbb951e-7bc5-4034-a524-ad12221ebd42",
+      "renderPriority" : "NEUTRAL",
+      "renditionMap" : { },
+      "type" : "component"
+    } ],
+    "id" : "fc3792fb-b15c-462d-b50d-c5c90f548ac1",
+    "regionName" : "sfdcHiddenRegion",
+    "type" : "region"
+  } ],
+  "themeLayoutType" : "Inner",
+  "type" : "view",
+  "viewType" : "home"
+}

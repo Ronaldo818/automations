@@ -1,0 +1,20 @@
+<template>
+    <template lwc:if={showComponent}>
+        <div class="slds-card slds-var-p-around_small slds-m-vertical_small">
+            <div class="slds-var-p-horizontal_small slds-var-p-bottom_small" style="display: inline-flex; align-items: center; width: 100%; justify-content: space-between;">
+                <div>
+                    <span>Item(s) inválido(s): </span>
+                </div>
+                <div class="slds-var-p-left_medium" style="border-left: 1px solid var(--slds-g-color-border-base-1);">
+                    <lightning-icon icon-name="utility:error" alternative-text="error" variant="error" size='small' title="error"></lightning-icon>
+                </div>
+            </div>
+            <template for:each={invalidCartItems} for:item="item">
+                <div key={item.cartItemId} class="item-validation-row slds-var-p-around_small">
+                    <div><a href={item.url} ><b>{item.sku} - {item.name}</b></a></div>
+                    <div>{item.message}</div>
+                </div>
+            </template>
+        </div>
+    </template>
+</template>

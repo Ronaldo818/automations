@@ -1,26 +1,40 @@
+# Ambiente de homologação QAS 300
 
 from pyrfc import Connection
 
-try:
-    conn = Connection(
-        user='S-SDKRFC',
-        passwd='RFC@2026sdk&&15',
-        ashost='10.200.2.73',
-        sysnr='00',
-        client='100',
-        lang='PT'
-    )
+conn = Connection(
+    user="S-SDKRFC",
+    passwd="RFC@2026sdk&&15",
+    ashost="10.200.3.10",
+    sysnr="00",
+    client="310",
+    lang="EN"
+)
 
-    result = conn.call(
-        'RFC_READ_TABLE',
-        QUERY_TABLE='T000',
-        ROWCOUNT=1,
-        DELIMITER=';'
-    )
+info = conn.call("RFC_SYSTEM_INFO")
 
-    print("✅ Conexão RFC OK")
-    print(result['DATA'])
+for k, v in info.items():
+    print(k, "=", v)
 
-except Exception as e:
-    print("❌ Erro na conexão RFC")
-    print(str(e))
+
+from pyrfc import Connection
+
+
+
+# Ambiente de produção PRD 300
+
+from pyrfc import Connection
+
+conn = Connection(
+    user="S-SDKRFC",
+    passwd="RFC@2026sdk&&15",
+    ashost="10.200.3.92",
+    sysnr="00",
+    client="310",
+    lang="EN"
+)
+
+info = conn.call("RFC_SYSTEM_INFO")
+
+for k, v in info.items():
+    print(k, "=", v)    

@@ -1,0 +1,34 @@
+<template>
+    <lightning-card title="Informações Financeiras" icon-name="utility:moneybag">
+        <div class="slds-var-p-around_medium">
+            <template if:true={financialData}>
+                
+                <div class="slds-var-m-bottom_small">
+                    <strong>Condição de Pagamento Padrão:</strong> {financialData.paymentTerm}
+                </div>
+                
+                <hr class="slds-var-m-vertical_medium" />
+
+                <div class="slds-var-m-bottom_small">
+                    <strong>Limite de Crédito: </strong> 
+                    <lightning-formatted-number value={financialData.creditLimit} format-style="currency" currency-code="BRL"></lightning-formatted-number>
+                </div>
+                
+                <div class="slds-var-m-bottom_small">
+                    <strong>Compromisso Atual: </strong> 
+                    <lightning-formatted-number value={financialData.commitment} format-style="currency" currency-code="BRL"></lightning-formatted-number>
+                </div>
+                
+                <div class="slds-var-m-bottom_small">
+                    <strong>Limite Disponível: </strong> 
+                    <lightning-formatted-number value={financialData.availableCredit} format-style="currency" currency-code="BRL"></lightning-formatted-number>
+                </div>
+
+            </template>
+            
+            <template if:true={error}>
+                <p class="slds-text-color_error">Falha ao carregar: {errorMessage}</p>
+            </template>
+        </div>
+    </lightning-card>
+</template>

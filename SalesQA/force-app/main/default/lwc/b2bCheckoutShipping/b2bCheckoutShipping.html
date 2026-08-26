@@ -1,0 +1,45 @@
+<template>
+        <article class="slds-card slds-var-p-horizontal_small slds-var-p-bottom_small">
+        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+            <div class="slds-media__body">
+                <div class="title">
+                    <h2> Endereço de Entrega </h2>
+                </div>
+            </div>
+        </header>
+        
+        <div class="slds-var-p-around_small">
+            <template lwc:if={shippingAddress}>
+                 <template lwc:if={shippingAddress.street}>
+                <div class="flex-informations slds-var-p-bottom_xxx-small">
+                    <p> 
+                        <strong>Logradouro: </strong>{shippingAddress.street}
+                    </p>
+                </div>
+            </template>
+            <template lwc:if={shippingAddress.city}>
+                <div class="flex-informations slds-var-p-bottom_xxx-small">
+                    <p>
+                        <strong>Cidade: </strong>{shippingAddress.city}
+                    </p>
+                </div>
+            </template>
+            <template lwc:if={shippingAddress.postalCode}>
+                <div class="flex-informations slds-var-p-bottom_xxx-small">
+                    <p>
+                        <strong>CEP: </strong>{shippingAddress.postalCode}
+                    </p>
+                </div>
+            </template>
+            </template>
+            <template lwc:else>
+                <lightning-spinner 
+                  alternative-text="Loading" 
+                  size="xx-small"
+                  variant="base"
+                ></lightning-spinner>
+            </template>
+           
+        </div>
+    </article>
+</template>

@@ -1,0 +1,32 @@
+.accordion-container {
+    width: 100%;
+    max-width: 100%;
+    min-height: 30px;
+    padding-right: 15px;
+}
+
+.accordion-title {
+    font-size: 30px;
+    font-weight: 700;
+}
+
+span {
+    padding-left: 10px;
+}
+
+.exampleHolder{
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    min-height: 30px;
+    vertical-align: middle;
+    text-align: center;
+}
+
+@media (max-width : 768px) {
+    .accordion-container {
+        padding-right: 0;
+        min-height: 30px;
+    }
+}

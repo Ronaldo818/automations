@@ -1,0 +1,91 @@
+<template>
+    <div class="container" lwc:ref="container">
+        <template lwc:if={foundProducts}>
+            <div class="carousel-arrow-container carousel-arrow-left" lwc:if={showArrow}>
+                <lightning-icon class="carousel-arrow slds-show" icon-name="utility:chevronleft" alternative-text="Prev" onclick={showPrevious} lwc:ref="arrowLeft"></lightning-icon>
+            </div>
+            <div class="slider-container" lwc:ref="sliderContainer">
+                <div class="slider" lwc:ref="slider">
+                    <template for:each={listaProdutos} for:item="item" for:index="index">
+                        <div class="slide animate carousel-item-container" key={item.id} onmouseenter={handleOnMouseEnter} onmouseleave={handleOnMouseLeave}>
+                                <a href={item.url} target="_self" data-item-id={item.id} data-item-title={item.title}>
+                                    <div class="imageArea">
+                                        <img src={item.defaultImageUrl} style="" alt={item.title}>
+                                    </div>
+                                    <div class="fieldsArea">
+                                        <h2 class="slds-text-heading_small">{item.title}</h2>
+                                    </div>
+                                </a>
+                                <div lwc:if={exibirPreco} class="priceArea slds-m-top_x-small">
+                                    <div class="slds-align_absolute-center slds-grid_vertical">
+                                        <!-- NOVO LAYOUT DE PREÇO -->
+                                        <div style="display: flex; align-items: baseline; justify-content: center; flex-wrap: wrap;">
+                                            <b style="font-size: 1.1rem; color: #000;">
+                                                <lightning-formatted-number value={item.price} format-style="currency"
+                                                    currency-code={currencyIsoCode} currency-display-as={estiloPreco} class="">
+                                                </lightning-formatted-number> CX
+                                            </b>
+                                            
+                                            <!-- Preço por KG condicional -->
+                                            <template lwc:if={item.precoPorKg}>
+                                                <span style="margin-left: 4px; font-size: 0.9rem; color: #181818;"> / KG: 
+                                                    <b style="color: #000;">
+                                                        <lightning-formatted-number value={item.precoPorKg} format-style="currency"
+                                                            currency-code={currencyIsoCode} currency-display-as={estiloPreco} class="">
+                                                        </lightning-formatted-number>
+                                                    </b>
+                                                </span>
+                                            </template>
+                                        </div>
+                                        <!-- FIM DO NOVO LAYOUT -->
+                                    </div>
+                                </div>
+                                <div lwc:if={exibirAdicionarAoCarrinho} slot="footer" class="addToCartArea slds-var-m-top_x-small">
+                                    <button
+                                        name={item.id}
+                                        data-item-id={item.id}
+                                        class="slds-align_absolute-center slds-button slds-button_brand slds-button_stretch buttonRadius"
+                                        title={addToCartLabel} onclick={handleAddToCart}>
+                                        {addToCartLabel}
+                                    </button>
+                                </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+            <div class="carousel-arrow-container carousel-arrow-right" lwc:if={showArrow}>
+                <lightning-icon class="carousel-arrow slds-show" icon-name="utility:chevronright" alternative-text="Next" onclick={showNext} lwc:ref="arrowRight"></lightning-icon>
+            </div>
+        </template>
+        <template lwc:else>
+            <div lwc:if={inSitePreview} style="text-align: center;">
+                <h2 class="slds-text-heading_small"><b>Commerce Product Carousel</b></h2>
+            </div>
+        </template>
+    </div>
+    <template lwc:if={showAddedToCart}>
+        <section aria-modal="true" class="slds-modal slds-fade-in-open" style="width:100%;">
+            <div class="slds-modal__container">
+                <lightning-button-icon icon-name="utility:close" size="large" variant="bare-inverse" class="slds-modal__close" onclick={closeAddedToCartModal} ></lightning-button-icon>
+                <div class="slds-modal__header">
+                    <h1 class="slds-text-heading_medium slds-hyphenate">
+                        O item foi adicionado ao carrinho
+                    </h1>
+                </div>
+                <div class="slds-modal__content slds-p-around_medium slds-modal__content_footless" style="max-height: 506px; min-height: 80px;">
+                    <div class="slds-grid slds-wrap">
+                        <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_x-small">
+                            <lightning-button label='Continuar Comprando' title='Continuar Comprando' onclick={closeAddedToCartModal} stretch></lightning-button>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_x-small">
+                            <a href="/cart" type="_self">
+                                <lightning-button label='Finalizar Compra' title='Adicionar' variant="brand" stretch></lightning-button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

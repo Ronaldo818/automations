@@ -1,0 +1,14 @@
+li {
+    font-size: 0.875rem;
+    border-bottom: 1px solid #f3f2f2;
+}
+
+.sticky-div {
+    position: sticky;
+    bottom: 0px;
+    width: 100%;
+    left: 0;
+    padding: var(--dxp-g-spacing-small) 0 var(--dxp-g-spacing-large) 0; 
+    background: var(--dxp-g-root);
+    z-index: 1;
+}

@@ -1,0 +1,74 @@
+<template>
+    <div lwc:if={boleto} class="slds-p-vertical_x-large" style="display: flex;justify-content: center;">
+        <p>O Boleto para efetuar o pagamento será enviado para o seu e-mail junto com a Nota Fiscal após a emissão.</p>
+        <div class="slds-m-vertical_medium">{numbers}</div>
+
+        <!-- <div class="slds-m-vertical_medium"><lightning-button class="slds-button_destructive" onclick={abrirBoleto} label="VISUALIZAR E IMPRIMIR BOLETO">  </lightning-button></div> -->
+    </div>
+    <div lwc:elseif={pix} class="slds-card slds-p-around_medium slds-m-vertical_medium">
+
+        <div class="slds-card__body slds-grid slds-wrap slds-gutters">
+
+            <!-- Coluna Esquerda -->
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_7-of-12">
+
+                <h2 class="slds-text-heading_small slds-m-bottom_large">Pagamento via Pix</h2>
+
+                <!-- Prazo -->
+                <div class="slds-m-bottom_medium">
+                    <p class="slds-text-title">Pague até:</p>
+                    <p class="slds-text-heading_medium slds-text-color_error">
+                        
+                        <lightning-formatted-date-time lwc:if={image} value={paymentData.expiresAt} year="numeric" month="2-digit"
+                            day="2-digit" hour="2-digit" minute="2-digit">
+                        </lightning-formatted-date-time>
+                        <c-commerce-stencil
+                            lwc:else
+                            height="1.75rem"
+                            width="10.5rem"
+                        ></c-commerce-stencil>
+                    </p>
+                </div>
+
+                <!-- Copia e Cola -->
+                <div class="slds-m-bottom_xx-small">
+                    <p class="slds-text-title slds-m-bottom_xx-small">Pix Copia e Cola:</p>
+
+                    <div lwc:if={image} class="slds-box slds-theme_default slds-text-body_small" style="word-break: break-all;">
+                        {paymentData.copyAndPaste}
+                    </div>
+                    <c-commerce-stencil
+                                lwc:else
+                                height="5.875rem"
+                    ></c-commerce-stencil>
+
+                </div>
+
+                <!-- Botão -->
+                <lightning-button class="slds-m-bottom_medium" variant="brand" label="Copiar código" icon-name="utility:copy" stretch
+                    onclick={copyToClipboard} disabled={isLoading}>
+                </lightning-button>
+
+            </div>
+
+            <!-- Coluna Direita -->
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_5-of-12 slds-text-align_center slds-grid slds-wrap slds-grid_align-center">
+
+                <div class="slds-col slds-size_1-of-1">
+                    <p class="slds-text-title slds-m-bottom_small">Escaneie o QR Code:</p>
+                </div>
+
+                <div lwc:if={image} class="slds-col slds-box slds-theme_default" style="width: 15rem; height: 15rem; padding: 1px;">
+                    <img src={image} style="width: 100%;" />
+                </div>
+                <c-commerce-stencil
+                                lwc:else
+                                width="15rem"
+                                height="15rem"
+                ></c-commerce-stencil>
+
+            </div>
+
+        </div>
+    </div>
+</template>

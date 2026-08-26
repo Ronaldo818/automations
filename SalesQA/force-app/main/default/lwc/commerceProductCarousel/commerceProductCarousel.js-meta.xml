@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>63.0</apiVersion>
+    <isExposed>true</isExposed>
+
+    <masterLabel>Commerce Product Carousel</masterLabel>
+    <description>Component used on a page for the Commerce Site</description>
+    <targets>
+        <target>lightning__RecordPage</target>
+        <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Default</target>
+    </targets>
+
+    <targetConfigs>
+        <targetConfig targets="lightningCommunity__Default">
+            <property name="category" type="String" label="Nome da Categoria" description="Digite o nome da categoria exatamente igual ao nome cadastrado hoje"/>
+            <property name="categoryProductQuantity" type="Integer" label="Quantos produtos da categoria?" description="Quantidade de produtos que serão utilizados da categoria escolhida" default="5"/>
+            <property name="productsSku" type="String" label="SKU dos Produtos" description="Adicione o SKU separado por vírgulas (,) e sem espaços. Ex: sku1,sku2..."/>
+            <property name="pageSize" type="Integer" label="Quantos produtos ao mesmo tempo?" description="" default="3"/>
+            <property name="exibirPreco" type="Boolean" label="Exibir preço no produto?" description="" default="true"/>
+            <property name="estiloPreco" type="String" label="Modo de exibição do preço" datasource="symbol,code,name"/>
+            <property name="currencyIsoCode" type="String" label="Moeda" default="{!User.Record.CurrencyIsoCode}"/>
+            <property name="exibirAdicionarAoCarrinho" type="Boolean" label="Exibir botão de adicionar ao carrinho?" description="" default="true"/>
+            <property name="urlPrefix" type="String" label="Prefixo da URL" description="Argumento padrão após a URL de origem" default="/"/>
+            <property name="effectiveAccountId" type="String" label="Effective Account Id" description="" default="{!CurrentUser.AccountId}"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

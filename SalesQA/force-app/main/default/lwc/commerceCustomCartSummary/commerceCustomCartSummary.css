@@ -1,0 +1,19 @@
+.pedido-alerta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    background: #fef1f1;
+    border-radius: 3rem;
+    padding: 0.5rem;
+    font-size: 17px;
+    font-weight: bold;
+    color: red;
+    margin-bottom: 1rem;
+    justify-content: center;
+}
+
+.texto-vermelho {
+    color: red;
+    font-weight: 600;
+}

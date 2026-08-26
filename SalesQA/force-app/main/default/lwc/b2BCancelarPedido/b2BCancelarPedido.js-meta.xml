@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>58.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Custom Cancel Order</masterLabel>
+    <description>Component used on a page for the B2B Site</description>
+    <targets>
+        <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Default</target>
+        <target>lightning__RecordPage</target>
+        <target>lightning__AppPage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightningCommunity__Default">
+            <property name="recordId" type="String" label="Record ID" description="Record ID." default="recordId"/>
+            <property name="alertMesage" type="String" label="Mensagem" description="Mensagem que será exibida para o cliente."/>
+            <property name="comercialNumber" type="String" label="Número do Comercial" description="Número que será exibido para o clinte ligar."/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

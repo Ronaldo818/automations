@@ -1,0 +1,52 @@
+<template>
+    <lightning-button 
+      variant="brand"
+      label="Carregar no Carrinho" 
+      onclick={handleOpenModal} 
+    ></lightning-button>
+    <template lwc:if={showModal}>
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <header class="slds-modal__header">
+            <lightning-button-icon
+              style="border-radius: var(--sds-c-button-radius-border, var(--dxp-s-button-radius-border, 0.25em));"
+              icon-name="utility:close"
+              alternative-text="Fechar Modal"
+              class="slds-modal__close"
+              size="large"
+              type="button"
+              variant="container"
+              onclick={handleCloseModal}
+              disabled={isProcessing}
+            ></lightning-button-icon>
+            <!--
+            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={handleCloseModal}>
+                <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#close"></use>
+                </svg>
+                <span class="slds-assistive-text">Close</span>
+            </button>
+            -->
+            <h2 class="slds-modal__title slds-hyphenate slds-var-m-around_small">Carregar Mesa de Negociação no Carrinho</h2>
+            </header>
+            <div class="slds-modal__content slds-var-p-around_medium slds-text-align_center" style="position: relative;" id="modal-content-id-1">
+            <p><b>O carrinho atual será sobreescrito</b> com os dados da mesa de negociação.</p>
+            <p>Você poderá editar os itens do carrinho para gerar uma nova mesa.</p>
+            <template lwc:if={isProcessing}>
+                <lightning-spinner 
+                    alternative-text="Loading" 
+                    size="medium"
+                    variant="brand"
+                    style="background-color: white"
+                ></lightning-spinner>
+            </template>
+            </div>
+            <footer class="slds-modal__footer slds-modal__footer_directional">
+            <button class="slds-button slds-button_neutral" onclick={handleCloseModal} disabled={isProcessing}>Cancelar</button>
+            <button class="slds-button slds-button_brand" onclick={handleConvert} disabled={isProcessing}>Confirmar</button>
+            </footer>
+        </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

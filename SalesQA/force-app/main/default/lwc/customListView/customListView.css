@@ -1,0 +1,42 @@
+.slds-modal__content.frameCustom .header {
+    display: none;
+}
+
+.slds-modal__container, .modal_container_custom {
+    color:white;
+    margin:auto;
+    margin-top: 1rem;
+    max-height: 90%;
+    max-width:none;
+    width:70%;
+    display: block;
+}
+
+.modal_content_custom {
+    width:100%;
+}
+
+.frameCustom .themeFooter {
+    display: none;
+}
+
+.slds-modal__close.slds-float_right.custom-color[c-b2BObjectTable_b2BObjectTable] svg {
+    --slds-c-icon-color-foreground:white;
+    fill: white
+}
+
+.custom-empty-message {
+    font-size: 1.4em;
+    text-align: center;
+    padding: 1em;
+}
+
+iframe .slds-media__body {
+    display: none !important;
+}
+
+.builder-clickable-space{
+    height: 40px;
+    border: 1px dashed var(--dxp-g-neutral-2, #bbbbbb);
+    border-bottom: none;
+}

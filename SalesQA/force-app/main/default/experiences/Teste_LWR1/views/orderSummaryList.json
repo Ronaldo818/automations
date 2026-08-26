@@ -1,0 +1,93 @@
+{
+  "appPageId" : "068361c5-c471-452a-aad9-0f41d8e658bd",
+  "componentName" : "community_layout:sldsFlexibleLayout",
+  "dataProviders" : [ ],
+  "id" : "925d147f-e58f-4b63-8067-2148588ca830",
+  "label" : "Order Summary List",
+  "regions" : [ {
+    "components" : [ {
+      "componentAttributes" : {
+        "backgroundImageConfig" : "",
+        "backgroundImageOverlay" : "rgba(0,0,0,0)",
+        "sectionConfig" : "{\"UUID\":\"451e7c18-45cd-485a-bc3c-3004705bcb9a\",\"columns\":[{\"UUID\":\"4b0bbf7f-2aba-4551-949e-9e66ec5d6bc1\",\"columnName\":\"Column 1\",\"columnKey\":\"col1\",\"columnWidth\":\"12\",\"seedComponents\":[]}]}"
+      },
+      "componentName" : "community_layout:section",
+      "id" : "451e7c18-45cd-485a-bc3c-3004705bcb9a",
+      "regions" : [ {
+        "components" : [ {
+          "componentAttributes" : {
+            "backgroundColor" : "",
+            "paddingHorizontal" : "none",
+            "paddingVertical" : "small",
+            "text" : "Order History",
+            "textAlign" : "left",
+            "textDecoration" : "{\"bold\": true}",
+            "textDisplayInfo" : "{\"textStyle\": \"heading-medium\", \"headingTag\": \"h2\"}"
+          },
+          "componentName" : "dxp_base:textBlock",
+          "id" : "6faa2af1-0d08-4853-a5ae-8f5dec8ce036",
+          "renderPriority" : "NEUTRAL",
+          "renditionMap" : { },
+          "type" : "component"
+        } ],
+        "id" : "4b0bbf7f-2aba-4551-949e-9e66ec5d6bc1",
+        "regionLabel" : "Column 1",
+        "regionName" : "col1",
+        "renditionMap" : { },
+        "type" : "region"
+      } ],
+      "renderPriority" : "NEUTRAL",
+      "renditionMap" : { },
+      "scopedBrandingSetId" : null,
+      "type" : "component"
+    }, {
+      "componentAttributes" : {
+        "backgroundImageConfig" : "",
+        "backgroundImageOverlay" : "rgba(0,0,0,0)",
+        "sectionConfig" : "{\"UUID\":\"6ba7cd7d-5650-402f-995e-b02e45fb41d2\",\"columns\":[{\"UUID\":\"b956c16b-b273-413b-acd4-5753c11b94c1\",\"columnName\":\"Column 1\",\"columnKey\":\"col1\",\"columnWidth\":\"12\",\"seedComponents\":null}]}"
+      },
+      "componentName" : "community_layout:section",
+      "id" : "6ba7cd7d-5650-402f-995e-b02e45fb41d2",
+      "regions" : [ {
+        "components" : [ {
+          "componentAttributes" : {
+            "accountId" : "",
+            "noOrderMessageText" : "After you place an order, it appears here.",
+            "noResultsText" : "To view orders, adjust your filters.",
+            "numberOfMonthsForFilter" : 12,
+            "orderSummaryFieldMapping" : "[{\"entity\": \"OrderSummary\",\"name\": \"Id\",\"label\": \"Order Number\",\"type\": \"Lookup()\"},{\"entity\": \"OrderSummary\",\"name\": \"OrderedDate\",\"label\": \"Ordered Date\",\"type\": \"Date/Time\"},{\"entity\": \"OrderSummary\",\"name\": \"Status\",\"label\": \"Status\",\"type\": \"Picklist\"},{\"entity\": \"OrderSummary\",\"name\": \"GrandTotalAmount\",\"label\": \"Total\",\"type\": \"Formula (Currency)\"}]",
+            "ordersListCount" : 25,
+            "reorderLabel" : "Start Reorder",
+            "showMoreLabel" : "Show More",
+            "showOrdersListFilter" : true,
+            "showOrdersListSortBy" : true,
+            "showReorder" : true,
+            "showViewDetailsLink" : true,
+            "viewDetailsLinkLabel" : "View Details",
+            "viewMoreOrderBehaviour" : "SHOW_MORE"
+          },
+          "componentName" : "commerce_builder:orders",
+          "id" : "5946a713-4e3b-4b29-86b5-40dfcf64dcbd",
+          "renderPriority" : "NEUTRAL",
+          "renditionMap" : { },
+          "type" : "component"
+        } ],
+        "id" : "b956c16b-b273-413b-acd4-5753c11b94c1",
+        "regionLabel" : "Column 1",
+        "regionName" : "col1",
+        "renditionMap" : { },
+        "type" : "region"
+      } ],
+      "renderPriority" : "NEUTRAL",
+      "renditionMap" : { },
+      "scopedBrandingSetId" : null,
+      "type" : "component"
+    } ],
+    "id" : "9e53f9e6-4627-4eb1-a48a-d390fd93d41c",
+    "regionName" : "content",
+    "type" : "region"
+  } ],
+  "themeLayoutType" : "MyAccount",
+  "type" : "view",
+  "viewType" : "list-1Os"
+}

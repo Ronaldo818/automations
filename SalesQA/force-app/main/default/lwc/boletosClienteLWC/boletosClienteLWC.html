@@ -1,0 +1,241 @@
+<template>
+    <lightning-card title="Meus Pagamentos e Notas Fiscais">
+        <div class="slds-p-around_medium">
+
+            <template if:true={accountName}>
+                <p class="slds-m-bottom_medium">
+                    <strong>Cliente:</strong> {accountName}
+                </p>
+            </template>
+
+            <!-- Abas -->
+            <div class="slds-tabs_default">
+                <ul class="slds-tabs_default__nav" role="tablist">
+                    <li class={classAbaBoletos}
+                        role="presentation"
+                        data-aba="boletos"
+                        onclick={handleAba}>
+                        <a class="slds-tabs_default__link" role="tab">
+                            Boletos
+                        </a>
+                    </li>
+                    <li class={classAbaNotas}
+                        role="presentation"
+                        data-aba="notas"
+                        onclick={handleAba}>
+                        <a class="slds-tabs_default__link" role="tab">
+                            Notas Fiscais
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- ── Aba Boletos ── -->
+                <template if:true={abaBoletosAtiva}>
+                    <div class="slds-tabs_default__content slds-show slds-p-top_medium">
+
+                        <div class="slds-grid slds-gutters slds-m-bottom_small">
+                            <div class="slds-col">
+                                <lightning-button
+                                    label="Verificar Boletos"
+                                    variant="brand"
+                                    onclick={buscarBoletos}
+                                    disabled={isLoadingBoletos}>
+                                </lightning-button>
+                            </div>
+                            <template if:true={temBoletosSelecionados}>
+                                <div class="slds-col">
+                                    <lightning-button
+                                        label={labelBaixarBoletos}
+                                        variant="success"
+                                        icon-name="utility:download"
+                                        onclick={handleDownloadBoletosSelecionados}>
+                                    </lightning-button>
+                                </div>
+                            </template>
+                        </div>
+
+                        <template if:true={isLoadingBoletos}>
+                            <lightning-spinner
+                                alternative-text="Buscando boletos..."
+                                size="small">
+                            </lightning-spinner>
+                        </template>
+
+                        <template if:true={errorBoletos}>
+                            <div class="slds-m-top_small slds-text-color_error">
+                                {errorBoletos}
+                            </div>
+                        </template>
+
+                        <template if:true={temBoletos}>
+                            <div class="slds-m-top_medium" style="overflow-x: auto;">
+                                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th scope="col">
+                                                <lightning-input
+                                                    type="checkbox"
+                                                    label="Todos"
+                                                    variant="label-hidden"
+                                                    onchange={handleSelecionarTodosBoletos}>
+                                                </lightning-input>
+                                            </th>
+                                            <th scope="col">Referência</th>
+                                            <th scope="col">Número</th>
+                                            <th scope="col">Vencimento</th>
+                                            <th scope="col">Valor (R$)</th>
+                                            <th scope="col">Download</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <template for:each={boletos} for:item="boleto">
+                                            <tr key={boleto.index}>
+                                                <td>
+                                                    <lightning-input
+                                                        type="checkbox"
+                                                        label="Selecionar"
+                                                        variant="label-hidden"
+                                                        checked={boleto.selecionado}
+                                                        data-index={boleto.index}
+                                                        onchange={handleCheckboxBoleto}>
+                                                    </lightning-input>
+                                                </td>
+                                                <td>{boleto.referencia}</td>
+                                                <td>{boleto.numero}</td>
+                                                <td>{boleto.vencimento}</td>
+                                                <td>{boleto.valor}</td>
+                                                <td>
+                                                    <template if:true={boleto.baixando}>
+                                                        <lightning-spinner
+                                                            size="x-small"
+                                                            alternative-text="Baixando...">
+                                                        </lightning-spinner>
+                                                    </template>
+                                                    <template if:false={boleto.baixando}>
+                                                        <lightning-button-icon
+                                                            icon-name="utility:download"
+                                                            variant="border-filled"
+                                                            alternative-text="Baixar Boleto"
+                                                            title="Baixar Boleto"
+                                                            data-index={boleto.index}
+                                                            onclick={handleDownloadBoletoUnico}>
+                                                        </lightning-button-icon>
+                                                    </template>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+
+                <!-- ── Aba Notas Fiscais ── -->
+                <template if:true={abaNotasAtiva}>
+                    <div class="slds-tabs_default__content slds-show slds-p-top_medium">
+
+                        <div class="slds-grid slds-gutters slds-m-bottom_small">
+                            <div class="slds-col">
+                                <lightning-button
+                                    label="Verificar Notas Fiscais"
+                                    variant="brand"
+                                    onclick={buscarNotas}
+                                    disabled={isLoadingNotas}>
+                                </lightning-button>
+                            </div>
+                            <template if:true={temNotasSelecionadas}>
+                                <div class="slds-col">
+                                    <lightning-button
+                                        label={labelBaixarNotas}
+                                        variant="success"
+                                        icon-name="utility:file"
+                                        onclick={handleDownloadNotasSelecionadas}>
+                                    </lightning-button>
+                                </div>
+                            </template>
+                        </div>
+
+                        <template if:true={isLoadingNotas}>
+                            <lightning-spinner
+                                alternative-text="Buscando notas fiscais..."
+                                size="small">
+                            </lightning-spinner>
+                        </template>
+
+                        <template if:true={errorNotas}>
+                            <div class="slds-m-top_small slds-text-color_error">
+                                {errorNotas}
+                            </div>
+                        </template>
+
+                        <template if:true={temNotas}>
+                            <div class="slds-m-top_medium" style="overflow-x: auto;">
+                                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th scope="col">
+                                                <lightning-input
+                                                    type="checkbox"
+                                                    label="Todas"
+                                                    variant="label-hidden"
+                                                    onchange={handleSelecionarTodasNotas}>
+                                                </lightning-input>
+                                            </th>
+                                            <th scope="col">Nº Documento</th>
+                                            <th scope="col">Nº NF</th>
+                                            <th scope="col">Data Emissão</th>
+                                            <th scope="col">Doc Contábil</th>
+                                            <th scope="col">Valor Total (R$)</th>
+                                            <th scope="col">Download</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <template for:each={notas} for:item="nota">
+                                            <tr key={nota.index}>
+                                                <td>
+                                                    <lightning-input
+                                                        type="checkbox"
+                                                        label="Selecionar"
+                                                        variant="label-hidden"
+                                                        checked={nota.selecionado}
+                                                        data-index={nota.index}
+                                                        onchange={handleCheckboxNota}>
+                                                    </lightning-input>
+                                                </td>
+                                                <td>{nota.docnum}</td>
+                                                <td>{nota.nfenum}</td>
+                                                <td>{nota.data_criacao_nf}</td>
+                                                <td>{nota.doc_contabil}</td>
+                                                <td>{nota.valor_total_nota}</td>
+                                                <td>
+                                                    <template if:true={nota.baixando}>
+                                                        <lightning-spinner
+                                                            size="x-small"
+                                                            alternative-text="Baixando...">
+                                                        </lightning-spinner>
+                                                    </template>
+                                                    <template if:false={nota.baixando}>
+                                                        <lightning-button-icon
+                                                            icon-name="utility:file"
+                                                            variant="border-filled"
+                                                            alternative-text="Baixar Nota Fiscal"
+                                                            title="Baixar Nota Fiscal"
+                                                            data-index={nota.index}
+                                                            onclick={handleDownloadNotaUnica}>
+                                                        </lightning-button-icon>
+                                                    </template>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+
+            </div>
+        </div>
+    </lightning-card>
+</template>

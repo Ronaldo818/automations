@@ -1,0 +1,17 @@
+<template>
+    <div if:true={showAlert}>
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-label="Meaningful description of the modal content" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <div class="slds-modal__content slds-p-around_medium slds-modal__content_headless" id="modal-content-id-1">
+                    <span>
+                        <h1>{message}</h1>
+                    </span>
+                    <div style="display: flex; align-items: center; justify-content: center; margin-top: 2rem;">
+                        <button class="slds-button slds-button_neutral" aria-label="Confirm and close" onclick={closeAlert}>OK</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </div>
+</template>

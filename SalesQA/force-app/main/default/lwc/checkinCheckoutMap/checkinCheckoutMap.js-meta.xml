@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Mapa de Checkin/Checkout</masterLabel>
+    <description>Exibe no mapa os marcadores de checkin e checkout (geolocalização) do Event (Visita).</description>
+    <targets>
+        <target>lightning__RecordPage</target>
+        <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Default</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage">
+            <objects>
+                <object>Event</object>
+            </objects>
+            <property name="cardTitle"
+                      type="String"
+                      label="Título do card"
+                      default="Mapa da Visita" />
+            <property name="zoomLevel"
+                      type="Integer"
+                      label="Nível de zoom (1-20)"
+                      default="15" />
+            <property name="listView"
+                      type="String"
+                      label="Lista de marcadores"
+                      description="visible | hidden | auto"
+                      default="visible" />
+        </targetConfig>
+        <targetConfig targets="lightningCommunity__Default">
+            <property name="recordId"
+                      type="String"
+                      label="ID do Registro"
+                      description="Id do Event. Em Object Detail Pages é preenchido automaticamente; em outras páginas, informar manualmente ou via {!recordId}."
+                      default="{!recordId}" />
+            <property name="cardTitle"
+                      type="String"
+                      label="Título do card"
+                      default="Mapa da Visita" />
+            <property name="zoomLevel"
+                      type="Integer"
+                      label="Nível de zoom (1-20)"
+                      default="15" />
+            <property name="listView"
+                      type="String"
+                      label="Lista de marcadores"
+                      description="visible | hidden | auto"
+                      default="visible" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

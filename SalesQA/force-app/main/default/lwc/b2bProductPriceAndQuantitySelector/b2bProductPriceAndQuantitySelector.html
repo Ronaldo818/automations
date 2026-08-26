@@ -1,0 +1,97 @@
+<template>
+    <p>Valor de Tabela: <lightning-formatted-number value={listPrice} format-style="currency" currency-code="BRL"
+            currency-display-as="symbol"></lightning-formatted-number></p>
+    <div class="slds-grid slds-wrap" style={mainGridStyle}>
+        <template lwc:if={showAlreadyInCart}>
+        <div class="slds-col slds-size_1-of-1 slds-grid slds-wrap slds-gutters" style="margin-top: 16px;">
+            <div class="slds-col slds-size_1-of-1">
+                <div style="
+            border-radius: var(--sds-c-button-radius-border, var(--dxp-s-button-radius-border, 0.25em));   
+            display: inline-flex;
+            background-color: var(--dxp-g-warning);
+            align-items: center;
+            width: 100%;">
+                    <div style="display: inline-flex;" class="slds-var-p-vertical_x-small slds-var-p-horizontal_small">
+                        <lightning-icon icon-name="utility:warning" alternative-text="Alerta Item no Carrinho"
+                            size="x-small" title="Alerta Item no Carrinho" variant="inverse"></lightning-icon>
+                    </div>
+                    <div class="slds-var-p-around_x-small">
+                          <span style="display: inline-block;">Produto já contido no carrinho.</span>
+                          <span style="display: inline-block;">A quantidade e valor selecionados irão sobreescrever o item atual.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </template>
+        <div class="slds-col slds-size_1-of-1 slds-grid slds-wrap slds-gutters" style="margin-top: 16px;">
+            <c-fv-master-order-picker 
+                lwc:ref="masterOrderPicker"
+                class="slds-col slds-size_1-of-1"
+                cart-id={cartId}
+                effective-account-id={_effectiveAccountId}
+                product-id={productId} 
+                onselected={handleMasterOrderSelected}>
+            </c-fv-master-order-picker>
+        </div>
+        <div class="slds-col slds-size_1-of-1 slds-grid slds-gutters slds-wrap slds-grid_vertical-align-center c-quantity-add-to-cart slds-size_full"
+            style="align-items: baseline;">
+            <span
+                class="slds-col slds-grid slds-large-size_x-small slds-medium-size_1-of-1 slds-small-size_1-of-1 slds-size_1-of-1 slds-var-m-bottom_small"
+                role="group" aria-label={fieldLabel}>
+
+                <button style="border-right: none; border-top-right-radius: 0px; border-bottom-right-radius: 0px;     height: 32px;" aria-label="Remover"
+                    class="number-input__decrement-button slds-button slds-button_neutral slds-p-horizontal_xx-small slds-p-vertical_x-small"
+                    onclick={decrement} disabled={isDecrementButtonDisabled}>
+                    <lightning-icon class="number-input__button-icon" icon-name="utility:dash" size="x-small"
+                        alternative-text="Remover"></lightning-icon>
+                </button>
+
+
+                <input lwc:ref="quantitySelector" style="border-radius: 0px; text-align: center" class="slds-input number-input__input" type="text"
+                    inputmode="numeric" onchange={handleInputChange} pattern={pattern} value={displayQuantity}
+                    aria-label={labelOrAriaLabel} aria-describedby={ariaDescribedByLabel} aria-invalid={isInvalid}
+                    disabled={isProcessing} />
+
+
+                <button style="
+                    border-left: none;
+                    border-top-left-radius: 0px;
+                    border-bottom-left-radius: 0px;     height: 32px;
+                " aria-label="Adicionar"
+                    class="number-input__increment-button slds-button slds-button_neutral slds-p-horizontal_xx-small slds-p-vertical_x-small"
+                    onclick={increment} disabled={isIncrementButtonDisabled}>
+                    <lightning-icon class="number-input__button-icon" icon-name="utility:add" size="x-small"
+                        alternative-text="Adicionar"></lightning-icon>
+                </button>
+
+            </span>
+            <div
+                class="slds-col slds-grid slds-gutters slds-wrap slds-grid_align-center c-quantity-add-to-cart slds-var-m-bottom_small">
+                <div style="text-align: center;"
+                    class="slds-col slds-large-size_1-of-2  slds-medium-size_1-of-2 slds-small-size_1-of-1 slds-size_1-of-1 slds-var-m-bottom_x-small">
+                    <button disabled={isProcessing} class="slds-button slds-button_brand slds-p-horizontal_x-small"
+                        style="display: inline-block; width: 100%" onclick={handleAddToCart}>
+                        {addToCartLabel}
+                        <!--
+                        <lightning-spinner
+                          lwc:if={isProcessing}
+                          style="left: 1rem;" 
+                          class="slds-is-relative"
+                          alternative-text="Loading" 
+                          size="xx-small"
+                          variant="inverse"
+                        ></lightning-spinner>
+                    -->
+                    </button>
+                </div>
+                <div style="text-align: center;"
+                    class="slds-col slds-large-size_1-of-2  slds-medium-size_1-of-2 slds-small-size_1-of-1 slds-size_1-of-1 slds-var-m-bottom_x-small">
+                    <button disabled={isProcessing}
+                        class="slds-button slds-button_outline-brand slds-p-horizontal_x-small"
+                        style="display: inline-block; width: 100%" onclick={handleAddToWishlist}>Adicionar aos
+                        Favoritos</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

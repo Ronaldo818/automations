@@ -1,0 +1,127 @@
+<!-- accountListPortal.html -->
+<template>
+    <div class="container">
+        <template if:true={isLoading}>
+            <div class="loading">
+                <lightning-spinner alternative-text="Carregando"></lightning-spinner>
+            </div>
+        </template>
+
+        <div class="header">
+            <div class="search-container">
+                <lightning-input
+                    type="search"
+                    variant="label-hidden"
+                    placeholder="Pesquisar..."
+                    onchange={handleSearch}>
+                </lightning-input>
+            </div>
+            <h2 class="title"></h2>
+        </div>
+
+        <template if:true={hasAccounts}>
+            <div class="table-scroll-container">
+                <div class="table-wrapper">
+                    <div class="table-header">
+                        <button
+                            class="sortable-header"
+                            data-field="name"
+                            onclick={handleSort}>
+                            Nome
+                            <lightning-icon icon-name={nameSortIcon} size="xx-small"></lightning-icon>
+                        </button>
+
+                        <button
+                            class="sortable-header"
+                            data-field="codigoClienteERP"
+                            onclick={handleSort}>
+                            Código ERP
+                            <lightning-icon icon-name={codigoSortIcon} size="xx-small"></lightning-icon>
+                        </button>
+
+                        <button
+                            class="sortable-header"
+                            data-field="cpfCnpj"
+                            onclick={handleSort}>
+                            CPF/CNPJ
+                            <lightning-icon
+                                icon-name={cpfSortIcon}
+                                size="xx-small">
+                            </lightning-icon>
+                        </button>
+
+                        <button
+                            class="sortable-header"
+                            data-field="categoria"
+                            onclick={handleSort}>
+                            Categoria
+                            <lightning-icon
+                                icon-name={categoriaSortIcon}
+                                size="xx-small">
+                            </lightning-icon>
+                        </button>
+
+                        <button
+                            class="sortable-header"
+                            data-field="subcategoria"
+                            onclick={handleSort}>
+                            Subcategoria
+                            <lightning-icon
+                                icon-name={subcategoriaSortIcon}
+                                size="xx-small">
+                            </lightning-icon>
+                        </button>
+
+                        <button
+                            class="sortable-header"
+                            data-field="status"
+                            onclick={handleSort}>
+                            Status
+                            <lightning-icon
+                                icon-name={statusSortIcon}
+                                size="xx-small">
+                            </lightning-icon>
+                        </button>
+                    </div>
+
+                    <template for:each={filteredAccounts} for:item="acc">
+                        <div key={acc.id} class={acc.rowClass}>
+                            <div data-label="Cliente">
+                                <a data-id={acc.id} onclick={navigateToRecord} class="record-link">
+                                    {acc.name}
+                                </a>
+                            </div>
+
+                            <div data-label="Cód. ERP">
+                                {acc.codigoClienteERP}
+                            </div>
+
+                            <div data-label="CPF/CNPJ">
+                                {acc.cpfCnpj}
+                            </div>
+
+                            <div data-label="Categoria">
+                                <span>{acc.categoria}</span>
+                            </div>
+
+                            <div data-label="Subcategoria">
+                                <span>{acc.subcategoria}</span>
+                            </div>
+
+                            <div data-label="Status">
+                                {acc.status}
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </template>
+
+        <template if:false="{hasAccounts && !isLoading}">
+            <div class="empty-state">
+                Nenhum registro encontrado.
+            </div>
+        </template>
+    </div>
+
+</template>

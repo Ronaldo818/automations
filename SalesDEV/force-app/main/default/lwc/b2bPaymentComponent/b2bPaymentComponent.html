@@ -1,0 +1,240 @@
+<template>
+    <label if:true={showError} class="slds-text-color_error">
+        {error}
+    </label>
+
+    <div if:true={showAlert}>
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-label="Meaningful description of the modal content" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <div class="slds-modal__content slds-p-around_medium slds-modal__content_headless" id="modal-content-id-1">
+                    <span style="text-align: center; padding: 1%;">
+                        <h2 class="slds-text-align_center">Caro cliente, ocorreu um erro ao tentar finalizar a compra:</h2> <br>
+                        <p> {alertMessage} </p>
+                        <span if:true={alertLogId}>
+                            <br>
+                            <h2 class="slds-text-align_center"> LOG ID: {alertLogId}</h2>
+                        </span>
+                    </span>
+                    <div style="display: flex; align-items: center; justify-content: center; margin: 1%;">
+                        <button id="closeAlertButton" class="slds-button slds-button_brand" onclick={closeAlert} >OK</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </div>
+    
+    <article class="slds-card">
+        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+            <div class="slds-media__body">
+                <div class="title">
+                    <!-- <lightning-icon class="title-item01" icon-name="utility:truck" alternative-text="Truck" title="Truck"></lightning-icon> -->
+                    <h2> Cashback </h2>
+                </div>
+            </div>
+        </header>
+
+        <div style="padding: 1% 5% 1% 5%;" class="slds-card">        
+            <div>
+                <p><strong>Saldo de: </strong>R$ {saldoCashBack}</p>
+                <br>
+            </div>
+            <div class="slds-form-element" style="max-width: 150px;">
+                <lightning-input type="number" label="Utilizar" onchange={handleCashback} formatter="currency" step="0.01" value={valorCashback}></lightning-input>
+            </div>
+        </div>
+
+        <div
+            if:true={cashbackErrorMessage}
+            class="card-auth-error slds-scoped-notification slds-media slds-media_center slds-theme_error"
+            role="alert">
+            <div class="slds-media__figure">
+                <lightning-icon
+                    icon-name="utility:error"
+                    variant="error"
+                    size="small"
+                ></lightning-icon>
+            </div>
+            <div class="slds-media__body">
+                <p>{cashbackErrorMessage}</p>
+            </div>
+        </div>
+    </article>
+    <br>
+
+    <article class="slds-card">
+        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+            <div class="slds-media__body">
+                <div class="title">
+                    <h2> Método de Pagamento </h2>
+                </div>
+            </div>
+        </header>
+
+        <div style="padding: 1% 5% 1% 5%;" class="slds-card">        
+            <lightning-radio-group
+                label=""
+                options={options}
+                value={value}
+                onchange={handlePaymentType} >
+            </lightning-radio-group>
+        </div>
+
+        <div
+            if:true={cashbackErrorMessage}
+            class="card-auth-error slds-scoped-notification slds-media slds-media_center slds-theme_error"
+            role="alert">
+            <div class="slds-media__figure">
+                <lightning-icon
+                    icon-name="utility:error"
+                    variant="error"
+                    size="small"
+                ></lightning-icon>
+            </div>
+            <div class="slds-media__body">
+                <p>{cashbackErrorMessage}</p>
+            </div>
+        </div>
+    </article>
+
+
+    <div if:true={creditCard} class="slds-card" style="padding: 1% 5%">
+        <div
+            if:true={creditCardErrorMessage}
+            class="card-auth-error slds-scoped-notification slds-media slds-media_center slds-theme_error"
+            role="alert">
+            <div class="slds-media__figure">
+                <lightning-icon
+                    icon-name="utility:error"
+                    variant="error"
+                    size="small"
+                ></lightning-icon>
+            </div>
+            <div class="slds-media__body">
+                <p>{creditCardErrorMessage}</p>
+            </div>
+        </div>
+
+        <div if:false={hideCardHolderName} class="slds-form-element">
+            <lightning-input
+                data-validate
+                data-cardholder-name
+                class="cardHolderName"
+                onblur={handleCardHolderNameChange}
+                name="cardHolderName"
+                value=''
+                label="Nome do titular do cartão"
+                placeholder="Nome no cartão"
+                max-length="26"
+                required={cardHolderNameRequired}
+                onkeyup={preventSensitiveInformationPropagation}
+                onkeydown={preventSensitiveInformationPropagation}
+                onkeypress={preventSensitiveInformationPropagation}
+                onchange={preventSensitiveInformationPropagation}
+            >
+            </lightning-input>
+        </div>
+
+        <div class="slds-grid">
+            <div class={cardNumberClass}>
+                <lightning-input
+                    data-validate
+                    data-card-number
+                    class="cardNumber"
+                    onblur={handleCardNumberChange}
+                    name="cardNumber"
+                    value={cardNumber}
+                    label="Número do cartão"
+                    placeholder="4539 6206 5992 2097"
+                    pattern="[0-9]{14,16}"
+                    autocomplete="off"
+                    max-length="16"
+                    required
+                    message-when-pattern-mismatch="Preencha esse campo com números."
+                    onkeyup={preventSensitiveInformationPropagation}
+                    onkeydown={preventSensitiveInformationPropagation}
+                    onkeypress={preventSensitiveInformationPropagation}
+                    onchange={preventSensitiveInformationPropagation}
+                >
+                </lightning-input>
+            </div>
+            <div
+                if:false={hideCvv}
+                class="slds-form-element slds-size_1-of-3 slds-p-left_x-small"
+            >
+                <lightning-input
+                    data-validate
+                    data-cvv
+                    class="cvv"
+                    onblur={handleCvvChange}
+                    name="CVV"
+                    value={cvv}
+                    label="CVV"
+                    placeholder="000"
+                    type="password"
+                    pattern="[0-9]{3,4}"
+                    required={cvvRequired}
+                    max-length="4"
+                    autocomplete="off"
+                    field-level-help="Preencher com número de CVV atrás do cartão"
+                    message-when-pattern-mismatch="Preencha com CVV do cartão."
+                    onkeyup={preventSensitiveInformationPropagation}
+                    onkeydown={preventSensitiveInformationPropagation}
+                    onkeypress={preventSensitiveInformationPropagation}
+                    onchange={preventSensitiveInformationPropagation}
+                ></lightning-input>
+            </div>
+        </div>
+
+        <div class="slds-grid">
+            <div
+                if:false={hideExpiryMonth}
+                class="slds-form-element slds-col slds-p-right_x-small"
+            >
+                <lightning-combobox
+                    data-validate
+                    data-expiry-month
+                    class="expiryMonth"
+                    onchange={handleExpiryMonthChange}
+                    name="expiryMonth"
+                    value={expiryMonth}
+                    label="Mes"
+                    placeholder="01"
+                    options={expiryMonths}
+                    required={expiryMonthRequired}
+                >
+                </lightning-combobox>
+            </div>
+            <div if:false={hideExpiryYear} class="slds-form-element slds-col">
+                <lightning-combobox
+                    data-validate
+                    data-expiry-year
+                    class="expiryYear"
+                    onchange={handleExpiryYearChange}
+                    name="expiryYear"
+                    value={expiryYear}
+                    label="Ano"
+                    placeholder="2029"
+                    options={expiryYears}
+                    required={expiryYearRequired}
+                >
+                </lightning-combobox>
+            </div>   
+        </div>
+        <lightning-combobox
+        name="parcelas"
+        label="Parcelas"
+        value={parcelas}
+        placeholder="Select Progress"
+        options={optionsParcelas}
+        onchange={handleParcelas} ></lightning-combobox>
+    </div>
+    <br>
+
+    <lightning-button label="Pagar" disabled={disablePayment} onclick={placeOrder}></lightning-button>
+
+    <!-- General loading indicator -->
+    <div if:true={isLoading}>
+       <lightning-spinner alternative-text="Carregando..."></lightning-spinner>
+    </div>
+</template>

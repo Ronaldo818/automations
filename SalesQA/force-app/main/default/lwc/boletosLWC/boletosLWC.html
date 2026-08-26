@@ -1,0 +1,101 @@
+<template>
+    <lightning-card title="Boletos em Aberto">
+        <div class="slds-p-around_medium">
+
+            <template if:true={accountName}>
+                <p class="slds-m-bottom_small">
+                    <strong>Cliente:</strong> {accountName}
+                </p>
+            </template>
+
+            <lightning-button
+                label="Verificar Boletos"
+                variant="brand"
+                onclick={buscarBoletos}
+                disabled={isLoading}>
+            </lightning-button>
+
+            <template if:true={isLoading}>
+                <div class="slds-m-top_medium">
+                    <lightning-spinner
+                        alternative-text="Buscando boletos..."
+                        size="small">
+                    </lightning-spinner>
+                </div>
+            </template>
+
+            <template if:true={errorMessage}>
+                <div class="slds-m-top_small slds-text-color_error">
+                    {errorMessage}
+                </div>
+            </template>
+
+            <template if:true={successMessage}>
+                <div class="slds-m-top_small" style="color: green;">
+                    {successMessage}
+                </div>
+            </template>
+
+            <template if:true={temBoletos}>
+                <div class="slds-m-top_medium">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th scope="col"></th>
+                                <th scope="col">Número Documento</th>
+                                <th scope="col">Nota Fiscal</th>
+                                <th scope="col">Vencimento</th>
+                                <th scope="col">Valor (R$)</th>
+                                <th scope="col">Observação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={boletos} for:item="boleto">
+                                <tr key={boleto.index}
+                                    class={boleto.cssClass}
+                                    data-index={boleto.index}
+                                    onclick={handleSelecionarBoleto}
+                                    style={boleto.cursorStyle}>
+                                    <td>
+                                        <lightning-input
+                                            type="radio"
+                                            name="boleto"
+                                            checked={boleto.selecionado}
+                                            disabled={boleto.semPdf}
+                                            data-index={boleto.index}>
+                                        </lightning-input>
+                                    </td>
+                                    <td>{boleto.numero}</td>
+                                    <td>{boleto.referencia}</td>
+                                    <td>{boleto.vencimento}</td>
+                                    <td>{boleto.valor}</td>
+                                    <td class="slds-cell-wrap" style="color: #d4504c; font-size: 0.85rem; white-space: pre-line; max-width: 200px;">
+                                        {boleto.observacao}
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+
+                    <div class="slds-m-top_medium">
+                        <lightning-button
+                            label="Enviar Boleto por Email"
+                            variant="success"
+                            onclick={handleEnviarEmail}
+                            disabled={isSending}>
+                        </lightning-button>
+
+                        <template if:true={isSending}>
+                            <lightning-spinner
+                                alternative-text="Enviando..."
+                                size="small"
+                                class="slds-m-left_small">
+                            </lightning-spinner>
+                        </template>
+                    </div>
+                </div>
+            </template>
+
+        </div>
+    </lightning-card>
+</template>

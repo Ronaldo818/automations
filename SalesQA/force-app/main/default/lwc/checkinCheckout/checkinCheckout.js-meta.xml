@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Checkin / Checkout</masterLabel>
+    <description>Botão único de Checkin/Checkout com geolocalização, para Event (Visita).</description>
+    <targets>
+        <target>lightning__RecordPage</target>
+        <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Default</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage">
+            <objects>
+                <object>Event</object>
+            </objects>
+        </targetConfig>
+        <targetConfig targets="lightningCommunity__Default">
+            <property name="recordId"
+                      type="String"
+                      label="ID do Registro"
+                      description="Id do Event. Em Object Detail Pages é preenchido automaticamente; em outras páginas, informar manualmente ou via {!recordId}."
+                      default="{!recordId}" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

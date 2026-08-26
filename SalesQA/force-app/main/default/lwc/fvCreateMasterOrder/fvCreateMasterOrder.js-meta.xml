@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>63.0</apiVersion>
+    <isExposed>true</isExposed>
+
+    <masterLabel>FV - Create Master Order Button</masterLabel>
+    <description>FV - Create Master Order Button</description>
+    <targets>
+        <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Default</target>
+    </targets>
+
+     <targetConfigs>
+        <targetConfig targets="lightningCommunity__Default">
+            <property name="cartDetails" type="String" label="Cart Detail Data Binding" default="{!Cart.Details}" required="true"/>
+            <property name="cartItems" type="String" label="Cart Items Data Binding - UNUSED" default="{!Cart.Items}" required="false"/>
+            <property name="effectiveAccount" type="String" label="Effective Account Fields Data Binding" default="{!User.Commerce.EffectiveAccount.fields}" required="true"/>
+
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

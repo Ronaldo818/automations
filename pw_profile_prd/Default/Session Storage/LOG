@@ -1,3 +1,2 @@
-2026/06/11-17:04:42.151 84fc Reusing MANIFEST C:\python_scripts\pw_profile_prd\Default\Session Storage/MANIFEST-000001
-2026/06/11-17:04:42.162 84fc Recovering log #3
-2026/06/11-17:04:42.163 84fc Reusing old log C:\python_scripts\pw_profile_prd\Default\Session Storage/000003.log 
+2026/08/10-11:52:16.626 6c74 Creating DB C:\python_scripts\pw_profile_prd\Default\Session Storage since it was missing.
+2026/08/10-11:52:16.667 6c74 Reusing MANIFEST C:\python_scripts\pw_profile_prd\Default\Session Storage/MANIFEST-000001

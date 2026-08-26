@@ -1,0 +1,8 @@
+.map-wrapper {
+    height: 400px;
+    width: 100%;
+}
+
+.empty-state {
+    color: #706e6b;
+}

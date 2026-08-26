@@ -1,0 +1,102 @@
+<template>
+    <lightning-modal-header label="Gerar Mesa de Negociação"></lightning-modal-header>
+    <lightning-modal-body>
+
+    <div class="slds-modal__content slds-var-p-around_medium" style="position: relative;" id="modal-content-id-1">
+
+        <div lwc:if={isValid}>
+            <div>
+                <p>Gerar Mesa de Negociação para <b>{effectiveAccountName}</b> e
+                    suas subsidiarias.</p>
+                <div class="slds-var-p-around_small slds-var-m-top_small"
+                    style="background-color: var(--dxp-g-neutral);font-size: smaller; border-radius: var(--slds-c-modal-radius-border, var(--sds-c-modal-radius-border, .25rem));">
+                    <ul class="slds-list_dotted">
+                        <li>A Mesa de Neogicação será criada a partir dos itens do carrinho atual.</li>
+                        <li>Você poderá utilizar-la para a criação de pedidos quando for aprovada.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="slds-grid slds-wrap slds-gutters slds-var-m-top_small">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input data-id="startDate" value={today} disabled type="date" name="startDate"
+                        label="Data Início"></lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input data-id="endDate" required type="date" max={maxDate} min={minDate} value={endDate}
+                        name="endDate" label="Data Fim"></lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-1">
+                    <lightning-textarea required class="slds-var-m-top_small" max-length="32768" name="comment"
+                        label="Comentário" placeholder="Digite aqui..." value={comment} variant="standard"
+                        onchange={handleComment}></lightning-textarea>
+                </div>
+            </div>
+        </div>
+
+        <div lwc:else>
+            <p class="slds-var-m-horizontal_xx-small">
+                Não é possível gerar uma Mesa de Negociação pelos seguintes motivos:
+            </p>
+            <div class="slds-var-p-around_small slds-var-m-vertical_small"
+                style="background-color: var(--dxp-g-warning); font-size: smaller; border-radius: var(--slds-c-modal-radius-border, var(--sds-c-modal-radius-border, .25rem));">
+                <ul class="slds-list_dotted">
+                    <template for:each={cartItemsValidity.invalidItems} for:item="item">
+                        <li key={item.id}><b>{item.name}</b>: {item.invalidReason}</li>
+                    </template>
+                </ul>
+            </div>
+            <p class="slds-var-m-horizontal_xx-small">Faça os ajustes necessários e tente novamente.</p>
+        </div>
+
+
+        <lightning-spinner lwc:if={isProcessing}
+            alternative-text="Loading"
+            size="medium"
+            variant="brand"
+            style="background-color: white">
+        </lightning-spinner>
+
+
+        <div lwc:elseif={created} 
+        style="   
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;">
+            <div class="slds-var-m-around_medium">
+                <lightning-icon icon-name='utility:success' alternative-text='success' variant='success'
+                    size='large' title='success'></lightning-icon>
+            </div>
+            <div>
+                Mesa de Negociação <a href={masterOrderUrl}>{masterOrderName}</a> criada com
+                sucesso.
+            </div>
+        </div>
+
+    </div>
+    </lightning-modal-body>
+    <lightning-modal-footer>
+
+        <div lwc:if={created} class="">
+            <button class="slds-button slds-button_brand" onclick={handleCloseModal}>Ok</button>
+        </div>
+
+        <div lwc:elseif={isValid} class="slds-modal__footer_directional">
+            <button class="slds-button slds-button_neutral" onclick={handleCloseModal}
+                disabled={isProcessing}>Cancelar</button>
+            <button class="slds-button slds-button_brand" onclick={handleCreateMasterOrder}
+                disabled={isProcessing}>Confirmar</button>
+        </div>
+
+        <div lwc:else class="">
+            <button class="slds-button slds-button_neutral" onclick={handleCloseModal}>Ok</button>
+        </div>
+
+    </lightning-modal-footer>
+</template>

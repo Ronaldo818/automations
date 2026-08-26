@@ -1,0 +1,42 @@
+.title-error-01 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-items: center;
+    padding: 2% 0% 2% 0%;
+}
+
+.title-error_02 {
+    text-transform: uppercase;
+}
+
+.title-tax-01 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-items: center;
+    padding: 2% 0% 1% 0%;
+}
+
+.shipping-main {
+    padding: 1%;
+}
+
+.flex-informations {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0% 5% 1% 5%;
+}
+
+.flex-informations-total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0% 5% 1% 5%;
+}
+
+.strong-text {
+    font-weight: 700;
+    font-size: 20px;
+}

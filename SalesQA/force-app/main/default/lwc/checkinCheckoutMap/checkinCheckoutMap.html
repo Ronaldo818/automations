@@ -1,0 +1,41 @@
+<template>
+    <lightning-card title={cardTitle} icon-name="utility:location">
+
+        <template lwc:if={isLoading}>
+            <div class="slds-p-around_medium slds-text-align_center">
+                <lightning-spinner alternative-text="Carregando" size="small"></lightning-spinner>
+            </div>
+        </template>
+
+        <template lwc:elseif={hasError}>
+            <div class="slds-p-around_medium slds-text-color_error slds-text-align_center">
+                Erro ao carregar as localizações da visita.
+            </div>
+        </template>
+
+        <template lwc:elseif={hasMarkers}>
+            <div class="map-wrapper">
+                <lightning-map
+                    map-markers={mapMarkers}
+                    center={center}
+                    zoom-level={zoomLevel}
+                    markers-title={markersTitle}
+                    list-view={listView}>
+                </lightning-map>
+            </div>
+        </template>
+
+        <template lwc:else>
+            <div class="empty-state slds-p-around_large slds-text-align_center">
+                <lightning-icon icon-name="utility:location"
+                                size="medium"
+                                alternative-text="Sem localização">
+                </lightning-icon>
+                <p class="slds-text-body_regular slds-m-top_small">
+                    Nenhuma localização de checkin/checkout registrada para esta visita.
+                </p>
+            </div>
+        </template>
+
+    </lightning-card>
+</template>

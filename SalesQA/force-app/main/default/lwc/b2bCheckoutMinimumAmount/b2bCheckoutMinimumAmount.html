@@ -1,0 +1,47 @@
+<template>
+     <template lwc:if={minimumAmount}>
+        <div class="slds-card slds-var-p-around_small">
+            <div class="slds-var-p-horizontal_small" style="display: inline-flex; align-items: center; width: 100%; justify-content: space-between;">
+                <div>
+                    <span>Valor mínimo do pedido: </span>
+                    <b>
+                        <lightning-formatted-number
+                            format-style="currency"
+                            currency-code="BRL"
+                            value={minimumAmount}
+                        ></lightning-formatted-number>
+                    </b>
+                </div>
+                <div class="slds-var-p-left_medium" style="border-left: 1px solid var(--slds-g-color-border-base-1);">
+                    <lightning-icon icon-name={iconName} alternative-text={iconVariant} variant={iconVariant} size='small' title={iconVariant}></lightning-icon>
+                </div>
+            </div>
+        </div>
+    </template>
+    <template lwc:if={quantityLimit}>
+        <div class="slds-card slds-var-p-around_small">
+            <div class="slds-var-p-horizontal_small" style="display: inline-flex; align-items: center; width: 100%; justify-content: space-between;">
+                <div>
+                    <span>Máximo de caixas por mês: </span>
+                    <b><lightning-formatted-number value={maxQuantity}></lightning-formatted-number></b>
+                </div>
+                <div class="slds-var-p-left_medium" style="border-left: 1px solid var(--slds-g-color-border-base-1);">
+                    <lightning-icon icon-name={iconNameMaxPack} alternative-text={iconVariantMaxPack} variant={iconVariantMaxPack} size='small' title={iconVariantMaxPack}></lightning-icon>
+                </div>
+            </div>
+        </div>
+    </template>
+    <template lwc:if={MasterOrderItemQuantityLimit}>
+        <div class="slds-card slds-var-p-around_small">
+            <div class="slds-var-p-horizontal_small" style="display: inline-flex; align-items: center; width: 100%; justify-content: space-between;">
+                <div>
+                    <span>Máximo de caixas por mês: </span>
+                    <b><lightning-formatted-number value={maxQuantity}></lightning-formatted-number></b>
+                </div>
+                <div class="slds-var-p-left_medium" style="border-left: 1px solid var(--slds-g-color-border-base-1);">
+                    <lightning-icon icon-name={iconNameMasterOrderItem} alternative-text={iconVariantMasterOrderItem} variant={iconVariantMasterOrderItem} size='small' title={iconVariantMasterOrderItem}></lightning-icon>
+                </div>
+            </div>
+        </div>
+    </template>
+</template>

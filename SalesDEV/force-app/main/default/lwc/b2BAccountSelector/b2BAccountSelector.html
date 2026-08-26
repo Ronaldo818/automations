@@ -1,0 +1,104 @@
+<template>
+
+    <div class="slds-grid slds-wrap slds-has-flexi-truncate slds-grid_vertical-align-center" style="cursor:pointer" onclick={handleOpenModal}>
+
+
+        <div class="slds-col slds-size_10-of-12 slds-p-left_large slds-p-right_x-small slds-show_medium" >
+            <span class="{bloqueio ? 'destaque-bloqueio' : 'sem-destaque'}" style="font-size: 12px; text-align: right; line-height: 14px; font-weight: 600; padding-right: 5px; display:block" >{accountName}</span>
+        </div>
+        <div class="slds-col slds-size_10-of-12 slds-p-left_xx-small slds-p-right_xx-small slds-hide_medium" >
+            <span class="{bloqueio ? 'destaque-bloqueio' : 'sem-destaque'}" style="font-size: 10px; text-align: right; font-weight: 500; padding-right: 3px; display:block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; " >{accountName}</span>
+        </div>
+        <div class="slds-col slds-size_2-of-12" style="text-align: center;">
+            <lightning-icon icon-name="utility:swarm_request"
+                title="Trocar Conta"
+                class="slds-icon_container"
+                size="small"
+                style="--sds-c-icon-color-foreground-default: rgb(226, 225, 211);"
+            >
+            </lightning-icon>
+        </div>
+    </div>
+
+    <template if:true={isModalOpen}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+
+                <button 
+                    style="--slds-c-button-color-background: var(--dxp-g-root, #fff);"
+                    class="slds-button slds-button_icon slds-modal__close slds-button_icon-bare"
+                    onclick={handleClose}>
+                        <lightning-icon
+                        size="small"
+                        icon-name="utility:close"
+                        variant="inverse"
+                        class="slds-icon_container" 
+                        style="
+                            --slds-c-icon-color-background: var(--dxp-g-root, #fff);
+                            --slds-c-icon-color-foreground: var(--dxp-g-root-3, #747474);">
+                        </lightning-icon>
+                </button>                
+
+                <div class="slds-modal__header">
+                    <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate" tabindex="-1">
+                        Trocar Conta
+                    </h1>
+                    <div class="slds-p-horizontal_x-large slds-m-vertical_medium">
+                        <lightning-input type="text" placeholder="Pesquisar..." onchange={handleSearch} variant="label-hidden"></lightning-input>
+                    </div>
+                </div>
+
+                <div class="slds-modal__content" id="modal-content-id-1">
+                    <template if:true={isLoading}>
+                        <div class="slds-align_absolute-center slds-is-relative" style="height: 2rem;">
+                            <lightning-spinner variant="inverse" alternative-text="Carregando..." size="small"></lightning-spinner>
+                        </div>
+                    </template>
+
+                    <template if:true={noAccounts}>
+                        <div class="slds-align_absolute-center slds-var-p-vertical_medium">
+                            <p class="p-align">Nenhuma conta conta encontrada</p>
+                        </div>
+                    </template>
+
+                    <template if:false={noAccounts}>
+                        <ul class="slds-m-bottom_medium">
+                            <template for:each={filteredAccounts} for:item="acc">
+                                <li key={accountId} data-id={acc.accountId} onclick={handleListClick} class="slds-border_bottom slds-var-p-vertical_x-small slds-var-p-horizontal_medium">
+                                    <div class="slds-grid slds-nowrap slds-grid_vertical-align-center">
+                                        <div class="slds-no-flex slds-m-right_small">
+                                            <div class="slds-align_absolute-center">
+                                                <lightning-icon style={acc.variantMatrizFilial} icon-name={acc.iconeMatrizFilial} class="slds-icon_container" size="medium"></lightning-icon>
+                                            </div>
+                                            <div class="slds-align_absolute-center">
+                                                <span style="font-size: 11px;">{acc.textoMatrizFilial}</span>
+                                            </div>
+                                        </div>
+                                        <div class="slds-col slds-text-body_small">
+                                            <p class="{acc.bloqueio ? 'destaque-bloqueio' : 'sem-destaque'}"><b>{acc.name}</b></p>
+                                            <p>{acc.cpfCnpj}</p>
+                                            <p>{acc.endereco}</p>
+                                            <template lwc:if={acc.condicaoPagamentoPadrao}>
+                                                <p>CONDIÇÃO DE PAGAMENTO PADRÃO: {acc.condicaoPagamentoPadrao}</p>
+                                            </template>
+
+                                            <template lwc:if={acc.bloqueio}>
+                                                <p class="destaque-bloqueio"><b>MOTIVO: {acc.motivoBloqueio}</b></p>
+                                            </template>
+                                        </div>
+
+                                    </div>
+
+                                </li>
+                            </template>
+                        </ul>
+                    </template>
+
+
+                </div>
+
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

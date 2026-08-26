@@ -41,6 +41,7 @@ def ID_MATERIAL(linha): return f"{TABELA}/ctxtEKPO-EMATN[3,{linha}]"
 def ID_QUANTIDADE(linha): return f"{TABELA}/txtEKPO-KTMNG[5,{linha}]"
 def ID_PRECO(linha): return f"{TABELA}/txtEKPO-NETPR[7,{linha}]"
 def ID_KNTTP(linha): return f"{TABELA}/ctxtEKPO-KNTTP[2,{linha}]"
+def ID_CENTRO_ITEM(linha): return f"{TABELA}/ctxtEKPO-WERKS[12,{linha}]"
 
 # Imposto
 ID_MWSKZ = "wnd[0]/usr/ctxtEKPO-MWSKZ"
@@ -120,10 +121,10 @@ class SAPContrato:
             self.escrever(ID_ORG_COMPRAS, limpar_texto(dados["Organiz.compras"]))
             self.escrever(ID_GRUPO_COMPRADORES, limpar_texto(dados["Grupo de compradores"]))
 
-            if possui_valor(dados["Centro"]):
-                self.escrever(ID_CENTRO, limpar_texto(dados["Centro"]))
-            else:
-                self.escrever(ID_CENTRO, "")
+            #if possui_valor(dados["Centro"]):
+            #    self.escrever(ID_CENTRO, limpar_texto(dados["Centro"]))
+            #else:
+            #    self.escrever(ID_CENTRO, "")
 
             self.pressionar(BTN_SINTESE)
 
@@ -188,26 +189,45 @@ class SAPContrato:
             self.escrever(ID_QUANTIDADE(linha_visivel), decimal(item["Qntde Prev"], 0))
             self.escrever(ID_PRECO(linha_visivel), decimal(item["valor"]))
             
+            if possui_valor(item.get("Centro")):
+                self.escrever(ID_CENTRO_ITEM(linha_visivel), limpar_texto(item["Centro"]))
+                
             # ---------------------------------------------------------
-            # TRATAMENTO DO KNTTP E NAVEGAÇÃO FORÇADA
+            # A SUA REGRA DE OURO (KNTTP)
             # ---------------------------------------------------------
-            # 1. Escreve o KNTTP na célula apenas se ele existir no Excel
             if possui_valor(item["Classificação Contabil"]):
                 self.escrever(ID_KNTTP(linha_visivel), limpar_texto(item["Classificação Contabil"]))
-                
-            # 2. O PULO DO GATO: Independentemente de ter KNTTP ou não, 
-            # nós SEMPRE damos o duplo clique para validar a linha e 
-            # FORÇAR o SAP a abrir a aba de Detalhes de forma previsível.
-            self.duplo_clique(ID_KNTTP(linha_visivel))
-            
-            # 3. Limpa os avisos amarelos (ex: Data de remessa, Preço efetivo)
-            if self.status():
                 self.enter()
-                if self.status(): 
+                
+                if self.status():
                     self.enter()
+                    if self.status(): 
+                        self.enter()
+                        
+                try:
+                    self.session.findById(ID_KNTTP(linha_visivel)) 
+                    self.duplo_clique(ID_KNTTP(linha_visivel))     
+                except Exception:
+                    pass 
 
-            # 4. Preenche o imposto (com a certeza absoluta de estar na tela certa)
+            else:
+                self.duplo_clique(ID_KNTTP(linha_visivel))
+                
+                if self.status():
+                    self.enter()
+                    if self.status():
+                        self.enter()
+
+            # ---------------------------------------------------------
+            # FINALIZA O ITEM E TRATA AVISOS (IMPOSTO / PREÇO EFETIVO)
+            # ---------------------------------------------------------
             self.preencher_imposto(item["Cód. Imposto"])
+            
+            # CENÁRIO 2: Captura a mensagem do Preço Efetivo (06207)
+            msg_imposto = self.status()
+            if "preço efetivo" in msg_imposto.lower():
+                self.enter() # Dá um enter extra para limpar o aviso amarelo
+                
             self.voltar_sintese()
 
     # =====================================================
@@ -238,13 +258,42 @@ class SAPContrato:
     # STATUS
     # =====================================================
     def status(self):
-            texto = self.ler(BARRA_STATUS).strip()
-            
-            # Se houver texto e ele não for idêntico ao último capturado, nós o registramos
-            if texto and (not self.historico_mensagens or self.historico_mensagens[-1] != texto):
-                self.historico_mensagens.append(texto)
+            try:
+                sbar = self.session.findById("wnd[0]/sbar")
+                texto = sbar.text.strip()
+                tipo_mensagem = sbar.messageType 
                 
-            return texto
+                # Grava no histórico para a planilha de auditoria
+                if texto and (not self.historico_mensagens or self.historico_mensagens[-1] != texto):
+                    self.historico_mensagens.append(texto)
+                    
+                # ---------------------------------------------------------
+                # CENÁRIO 1: Erro de Centro (M3351) - Aborta Imediatamente
+                # ---------------------------------------------------------
+                if "não está atualizado no centro" in texto.lower():
+                    raise Exception("O item precisa ser ajustado no centro de custo.")
+                    
+                # ---------------------------------------------------------
+                # CENÁRIO 2: Tratamento de Erros Vermelhos padrão
+                # ---------------------------------------------------------
+                if tipo_mensagem in ['E', 'A']:
+                    texto_lower = texto.lower()
+                    
+                    # EXCEÇÃO (Bypass): Erros vermelhos temporários (O robô vai preencher no próximo passo)
+                    # Adicionamos "imposto" para que ele não trave no meio do caminho!
+                    if "data" in texto_lower or "validade" in texto_lower or "imposto" in texto_lower:
+                        return texto 
+                    
+                    # Qualquer outro erro vermelho que não esteja na exceção, aborta o contrato
+                    raise Exception(f"Bloqueio SAP: {texto}")
+                    
+                return texto
+                
+            except Exception as e:
+                # Repassa a exceção customizada para o main.py capturar
+                if "ajustado no centro" in str(e) or "Bloqueio SAP" in str(e):
+                    raise e 
+                return ""
 
     # =====================================================
     # CONTRATO

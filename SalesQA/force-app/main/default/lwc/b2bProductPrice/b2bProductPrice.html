@@ -1,0 +1,28 @@
+<template>
+    <div if:true={isLoading}>
+        <lightning-spinner></lightning-spinner>    
+    </div>
+    <div if:true={price}>
+        <div class="slds-p-vertical_small commerce-productPricing_productPricing-host" style="display: flex; align-items: baseline; flex-wrap: wrap;">
+            <p style="margin-right: 8px; font-size: 18px; color: #181818;">{fieldLabel}</p>
+            <span style="font-size: 28px; color: #000000; font-weight: 700;">
+                <lightning-formatted-number        
+                    value={price}
+                    format-style="currency"
+                    currency-code="BRL">
+                </lightning-formatted-number>
+            </span>
+            <template lwc:if={precoPorKg}>
+                <p style="margin-left: 12px; margin-right: 8px; font-size: 18px; color: #181818;">/ Preço por KG:</p>
+                <span style="font-size: 28px; color: #000000; font-weight: 700;">
+                    <lightning-formatted-number        
+                        value={precoPorKg}
+                        format-style="currency"
+                        currency-code="BRL">
+                    </lightning-formatted-number>
+                </span>
+            </template>
+            
+        </div>
+    </div>
+</template>

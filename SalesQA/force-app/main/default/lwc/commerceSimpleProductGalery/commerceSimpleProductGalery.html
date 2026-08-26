@@ -1,0 +1,97 @@
+<template>
+    <template lwc:if={conteudo}>
+        <template for:each={colecoes} for:item="colecao">
+            <div key={colecao.id} class={colecao.cardClass}>
+                <template lwc:if={exibirTitulo}>
+                    <h1 class="slds-text-align_center slds-m-vertical_x-large titulo">{titulo}</h1>
+                </template>
+                <div class="container-style" style="position: relative;" onmouseenter={showButtons} onmouseleave={hideButtons}>
+                    <div class="card-background-style slds-m-bottom_x-large">
+                        <div class="card-style" onmouseenter={displayZoom} onmouseleave={undisplayZoom}>
+                            <div style="text-align: center;" class="image-container">
+                                <div class="slds-spinner slds-spinner_medium" style="z-index: 9;">
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                                <div style="position: relative;">
+                                    <img fetchpriority="high" loading="lazy" class="img-style mainImage" src={colecao.url}>
+                                </div>  
+                            </div>
+                        </div>
+                    </div>
+                    <template lwc:if={trocaManual}>
+                        <template lwc:if={exibirBotoes}>
+                            <template lwc:if={exibirSetas}>
+                                <div class="chevron-button left" data-id="leftButton" data-show={showButton} style='background-color:rgba(255, 255, 255, 0.6)' onclick={prevCard} onmouseenter={undisplayZoom}>
+                                    <svg class="slds-icon" focusable="false" data-key="" aria-hidden="true" part="icon" style="    width: 40px;
+                                    height: 40px;">
+                                        <use style="    scale: 0.045;
+                                        transform: translateY(35px);" xlink:href={chevron_l_src}>
+                                        </use>
+                                    </svg>
+                                </div>
+                                <div class="chevron-button right" data-id="rightButton" data-show={showButton} style='background-color:rgba(255, 255, 255, 0.6)' onclick={nextCard} onmouseenter={undisplayZoom}>
+                                    <svg class="slds-icon" focusable="false" data-key="" aria-hidden="true" part="icon" style="    width: 40px;
+                                    height: 40px;">
+                                        <use style="    scale: 0.045;
+                                        transform: translateY(35px);" xlink:href={chevron_l_src}>
+                                        </use>
+                                    </svg>
+                                </div>
+                            </template>
+                        </template>
+                    </template>
+                </div>
+            </div>
+        </template>
+        <div class="slds-var-m-bottom_x-large" style="text-align: center;">
+            <lightning-button icon-name="utility:download" type="button" size="xx-small" variant="neutral" label="Baixar Mockup" alternative-text="Baixar Mockup" title="Baixar Mockup" onclick={handleDownloadImage} class="slds-var-m-left_x-small"></lightning-button>
+        </div>
+        <template lwc:if={exibirCirculos}>
+            <template lwc:if={exibirBotoes}>            
+                <div class="slds-text-align_center">
+                    <template for:each={colecoes} for:item="colecao">
+                        <div class={colecao.dotClass} data-id={colecao.slideIndex} onclick={selectCard} key={colecao.id}></div>
+                    </template>
+                </div>
+            </template>
+        </template>
+        <template lwc:if={exibirThumbs}>   
+            <div  class="slds-scrollable_x" style="overflow-x: hidden; position: relative; display: flex; margin: 0; padding: 0;justify-content:center;align-items:center;height:15%">
+                <div class="chevron-button left" data-id="leftButtonCarousel" data-show=true style={buttonStyle} onclick={prevCardCarousel}>
+                    <svg class="slds-icon" focusable="false" data-key="" aria-hidden="true" part="icon" style="    width: 40px;
+                    height: 40px;">
+                        <use style="    scale: 0.045;
+                        transform: translateY(35px);" xlink:href={chevron_l_src}>
+                        </use>
+                    </svg>
+                </div>
+            <div lwc:ref="scrollPanel" style="display: inline-flex; align-items: center; transition: transform 1s ease 0s;width:80%" >
+                <template for:each={colecoes} for:item="colecao">
+                    <div class={colecao.thumbClass}  data-id={colecao.slideIndex} onclick={selectCard} key={colecao.id}>
+                        <div class="slds-spinner slds-spinner_x-small" style="position: relative; z-index: 9;">
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                        <img loading="lazy" class="img-style" data-id={colecao.slideIndex} title={colecao.title} src={colecao.url}>
+                    </div>
+                </template>
+            </div>
+            <div class="chevron-button right" data-id="rightButtonCarousel" data-show=true style={buttonStyle} onclick={nextCardCarousel}>
+                <svg class="slds-icon" focusable="false" data-key="" aria-hidden="true" part="icon" style="    width: 40px;
+                height: 40px;">
+                    <use style="    scale: 0.045;
+                    transform: translateY(35px);" xlink:href={chevron_l_src}>
+                    </use>
+                </svg>
+            </div>
+        </div>
+        </template>
+
+    </template>
+
+    <div class="zoomArea slds-hide" lwc:ref="zoomArea">
+
+    </div>
+    
+</template>

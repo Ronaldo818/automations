@@ -1,0 +1,429 @@
+<template>
+
+    <div class="container-card">
+
+        <template if:true={showSpinner}>
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+            <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+        </template>
+
+        <!-- Tela Inicial e seleção de tipo de cadastro -->
+        <template lwc:if={showStep1}>
+            <div>
+                <h3 class="slds-text-align_center slds-p-vertical_small">{initialText}</h3>
+
+                <div class="slds-text-align_center slds-p-vertical_medium">
+                    <lightning-button icon-name="utility:user" label="Pessoa Física" variant="brand" value="pf" onclick={handleClickTipoCadastro} class="slds-m-around_small" ></lightning-button>
+                    <lightning-button icon-name="utility:company" label="Pessoa Jurídica" variant="brand" value="pj" onclick={handleClickTipoCadastro} class="slds-m-around_small"></lightning-button>
+                </div>
+            </div>
+        </template>
+
+        <!-- Checagem da identificação fiscal -->
+        <template lwc:elseif={showStep2}>  
+            <div class="container-center-body">
+                <template lwc:if={isPJ}>
+                    <h3 class="slds-text-align_center slds-p-vertical_small">Informe o CNPJ do cliente para verificar se já possui cadastro:</h3>
+                    <lightning-input required type="text" lwc:ref="inputCNPJ" field-api-name="cnpj" variant="label-hidden" max-length="18" onchange={handleChangeCnpj} disabled={isIdentificationInputDisabled}></lightning-input>
+                </template>
+                <template lwc:else>
+                    <h3 class="slds-text-align_center slds-p-vertical_small">Informe o CPF do cliente para verificar se já possui cadastro:</h3>
+                    <lightning-input required type="text" lwc:ref="inputCPF" field-api-name="cpf" value={identificacaoFiscal} variant="label-hidden" max-length="14" onchange={handleChangeCpf} disabled={isIdentificationInputDisabled}></lightning-input>
+                </template>
+            </div>
+        </template>
+
+        <!-- Formulário de cadastro -->
+        <template lwc:elseif={showStep3}>
+
+            <div class="slds-section__title slds-theme_shade slds-m-bottom_small slds-p-horizontal_small">
+                <span>Informações Gerais</span>
+            </div>
+            <div class="slds-m-bottom_xx-large">
+                <div class="slds-form__row slds-var-p-horizontal_medium">
+                    <div class="slds-form__item">
+                        <div class="slds-size_12-of-12">
+                            <template lwc:if={isPJ}>
+                                <lightning-input label="CNPJ" type="text" lwc:ref="inputCNPJ" field-api-name="cnpj" value={identificacaoFiscal} required disabled></lightning-input>
+                            </template>
+                            <template lwc:else>
+                                <lightning-input label="CPF" type="text" lwc:ref="inputCPF" field-api-name="cpf" value={identificacaoFiscal} required disabled></lightning-input>
+                            </template>
+                        </div>
+                    </div>
+                    <div class="slds-form__item">
+                        <div class="slds-size_12-of-12">
+                            <lightning-input required
+                                type="text"
+                                lwc:ref="inputName"
+                                field-api-name="Name"
+                                label="Nome (Razão Social)"
+                                max-length="80"
+                                onchange={handleGenericChange}>
+                            </lightning-input>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slds-form__row slds-var-p-horizontal_medium">
+                    <div class="slds-form__item">
+                        <div class="slds-size_12-of-12">
+                            <lightning-input required
+                                type="text"
+                                lwc:ref="inputFantasia"
+                                field-api-name="nomeFantasia"
+                                label="Nome Fantasia"
+                                max-length="255"
+                                onchange={handleGenericChange}>
+                            </lightning-input>
+                        </div>
+                    </div>
+                    <div class="slds-form__item">
+                        <div class="slds-size_12-of-12">
+                            <template lwc:if={isPJ}>
+                                <lightning-input required
+                                    type="number"
+                                    lwc:ref="inputAnoFundacao"
+                                    field-api-name="anoFundacao"
+                                    label="Ano de Fundação"
+                                    min-length="4"
+                                    max-length="4"
+                                    onchange={handleGenericChange}>
+                                </lightning-input>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slds-form__row slds-var-p-horizontal_medium">
+                    <div class="slds-form__item">
+                        <div class="slds-size_12-of-12">
+                            <lightning-combobox required
+                                lwc:ref="inputCategoria"
+                                field-api-name="categoria"
+                                label="Categoria (Grupo de Clientes 3)"
+                                options={categoriaOptions.data.values}
+                                onchange={handleGenericChange}>
+                            </lightning-combobox>
+                        </div>
+                    </div>
+                    <div class="slds-form__item">
+                        <div class="slds-size_12-of-12">
+                            <lightning-combobox required
+                                lwc:ref="inputSubcategoria"
+                                field-api-name="subcategoria"
+                                label="Subcategoria (Grupo de Clientes 4)"
+                                options={subcategoriaOptions.data.values}
+                                onchange={handleGenericChange}>
+                            </lightning-combobox>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slds-form__row slds-var-p-horizontal_medium">
+                    <div class="slds-form__item">
+                        <div class="slds-size_12-of-12">
+                            <!-- <lightning-combobox required
+                                lwc:ref="inputRamoAtividade"
+                                field-api-name="ramoAtividade"
+                                label="Ramo de Atividade"
+                                options={ramoAtividadeOptions.data.values}
+                                onchange={handleGenericChange}>
+                            </lightning-combobox> -->
+                        </div>
+                    </div>
+                    <div class="slds-form__item">
+                        <div class="slds-size_12-of-12">
+                            <!--<lightning-combobox required
+                                lwc:ref="inputCategoria"
+                                field-api-name="RamoAtividade__c"
+                                label="Categoria (Grupo de Clientes 3)"
+                                onchange={handleGenericChange}>
+                            </lightning-combobox> -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slds-section__title slds-theme_shade slds-m-bottom_small slds-p-horizontal_small">
+                    <span>Contato</span>
+                </div>
+
+                <div class="slds-form__row slds-var-p-horizontal_medium">
+                    <div class="slds-form__item">
+                        <div class="slds-size_12-of-12">
+                            <lightning-input required
+                                type="text"
+                                lwc:ref="inputEmail"
+                                field-api-name="email"
+                                label="Email"
+                                max-length="255"
+                                onchange={handleChangeEmail}>
+                            </lightning-input>
+                        </div>
+                    </div>
+                    <div class="slds-form__item">
+                        <div class="slds-size_12-of-12">
+                            <div>
+                                <lightning-input required
+                                    type="text"
+                                    lwc:ref="inputFone"
+                                    field-api-name="fone"
+                                    label="Telefone"
+                                    min-length="14"
+                                    max-length="15"
+                                    onchange={handleChangeTelefone}>
+                                </lightning-input>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slds-section__title slds-theme_shade slds-m-bottom_small slds-p-horizontal_small">
+                <span>Endereço</span>
+            </div>
+            <div class="slds-m-bottom_xx-large">
+                <div class="slds-form__row slds-var-p-horizontal_medium">
+                    <div class="slds-form__item">
+                        <div class="slds-size_12-of-12" >
+                            <lightning-input required
+                                type="search"
+                                lwc:ref="inputCep"
+                                field-api-name="Cep"
+                                label="CEP"
+                                min-length="8"
+                                max-length="9"
+                                is-loading={isLoading}
+                                onchange={handleChangeCep}>
+                            </lightning-input>
+                        </div>
+                    </div>
+                    <div class="slds-form__item">
+                        <div class="slds-size_12-of-12" >
+                            <lightning-input required
+                                type="text"
+                                lwc:ref="inputRua"
+                                field-api-name="rua"
+                                label="Rua"
+                                onchange={handleGenericChange}> 
+                            </lightning-input>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slds-form__row slds-var-p-horizontal_medium">
+                    <div class="slds-form__item">
+                        <div class="slds-size_4-of-12">
+                            <lightning-input required
+                                type="text"
+                                lwc:ref="inputNumero"
+                                field-api-name="numero"
+                                label="Número"
+                                onchange={handleGenericChange}>
+                            </lightning-input>
+                        </div>
+                        <div class="slds-size_8-of-12" style="padding-left:20px">
+                            <lightning-input required
+                                type="text"
+                                lwc:ref="inputBairro"
+                                field-api-name="bairro"
+                                label="Bairro"
+                                onchange={handleGenericChange}>
+                            </lightning-input>
+                        </div>
+                    </div>
+
+                    <div class="slds-form__item">
+                        <div class="slds-size_12-of-12">
+                            <lightning-input
+                                type="text"
+                                lwc:ref="inputComplemento"
+                                field-api-name="complemento"
+                                label="Complemento"
+                                onchange={handleGenericChange}>
+                            </lightning-input>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slds-form__row slds-var-p-horizontal_medium">
+                    <!-- 
+                    <div class="slds-form__item">
+                        <div class="slds-size_12-of-12">
+                            <lightning-record-edit-form object-api-name="Account" density="comfy">
+                                <lightning-input-field required
+                                    field-name="CidadeEntrega__c"
+                                    lwc:ref="inputMunicipio"
+                                    field-api-name="municipio"
+                                    onchange={handleGenericChange}> 
+                                </lightning-input-field>
+                            </lightning-record-edit-form>
+                        </div>
+                    </div>
+                    -->
+                    <div class="slds-form__item">
+                        <lightning-record-picker
+                            lwc:ref="inputMunicipio"
+                            style="width: 100%;"
+                            label={CidadeEntregaFieldName}
+                            placeholder="Pesquisar por nome"
+                            object-api-name="Cidade__c"
+                            field-api-name="municipio"
+                            onchange={handleGenericChange}>
+                        </lightning-record-picker>
+                    </div>
+                    <div class="slds-form__item">
+                        <div class="slds-size_12-of-12">
+                            <lightning-combobox required
+                                type="text"
+                                lwc:ref="inputEstado"
+                                field-api-name="estado"
+                                label="Estado"
+                                options={estadoOptions.data.values}
+                                onchange={handleGenericChange}>
+                            </lightning-combobox>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slds-section__title slds-theme_shade slds-m-bottom_small slds-p-horizontal_small">
+                <span>Dados Comerciais</span>
+            </div>
+            <div class="slds-m-bottom_xx-large">
+                <div class="slds-form__row slds-var-p-horizontal_medium">
+                    <div class="slds-form__item">
+                        <div class="slds-size_12-of-12" >
+                             <lightning-input required
+                                type="text"
+                                lwc:ref="inputNomeResponsavel"
+                                field-api-name="nomeResponsavel"
+                                label="Nome do Responsável"
+                                onchange={handleGenericChange}> 
+                            </lightning-input>
+                        </div>
+                    </div>
+                    <div class="slds-form__item">
+                        <div class="slds-size_12-of-12" >
+                            <lightning-input required
+                                type="text"
+                                lwc:ref="inputCelular"
+                                field-api-name="celular"
+                                label="Telefone Celular"
+                                min-length="14"
+                                max-length="15"
+                                onchange={handleChangeTelefone}>
+                            </lightning-input>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slds-form__row slds-var-p-horizontal_medium">
+                    <div class="slds-form__item">
+                        <div class="slds-size_12-of-12">
+                            <lightning-input required
+                                type="text"
+                                lwc:ref="inputTelefoneComercial"
+                                field-api-name="telefoneComercial"
+                                label="Telefone Comercial"
+                                min-length="14"
+                                max-length="15"
+                                onchange={handleChangeTelefone}>
+                            </lightning-input>
+                        </div>
+                    </div>
+                    <div class="slds-form__item">
+                        <div class="slds-size_12-of-12" >
+                            <lightning-input required
+                                type="text"
+                                lwc:ref="inputTelefoneFinanceiro"
+                                field-api-name="telefoneFinanceiro"
+                                label="Telefone Financeiro"
+                                min-length="14"
+                                max-length="15"
+                                onchange={handleChangeTelefone}>
+                            </lightning-input>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slds-form__row slds-var-p-horizontal_medium">
+                    <div class="slds-form__item">
+                        <div class="slds-size_12-of-12">
+                            <lightning-input required
+                                type="text"
+                                lwc:ref="inputEmailBoleto"
+                                field-api-name="emailBoleto"
+                                label="Email Boleto"
+                                max-length="255"
+                                onchange={handleChangeEmail}>
+                            </lightning-input>
+                        </div>
+                    </div>
+                    <div class="slds-form__item">
+                        <div class="slds-size_12-of-12">
+                            <lightning-input required
+                                type="text"
+                                lwc:ref="inputEmailXml"
+                                field-api-name="emailXml"
+                                label="Email para Recebimento do XML"
+                                max-length="255"
+                                onchange={handleChangeEmail}>
+                            </lightning-input>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slds-form__row slds-var-p-horizontal_medium">
+                    <div class="slds-form__item">
+                        <div class="slds-size_12-of-12">
+                            <lightning-input required
+                                type="text"
+                                lwc:ref="inputEmailComercial"
+                                field-api-name="emailComercial"
+                                label="Email Compras/Comercial"
+                                max-length="255"
+                                onchange={handleChangeEmail}>
+                            </lightning-input>
+                        </div>
+                    </div>
+                    <div class="slds-form__item">
+                        <div class="slds-size_12-of-12">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </template>
+
+        <template lwc:elseif={showStep4}>  
+            <div class="container-center-body">
+                <h3 class="slds-text-align_center slds-p-vertical_small"><lightning-icon icon-name="action:approval" alternative-text="Sucesso" title="Sucesso"></lightning-icon></h3>
+                <h3 class="slds-text-align_center slds-p-vertical_small">Conta foi criada com sucesso!</h3>
+                <lightning-button label="Voltar ao início" variant="brand" onclick={handleClickVoltarInicio} class="slds-m-around_medium" ></lightning-button>
+            </div>
+        </template>
+
+        <!-- Footer -->
+        <template lwc:if={showFooter}>
+            <div>
+                <div class="container-footer">
+                    <lightning-button
+                        label="Voltar"
+                        variant="neutral" 
+                        class="slds-var-m-around_small"
+                        onclick={handleClickPreviousStep}>
+                    </lightning-button>
+
+                    <lightning-button
+                        label={labelNext}
+                        variant="brand"
+                        class="slds-var-m-around_small"
+                        onclick={handleClickNextStep}>
+                    </lightning-button>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>

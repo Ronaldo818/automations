@@ -277,7 +277,7 @@ def preencher_lancamento(page: Page, row: dict) -> tuple[str, dict]:
     vencimento   = str(row["Data de vencimento"]).strip()
 
     detalhes = {
-        "tipo_lancamento":            "Débito" if tipo == "DEVOLUÇÃO" else "Crédito",
+        "tipo_lancamento": "Débito" if tipo.upper() in ("DEVOLUÇÃO", "DEVOLUCAO") else "Crédito",
         "conta_gl":                   conta_gl,
         "valor_preenchido":           valor,
         "atribuicao":                 atribuicao,
@@ -300,7 +300,7 @@ def preencher_lancamento(page: Page, row: dict) -> tuple[str, dict]:
     wait_busy_settle(page)
 
     # ── 3. Valor ─────────────────────────────────────────────
-    if tipo == "DEVOLUÇÃO":
+    if tipo in ("DEVOLUÇÃO", "DEVOLUCAO"):
         preencher_campo(page, SEL_VALOR_DEB, valor, pressionar_enter=True)
     else:
         preencher_campo(page, SEL_VALOR_CRED, valor, pressionar_enter=True)

@@ -1,0 +1,46 @@
+<template>
+    <lightning-card title="Ações de Pagamento Pix (Sandbox)">
+        <div class="slds-p-around_medium slds-grid slds-wrap">
+
+            <!-- Spinner -->
+            <template if:true={isProcessing}>
+                <lightning-spinner
+                    alternative-text="Processando"
+                    size="medium">
+                </lightning-spinner>
+            </template>
+
+
+            <!-- Botões -->
+             <div class="slds-col slds-size_1-of-1 slds-m-vertical_xxx-small">
+                <lightning-button
+                    stretch
+                    label="Cancelar Pagamento Pix"
+                    variant="destructive-text"
+                    onclick={handleCancelar}
+                    disabled={isProcessing}>
+                </lightning-button>
+            </div>
+
+            <div class="slds-col slds-size_1-of-1 slds-m-vertical_xxx-small">
+                <lightning-button
+                    stretch
+                    label="Reembolsar Pagamento Pix"
+                    variant="neutral"
+                    onclick={handleReembolsar}
+                    disabled={isProcessing}>
+                </lightning-button>
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-m-vertical_xxx-small">
+                <lightning-button
+                    stretch
+                    label="Confirmar Pagamento Pix"
+                    variant="brand-outline"
+                    onclick={handleConfirmar}
+                    disabled={isProcessing}>
+                </lightning-button>
+            </div>
+
+        </div>
+    </lightning-card>
+</template>

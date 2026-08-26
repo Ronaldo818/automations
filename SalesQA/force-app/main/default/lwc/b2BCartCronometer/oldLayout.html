@@ -1,0 +1,32 @@
+<template>
+    <div>
+        <div>
+            <div style="display: inline-flex; align-items: center">
+                <lightning-icon 
+                style="width: 3rem;"
+                icon-name="utility:customer" 
+                alternative-text="Cart Cronometer" 
+                size="medium" 
+                title="large size"
+                variant="brand"
+                ></lightning-icon>
+                <div style="width: 7rem;  text-align: center;">
+                    <div>
+                        <span style="font-size: 1.25rem; font-weight: 500">{hours}</span>:<span style="font-size: 1rem; font-weight: 400">{minutes}</span>:<span style="font-size: 1rem; font-weight: 400">{seconds}</span>
+                    </div>
+                    <div>
+                        <lightning-progress-bar 
+                        value={percentageToFinish} 
+                        aria-label="Progress bar showing 50 percent progress"
+                        size="small"
+                        variant="brand"
+                        ></lightning-progress-bar>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="font-size: small;">
+            Tempo de carriho restante
+        </div>
+    </div>
+</template>

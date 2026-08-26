@@ -1,0 +1,108 @@
+<template>
+    <template lwc:if={isPreview}>
+        <div style="text-align: center;">
+            <h1><b>Checkout Validation Component</b></h1>
+        </div>
+    </template>
+    <template lwc:else>
+
+        <template lwc:if={isLoading}>
+            <div class="exampleHolder">
+                <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+            </div>
+        </template>
+        <template lwc:else>
+            <div>
+                <span style="font-size: 20px; font-weight: bold; padding-right: 5px;">Informações Adicionais</span>
+            </div>
+            <div class="slds-grid slds-wrap slds-gutters slds-m-around_x-small">
+                <div class="slds-col slds-size_1-of-1 slds-large-size_3-of-12">
+                    <lightning-input required
+                        type="date"
+                        lwc:ref="inputDataEntrega"
+                        field-api-name="dataEntrega"
+                        label="Data de Carregamento "
+                        date-style="short"
+                        min={dataMinimaEntrega}
+                        value={dataEntrega}
+                        onchange={handleChangeDataEntrega}>
+                    </lightning-input>
+                </div>
+
+                <div class="slds-col slds-size_1-of-1 slds-large-size_6-of-12">
+                    <lightning-combobox required
+                        lwc:ref="inputCondicaoPagamento"
+                        field-api-name="condicaoPagamento"
+                        label="Condição de Pagamento"
+                        options={condicoes}
+                        value={condicaoSelecionada}
+                        onchange={handleCondicaoPagamentoChange}>
+                    </lightning-combobox>
+                </div>
+                
+                <div class="slds-col slds-size_1-of-1 slds-large-size_3-of-12">
+                    <lightning-input 
+                        type="text"
+                        lwc:ref="inputNumeroPedidoCliente"
+                        field-api-name="numeroPedidoCliente"
+                        label="Nº. Pedido do Cliente"
+                        max-length="15"
+                        value={numeroPedidoCliente}
+                        field-level-help="Permitido apenas Números, Letras Maiúsculas sem acentuação, ponto(.), barra(/) e hífen(-)"
+                        onchange={handleChangeNumeroPedido}
+                        onkeypress={handleKeyPressPedido}
+                        oninput={handleInputPedido}>
+                    </lightning-input>
+                </div>
+
+                <div class="slds-col slds-size_1-of-1 slds-large-size_9-of-12">
+                    <lightning-input 
+                        type="text"
+                        lwc:ref="inputObsNF"
+                        field-api-name="obsNF"
+                        label="Observação para Nota Fiscal"
+                        max-length="160"
+                        value={obsNF}
+                        field-level-help="Permitido apenas Números, Letras Maiúsculas sem acentuação, ponto(.) e barra(/)"
+                        onchange={handleChangeObsNF}
+                        onkeypress={handleKeyPress}
+                        oninput={handleInput}>
+                    </lightning-input>
+                </div>
+
+                <div class="slds-col slds-size_1-of-1 slds-large-size_2-of-12">
+                    <template lwc:if={permiteRcs}>
+                        <lightning-input 
+                            type="checkbox"
+                            lwc:ref="inputRcs"
+                            field-api-name="rcs"
+                            label="Venda por Conta e Ordem "
+                            onchange={handleChangeDataEntrega}>
+                        </lightning-input>
+                    </template>
+                </div>
+
+            </div>
+
+            <div class="accordion-container">
+                <span style="font-size: 20px; font-weight: bold; padding-right: 5px;">Validações</span>
+                <lightning-accordion allow-multiple-sections-open>
+                    <template for:each={checkoutAlerts.checkItems} for:item="item">
+                        <lightning-accordion-section key={item.id} label={item.title.description}>
+                            <div slot="actions">
+                                <lightning-icon icon-name={item.title.icon} size="small" variant={item.title.variant}></lightning-icon>
+                            </div>
+                            <div class="slds-p-left_medium">
+                                <template for:each={item.details} for:item="detail">
+                                    <div key={detail.description} class="slds-p-bottom_small">
+                                        <lightning-icon icon-name={detail.icon} size="x-small" variant={detail.variant}></lightning-icon>
+                                        <span>{detail.description}</span>
+                                    </div>
+                                </template>
+                            </div>
+                        </lightning-accordion-section>
+                    </template>
+                </lightning-accordion>
+            </div>
+    </template>
+</template>

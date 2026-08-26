@@ -1,0 +1,41 @@
+<template>
+    <lightning-card title="Detalhes da Conta" icon-name="standard:user">
+        <div class="slds-var-p-around_medium">
+            <template if:true={profileData}>
+                
+                <div class="slds-var-m-bottom_small">
+                    <strong>Usuário:</strong> {profileData.login}
+                </div>
+                <div class="slds-var-m-bottom_small">
+                    <strong>Nome:</strong> {profileData.firstName}
+                </div>
+                <div class="slds-var-m-bottom_small">
+                    <strong>Sobrenome:</strong> {profileData.lastName}
+                </div>
+                <div class="slds-var-m-bottom_small">
+                    <strong>Email:</strong> {profileData.email}
+                </div>
+                <div class="slds-var-m-bottom_small">
+                    <strong>Telefone:</strong> {profileData.phone}
+                </div>
+                
+                <hr class="slds-var-m-vertical_medium" />
+
+                <div class="slds-var-m-bottom_small">
+                    <strong>CNPJ/CPF:</strong> {profileData.document}
+                </div>
+                <div class="slds-var-m-bottom_small">
+                    <strong>Código Cliente:</strong> {profileData.clientCode}
+                </div>
+                <div class="slds-var-m-bottom_small">
+                    <strong>Endereço de Entrega:</strong> {profileData.address}
+                </div>
+
+            </template>
+            
+            <template if:true={error}>
+                <p class="slds-text-color_error">Falha ao carregar: {errorMessage}</p>
+            </template>
+        </div>
+    </lightning-card>
+</template>

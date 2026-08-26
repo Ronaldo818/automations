@@ -1,0 +1,191 @@
+<template>
+  
+    <div style="display:flex">
+       
+        <figure>
+            <a tabindex="-1" href={lineItem.productUrl} data-productid={lineItem.cartItem.productDetails.productId}>
+                <img src={lineItem.productImageUrl} alt={lineItem.productImageAlternativeText} data-productid={lineItem.cartItem.productDetails.productId}/>
+            </a>
+        </figure>
+
+        <div class="slds-grid slds-wrap slds-has-flexi-truncate">
+
+            <div class="slds-col slds-size_11-of-12 slds-rich-text-editor__output" style="text-align: left;">
+                <h3 class="item-name description-name-label" title={productName}>
+                    <a href={lineItem.productUrl} data-productid={lineItem.cartItem.productDetails.productId} tabindex="0">
+                        <span style="padding-right: 5px; "><lightning-icon icon-name="utility:choice" size="small" variant={lineItem.farol}></lightning-icon></span> {productName}
+                    </a>
+                </h3>
+            </div>
+
+            <div class="slds-col slds-size_1-of-12" style="text-align: right">
+                <lightning-icon icon-name="utility:delete" size="x-small" variant="error" onclick={handleClickDelete} style="cursor: pointer"></lightning-icon>
+            </div>
+
+            <div class="slds-col slds-size_12-of-12">
+
+                <div class="slds-grid slds-wrap slds-has-flexi-truncate">
+                    <div class="slds-col slds-size_1-of-2 slds-large-size_3-of-12">
+                        <div class="slds-form-element">
+                            <span class="slds-rich-text-editor__output" style="font-size:smaller;text-align: left;">Código</span>
+                            
+                                <div>{lineItem.cartItem.productDetails.fields.ProductCode}</div>
+                            
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-large-size_3-of-12">
+                        <div class="slds-form-element">
+                            <span style="font-size:smaller">Preço/CX</span>
+                            <div>
+                                <lightning-formatted-number value={lineItem.cartItem.salesPrice} format-style="currency" currency-code="BRL" minimum-fraction-digits="2"></lightning-formatted-number>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-large-size_3-of-12">
+                        <div class="slds-form-element">
+                            <span style="font-size:smaller">Preço/KG</span>
+                            <div>
+                                <lightning-formatted-number value={lineItem.precoKg} format-style="currency" currency-code="BRL" minimum-fraction-digits="2"></lightning-formatted-number>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="slds-col slds-size_1-of-2 slds-large-size_3-of-12">
+                        <div class="slds-form-element">
+                            <span style="font-size:smaller">Valor de Verba</span>
+                            
+                                <div>
+                                    <lightning-formatted-number value={lineItem.verbaConsumida} format-style="currency" currency-code="BRL" minimum-fraction-digits="2"></lightning-formatted-number>
+                                </div>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slds-grid slds-wrap slds-has-flexi-truncate">
+
+                    <div class="slds-col slds-size_1-of-1 slds-large-size_3-of-12 slds-p-right_large">
+                        <div class="slds-form-element">
+                            <span style="font-size:smaller"> </span>
+                            
+                                <div>
+                                    <template lwc:if={isLoaded}>
+                                        <c-fv-master-order-picker class="slds-col slds-size_1-of-1 teste" effective-account-id={_accountId}  product-id={productId}
+                                            onselected={handleMasterOrderSelected} style="--dxp-s-form-element-label-font-size: smaller; --dxp-g-spacing-medium: 0px;" >
+                                        </c-fv-master-order-picker>
+                                    </template>
+                                </div>
+                        </div>
+                    </div>
+
+                    <div class="slds-col slds-size_1-of-1 slds-large-size_3-of-12 slds-p-right_large">
+                        <div class="slds-form-element">
+                            <span style="font-size:smaller" class="slds-show_x-large">Desconto Negociado (Máximo {lineItem.descontoPermitido}%)</span>
+                            <span style="font-size:smaller" class="slds-hide_x-large">Desc Negoc. (Máx {lineItem.descontoPermitido}%)</span>
+                                <div>
+                                    <lightning-input type="number" lwc:ref="inputDiscount" value={discount} variant="label-hidden" step="0.01" min="-100" max="100" onchange={handleDiscountChange} onfocus={handleBlur} disabled={disableDiscount}></lightning-input>
+                                </div>
+                        </div>
+                    </div>
+
+                    <div class="slds-col slds-size_1-of-1 slds-large-size_3-of-12 slds-p-right_large">
+                        <div class="slds-form-element">
+                            <span style="font-size:smaller" class="slds-show_x-large">Valor Negociado (Mín <lightning-formatted-number value={lineItem.valorMinimo} format-style="decimal" minimum-fraction-digits="2"></lightning-formatted-number> / Máx <lightning-formatted-number value={maxPrice} format-style="decimal" minimum-fraction-digits="2"> </lightning-formatted-number>)</span>
+                            <span style="font-size:smaller" class="slds-hide_x-large">Vlr Negoc. (Mín <lightning-formatted-number value={lineItem.valorMinimo} format-style="decimal" minimum-fraction-digits="2"></lightning-formatted-number> / Máx <lightning-formatted-number value={maxPrice} format-style="decimal" minimum-fraction-digits="2"> </lightning-formatted-number>)</span>
+
+                            <div>
+                                <lightning-input type="number" lwc:ref="inputPrice" value={price} variant="label-hidden" step="0.01" min="0.01" max={maxPrice} onchange={handleItemChange} onfocus={handleBlur} disabled={disablePrice}></lightning-input>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="slds-col slds-size_1-of-1 slds-large-size_3-of-12 slds-p-right_large">
+
+                        <div class="slds-form-element">
+                            <span style="font-size:smaller">Quantidade (CX)</span>
+                                <div>
+                                    <div class="slds-col slds-grid slds-large-size_x-small slds-medium-size_1-of-1 slds-small-size_1-of-1 slds-size_1-of-1 slds-var-m-bottom_small" style="height: calc(1.875rem + (1px * 2))" role="group" aria-label={fieldLabel}>
+
+                                        <button style="border-right: none; border-top-right-radius: 0px; border-bottom-right-radius: 0px; " aria-label="Remover"
+                                            class="number-input__decrement-button slds-button slds-button_neutral slds-p-horizontal_xx-small slds-p-vertical_x-small"
+                                            onclick={decrement} disabled={isDecrementButtonDisabled}>
+                                            <lightning-icon class="number-input__button-icon" icon-name="utility:dash" size="x-small"
+                                                alternative-text="Remover"></lightning-icon>
+                                        </button>
+
+                                        <lightning-input type="number" style="--sds-c-input-radius-border: 0;"
+                                            min="1" max={maxQty} step="1.00" value={quantity}
+                                            aria-label={labelOrAriaLabel} aria-describedby={ariaDescribedByLabel} aria-invalid={isInvalid}
+                                            disabled={disableQuantity} onchange={handleItemChange} onfocus={handleBlur} lwc:ref="inputQuantity" name="inputQuantity" variant="label-hidden "> </lightning-input>
+
+                                        <button style="border-left: none; border-top-left-radius: 0px; border-bottom-left-radius: 0px;" aria-label="Adicionar"
+                                            class="number-input__increment-button slds-button slds-button_neutral slds-p-horizontal_xx-small slds-p-vertical_x-small"
+                                            onclick={increment} disabled={isIncrementButtonDisabled}>
+                                            <lightning-icon class="number-input__button-icon" icon-name="utility:add" size="x-small"
+                                                alternative-text="Adicionar"></lightning-icon>
+                                        </button>
+
+
+                                    </div>
+                                </div>
+                            
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="slds-grid slds-wrap slds-has-flexi-truncate">
+                    <div class="slds-col slds-size_1-of-2 slds-large-size_3-of-12">
+                        <!-- <div class="slds-form-element">
+                            <span style="font-size:smaller">Peso Total</span>
+                            
+                                <div><lightning-formatted-number value={lineItem.pesoTotal} format-style="decimal" minimum-fraction-digits="2"></lightning-formatted-number> {lineItem.cartItem.productDetails.fields.UnidadeMedida__c}</div>
+                            
+                        </div> -->
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-large-size_3-of-12">
+                        <div class="slds-form-element">
+                            <!-- <span style="font-size:smaller">Total Produto</span>
+                            <div>
+                                <div>
+                                    <lightning-formatted-number value={lineItem.cartItem.totalPrice} format-style="currency" currency-code="BRL" minimum-fraction-digits="2"></lightning-formatted-number>
+                                </div>                                   
+                            </div> -->
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-large-size_3-of-12">
+                        <!-- <div class="slds-form-element">
+                            <span style="font-size:smaller; font-weight:700">Preço/KG com ST</span>
+                            <div style="color: var(--com-c-cart-item-actual-price-font-color, var(--dxp-g-root-contrast)); font-size: var(--com-c-cart-item-actual-price-font-size, var(--dxp-s-body-font-size)); font-weight: var(--dxp-c-strong-text-weight);">
+                                <lightning-formatted-number value={lineItem.valorNegociadoST} format-style="currency" currency-code="BRL" minimum-fraction-digits="3"></lightning-formatted-number>
+                            </div>   
+                        </div> -->
+                        <div class="slds-form-element">
+                            <span style="font-size:smaller">Peso Total</span>
+                            
+                                <div><lightning-formatted-number value={lineItem.pesoTotal} format-style="decimal" minimum-fraction-digits="2"></lightning-formatted-number> {lineItem.cartItem.productDetails.fields.UnidadeMedida__c}</div>
+                            
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-large-size_3-of-12">
+                        <div class="slds-form-element">
+                            <span style="font-size:smaller; font-weight:700">Valor Total</span>
+                                <div style="color: var(--com-c-cart-item-actual-price-font-color, var(--dxp-g-root-contrast)); font-size: var(--com-c-cart-item-actual-price-font-size, var(--dxp-s-body-font-size)); font-weight: var(--dxp-c-strong-text-weight);">
+                                    <lightning-formatted-number value={lineItem.cartItem.totalPrice} format-style="currency" currency-code="BRL" minimum-fraction-digits="2"></lightning-formatted-number>
+                                </div>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                <!-- <template if:true={isLoading}>
+                    <div class="exampleHolder">
+                        <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+                    </div>
+                </template> -->
+
+            </div>
+        </div>
+    </div>
+</template>

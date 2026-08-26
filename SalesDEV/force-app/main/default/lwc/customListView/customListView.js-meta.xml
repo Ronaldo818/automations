@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>63.0</apiVersion>
+    <isExposed>true</isExposed>
+
+    <masterLabel>Custom List View</masterLabel>
+    <description>Component used list view of any object</description>
+    <targets>
+        <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Default</target>
+    </targets>
+
+    <targetConfigs>
+        <targetConfig targets="lightningCommunity__Default">
+            <property name="objeto" type="String" placeholder="Account" label="Objeto" description="Nome do Objeto a ser exibido" required="true"/>
+            <property name="titulo" type="String" placeholder="Nome,Campo 1,Campo 2,Campo 3" label="Titulo das colunas" description="Titulo das colunas a serem exibidas separadas apenas por vírgulas" required="true"/>
+            <property name="campos" type="String" placeholder='Name,customField__c,relation__r.Name,toLabel(picklist__c)' label="Campos" description="Nome de desenvolvedor dos campos a serem exibidos" required="true"/>
+            <property name="formato" type="String" placeholder='text,number,text,text' label="Formato" description="Nome de desenvolvedor do formato dos campos a serem exibidos: text, url, phone, email, percent, date, date-local, currency, boolean" required="true"/>
+            <property name="filtro" type="String" label="Filtro" placeholder='Name LIKE "%Test%"' description="SOQL WHERE filter ou custom like: 'custom,{customFilterName},{CustomFilterData}...." required="false"/>
+            <property name="enablequickactions" type="Boolean" label="Habilitar ações" description="Habilita ou desabilita ações na tabela" default="false"/>
+            <property name="nomeColunaAcao" type="String" label="Nome da Coluna de Ação" description="Nome a ser exibido como título da coluna de ação" default=""/>
+            <property name="recordPageName" type="String" label="Página do Registro" description="Nome da página do registro que aparece na url"/>
+            <property name="iconName" type="String" label="Ícone da Tabela" description="Ícone que aparece na tabela para realizar ação"/>
+            <property name="emptyMessage" type="String" label="Mensagem sem registro" description="Mensagem a ser exibida quando não encontrar registro" default="Ainda não há registro para ser exibido "/>
+            <property name="sortField" type="String" label="Campo para ordenar (Opcional)" description="Campo usado na ordenação"/>
+            <property name="sortDirect" type="String" label="Campo para direção de ordenar (Opcional)" description="Mensagem a ser exibida quando não encontrar registro" datasource="asc,desc"/>
+            <property name="showLoadMore" type="Boolean" label="Botão Carregar Mais" description="Habilita ou desabilita botão para carregar mais registros" default="false"/>
+            <property name="enableDetailPage" type="Boolean" label="Página de detalhe" description="Habilita ou desabilita links para a página de detalhe de cada item" default="false"/>
+            <property name="detailFields" type="String" label="Campos com link para a página de detalhe" description="Nome de desenvolvedor dos campos que ja devem estar presentes nos
+                                Campos, para fazer a referencia à página de detalhe" required="false"/>
+            <property name="detailFieldsSources" type="String" label="Campos com Id para o link" description="Nome de desenvolvedor do campo que possui o Id referente ao link" required="false"/>
+            <property name="detailFieldsTypes" type="String" label="Tipos de objetos do link" description="Nome de desenveolvedor dos objetos que serão referenciados" required="false"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

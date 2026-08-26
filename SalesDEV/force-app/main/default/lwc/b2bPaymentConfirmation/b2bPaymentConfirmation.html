@@ -1,0 +1,67 @@
+<template>
+    <div lwc:if={boleto}  class="slds-p-vertical_x-large" style="display: flex;justify-content: center;">
+        <p>O Boleto para efetuar o pagamento será enviado para o seu e-mail junto com a Nota Fiscal após a emissão.</p>
+        <div class="slds-m-vertical_medium">{numbers}</div>
+        
+        <!-- <div class="slds-m-vertical_medium"><lightning-button class="slds-button_destructive" onclick={abrirBoleto} label="VISUALIZAR E IMPRIMIR BOLETO">  </lightning-button></div> -->
+    </div>
+    <div lwc:else class="slds-col" style="display: flex;justify-content: center;">
+        <div lwc:if={image}>
+            <div class="slds-grid slds-gutters slds-wrap slds-var-m-around_xx-small" style="margin: 2rem 0rem;">
+                <div class="slds-col slds-text-align_center slds-grid slds-wrap slds-grid_align-center slds-small-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-2 c-payemnt-description" style="
+        height: 100%;
+    ">
+                    <div class="slds-col slds-text-align_center slds-size_1-of-1">
+                        Você deve realizar o pagamento até:
+                    </div>
+                    <div class="slds-col slds-text-align_center slds-size_1-of-1">
+                        <lightning-formatted-date-time
+                            style="font-weight: bold;"
+                            value={paymentData.expiresAt}
+                            year="numeric"
+                            month="numeric"
+                            day="numeric"
+                            hour="2-digit"
+                            minute="2-digit"
+                        ></lightning-formatted-date-time>
+                    </div>
+                    <div class="slds-col slds-text-align_center slds-grid slds-wrap slds-grid_align-center slds-var-m-around_xx-small" style="display: flex;justify-content: center;">
+                        <div class="slds-col slds-text-align_center slds-size_1-of-1 slds-var-m-around_xx-small">
+                            Pix Copia e Cola:
+                        </div>
+                        <div class="slds-col slds-text-align_center slds-size_1-of-1 slds-var-m-around_xx-small" style="
+                            font-size: x-small;
+                            border: solid;
+                            border-width: 1px;
+                            border-radius: 0.25rem;
+                            padding: 0.5rem;
+                            background-color: var(--sds-g-color-palette-neutral-95);
+                            word-break: break-all;
+                        ">
+                            {paymentData.copyAndPaste}
+                        </div>
+                        <div class="slds-col slds-text-align_center slds-size_1-of-1 slds-var-m-around_xx-small">
+                            <lightning-button
+                            variant="brand"
+                            label="Copiar"
+                            onclick={copyToClipboard}
+                        ></lightning-button>
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="slds-col slds-grid slds-wrap slds-small-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-2 slds-grid_align-center slds-text-align_center">
+                    <div class="slds-col slds-text-align_center slds-size_1-of-1">
+                        <img src={image} style="
+                        width: 15rem;
+                        padding: 0.25rem;
+                        border: solid;
+                        border-radius: 1rem;
+                        border-color: var(--dxp-g-brand);
+                        "/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

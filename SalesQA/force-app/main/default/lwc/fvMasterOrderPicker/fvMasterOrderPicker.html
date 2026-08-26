@@ -1,0 +1,18 @@
+<template>
+    <template lwc:if={isMobile}>
+        <label class="slds-form-element__label" part="label" for="master-order-selector">Mesa de negociação</label>
+        <select id="master-order-selector" name="masterOrder" class="slds-size_1-of-1 slds-input" data-id="masterOrderSelect" onchange={handleSelect} disabled={disabled}>
+            <!-- filled with JS-->
+        </select>
+    </template>
+    <template lwc:else>
+        <lightning-combobox
+          disabled={disabled}
+          name="Mesa de negociaçã"
+          label="Mesa de Negociação"
+          value={value}
+          options={options}
+          onchange={handleSelect}      
+        ></lightning-combobox>
+    </template>
+</template>

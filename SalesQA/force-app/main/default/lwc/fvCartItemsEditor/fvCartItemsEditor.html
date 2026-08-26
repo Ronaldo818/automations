@@ -1,0 +1,27 @@
+<template>
+    <div>
+        <lightning-datatable
+            lwc:ref="cartItemsDataTable"
+            class=""
+            column-widths-mode="auto"
+            key-field="id"
+            columns={cartItemsCollumns}
+            data={cartItemsData}
+            oncellchange={handleInlineEdit}
+            sorted-by={sortBy}
+            sorted-direction={sortDirection}
+            onsort={doSorting}
+            onsave={handleSave}
+            is-loading={isLoading}
+    ></lightning-datatable>
+
+        <lightning-spinner
+        lwc:if={isProcessing}
+        style="background-color: rgba(255,255,255,0.6);"
+        alternative-text="Loading" 
+        size="large"
+        variant="brand"
+        ></lightning-spinner>
+
+    </div>
+</template>
