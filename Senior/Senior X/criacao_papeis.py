@@ -7,7 +7,7 @@ from datetime import datetime
 # =========================
 ARQUIVO_ENTRADA = r"C:\Users\junio\OneDrive\Área de Trabalho\Documentos\Scripts Github\automations\Planilhas\Roles_input.xlsx"
 ARQUIVO_LOG = r"C:\Users\junio\OneDrive\Área de Trabalho\Documentos\Scripts Github\automations\Planilhas\Roles_input_logs.xlsx"
-TOKEN_SENIOR = "V2pXGPEaHvONvpMBkj0bwYpvotxm89Mv"
+TOKEN_SENIOR = "siDaL5h6vs5Mfv10Gr2s2LIr5apxNOgC"
 
 # =========================
 # API & HEADERS

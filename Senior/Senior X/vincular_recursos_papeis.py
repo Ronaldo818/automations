@@ -8,7 +8,7 @@ import math # Nova biblioteca nativa para ajudar no cálculo dos lotes
 # =========================
 ARQUIVO_ENTRADA = r"C:\Users\junio\OneDrive\Área de Trabalho\Documentos\Scripts Github\automations\Planilhas\Vinculo_recursos - Copia.xlsx"
 ARQUIVO_LOG = r"C:\Users\junio\OneDrive\Área de Trabalho\Documentos\Scripts Github\automations\Planilhas\Vinculo_recursos_logs.xlsx"
-TOKEN_SENIOR = "V2pXGPEaHvONvpMBkj0bwYpvotxm89Mv"
+TOKEN_SENIOR = "siDaL5h6vs5Mfv10Gr2s2LIr5apxNOgC"
 
 # Define quantos recursos vão em cada payload (100 é um número muito seguro para a Senior)
 TAMANHO_LOTE = 100 

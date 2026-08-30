@@ -8,7 +8,7 @@ import math
 # =========================
 ARQUIVO_ENTRADA = r"C:\Users\junio\OneDrive\Área de Trabalho\Documentos\Scripts Github\automations\Planilhas\Vinculo_usuarios.xlsx"
 ARQUIVO_LOG = r"C:\Users\junio\OneDrive\Área de Trabalho\Documentos\Scripts Github\automations\Planilhas\Vinculo_usuarios_logs.xlsx"
-TOKEN_SENIOR = "V2pXGPEaHvONvpMBkj0bwYpvotxm89Mv"
+TOKEN_SENIOR = "siDaL5h6vs5Mfv10Gr2s2LIr5apxNOgC"
 
 TAMANHO_LOTE = 100 
 
