@@ -18,7 +18,7 @@ SEL_CHECKBOX_TODOS = "div[id*='LineItem-innerTable-sa-CbBg']"
 SEL_BTN_FATURAR = "bdi:has-text('Faturar')"
 
 # Tabela e Status
-SEL_LINHAS_TABELA = "tr.sapMListTblRow"
+SEL_LINHAS_TABELA = "tbody tr.sapMListTblRow"
 SEL_CELULA_STATUS_FAT = "td[data-sap-ui-column*='StatusFaturamento-innerColumn'] .sapMObjStatusText"
 SEL_COLUNA_DOCNUM = "th[id*='DocNum-innerColumn']"
 SEL_MENU_DECRESCENTE = "text='Decrescente'" # Texto do menu do SAP UI5 em português
