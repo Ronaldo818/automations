@@ -21,7 +21,7 @@ SEL_BTN_FATURAR = "bdi:has-text('Faturar')"
 SEL_LINHAS_TABELA = "tbody tr.sapMListTblRow"
 SEL_CELULA_STATUS_FAT = "td[data-sap-ui-column*='StatusFaturamento-innerColumn'] .sapMObjStatusText"
 SEL_COLUNA_DOCNUM = "th[id*='DocNum-innerColumn']"
-SEL_MENU_DECRESCENTE = "text='Decrescente'" # Texto do menu do SAP UI5 em português
+SEL_MENU_CRESCENTE = "text='Crescente'" # Texto do menu do SAP UI5 em português
 
 # Impressão
 SEL_BTN_IMPRIMIR_NFE = "bdi:has-text('Imprimir NF-e')"
@@ -185,7 +185,7 @@ class FaturamentoApp(ctk.CTk):
                 # 6. Ordenação Descrescente
                 page.click(SEL_COLUNA_DOCNUM)
                 time.sleep(1)
-                page.locator(SEL_MENU_DECRESCENTE).click()
+                page.locator(SEL_MENU_CRESCENTE).click()
                 self.wait_busy(page)
 
                 # 7. Desmarca Seleção Geral
