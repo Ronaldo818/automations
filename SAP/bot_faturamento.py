@@ -69,6 +69,18 @@ class FaturamentoApp(ctk.CTk):
         self.txt_log.see("end")
         self.txt_log.configure(state="disabled")
         self.update()
+        
+    def executar_com_retentativas(self, acao_func, nome_acao, max_tentativas=3):
+        """Executa uma função e tenta novamente em caso de falha."""
+        for tentativa in range(1, max_tentativas + 1):
+            try:
+                return acao_func() # Tenta rodar o código
+            except Exception as e:
+                self.log(f"Aviso: Falha na etapa '{nome_acao}' (Tentativa {tentativa}/{max_tentativas}). Erro: {str(e)}")
+                if tentativa == max_tentativas:
+                    self.log(f"ERRO FATAL: Limite de retentativas atingido para '{nome_acao}'.")
+                    raise Exception(f"Falha definitiva em {nome_acao}: {str(e)}")
+                time.sleep(3)
 
     def iniciar_thread(self):
         """Dispara a automação em background para não travar a tela"""
@@ -85,8 +97,8 @@ class FaturamentoApp(ctk.CTk):
         if not data_remessa:
             data_remessa = datetime.now().strftime("%d.%m.%Y")
             
-        # Define Impressora
-        impressora = "PDF1" if oc.endswith("/1") else "ILOGU001"
+        # Define Impressora baseada na OC
+        impressora = "ILOGM003" if oc.endswith("/1") else "ILOGU001"
 
         self.btn_iniciar.configure(state="disabled", text="Rodando...")
         self.log(f"Iniciando para OC {oc} no ambiente {ambiente}...")
@@ -145,30 +157,44 @@ class FaturamentoApp(ctk.CTk):
                 page.locator(SEL_INPUT_OC).wait_for(state="visible", timeout=120000)
                 self.log("SAP Carregado. Preenchendo dados...")
 
-                # 2. Preenche Filtros e Pesquisa
-                page.fill(SEL_INPUT_OC, oc)
-                page.fill(SEL_INPUT_DATA, data)
-                page.keyboard.press("Enter")
-                page.click(SEL_BTN_INICIAR_BUSCA)
-                self.wait_busy(page)
+                # 2. Pesquisa de Remessas com Retentativas
+                def buscar_remessas():
+                    page.fill(SEL_INPUT_OC, oc)
+                    page.fill(SEL_INPUT_DATA, data)
+                    page.keyboard.press("Enter")
+                    page.click(SEL_BTN_INICIAR_BUSCA)
+                    self.wait_busy(page)
+                    total = self.rolar_tabela_ate_final(page)
+                    if total == 0:
+                        raise ValueError("Tabela retornou vazia.")
+                    return total
 
-                # 3. Carrega e Seleciona Tudo
-                total_linhas = self.rolar_tabela_ate_final(page)
-                if total_linhas == 0:
-                    raise Exception("Nenhuma remessa encontrada para esta OC.")
+                try:
+                    total_linhas = self.executar_com_retentativas(buscar_remessas, "Consulta da OC", max_tentativas=3)
+                except Exception as e:
+                    self.log("OC não encontrada ou nenhuma remessa localizada. Processo encerrado.")
+                    return # Interrompe a execução aqui conforme regra de negócio
+
+                # 3. Faturamento com Retentativas
+                def acao_faturar():
+                    page.click(SEL_CHECKBOX_TODOS)
+                    time.sleep(1)
+                    page.click(SEL_BTN_FATURAR)
+                    self.wait_busy(page)
                 
-                page.click(SEL_CHECKBOX_TODOS)
-                time.sleep(1)
-
-                # 4. Clica em Faturar
                 self.log("Iniciando Faturamento...")
-                page.click(SEL_BTN_FATURAR)
-                self.wait_busy(page)
+                self.executar_com_retentativas(acao_faturar, "Faturamento", max_tentativas=3)
 
-                # 5. Loop de Polling (Aguardando SEFAZ - Status 3)
+                # 4. Loop de Polling (Aguardando SEFAZ - Status 3) com Timeout
                 self.log("Aguardando autorização da SEFAZ (Status 3)...")
                 autorizados = 0
+                tentativas_sefaz = 0
+                max_tentativas_sefaz = 30 # Limite configurável (aprox. 3 a 4 min)
+                
                 while autorizados < total_linhas:
+                    if tentativas_sefaz >= max_tentativas_sefaz:
+                        raise Exception("Timeout no retorno da SEFAZ. Processo interrompido.")
+                        
                     page.click(SEL_BTN_INICIAR_BUSCA)
                     self.wait_busy(page)
                     self.rolar_tabela_ate_final(page)
@@ -179,52 +205,60 @@ class FaturamentoApp(ctk.CTk):
                     
                     if autorizados < total_linhas:
                         time.sleep(5) # Espera 5s antes de checar de novo
+                        tentativas_sefaz += 1
                 
                 self.log("Todos os documentos faturados! Preparando impressão...")
 
-                # 6. Ordenação Descrescente
+                # 5. Ordenação Crescente
                 page.click(SEL_COLUNA_DOCNUM)
                 time.sleep(1)
-                page.locator(SEL_MENU_CRESCENTE).click()
+                self.executar_com_retentativas(
+                    lambda: page.locator(SEL_MENU_CRESCENTE).click(),
+                    "Clique no menu de ordenação"
+                )
                 self.wait_busy(page)
 
-                # 7. Desmarca Seleção Geral
+                # 6. Desmarca Seleção Geral (Checkbox Mestre)
                 page.click(SEL_CHECKBOX_TODOS)
                 time.sleep(1)
 
-                # 8. Loop de Impressão (30 em 30)
+                # 7. Loop de Impressão (30 em 30) com Retentativas
                 checkboxes = page.locator("div[id*='-selectMulti-CbBg']").all()
                 lotes = [checkboxes[i:i + 30] for i in range(0, len(checkboxes), 30)]
                 
                 for idx, lote in enumerate(lotes):
                     self.log(f"Imprimindo lote {idx+1}/{len(lotes)} ({len(lote)} notas)...")
                     
-                    # Marca o lote
-                    for cb in lote:
-                        cb.scroll_into_view_if_needed()
-                        cb.click()
-                    
-                    # Abre Modal de Impressão
-                    page.click(SEL_BTN_IMPRIMIR_NFE)
-                    page.locator(SEL_INPUT_IMPRESSORA).wait_for(state="visible")
-                    
-                    # Preenche Impressora e Confirma
-                    page.fill(SEL_INPUT_IMPRESSORA, impressora)
-                    time.sleep(1)
-                    page.click(SEL_BTN_CONFIRMAR_IMPRESSAO)
-                    self.wait_busy(page)
-                    
-                    # Aguarda Toast sumir para evitar atropelo
-                    try:
-                        page.locator(SEL_TOAST).first.wait_for(state="visible", timeout=10000)
-                        page.locator(SEL_TOAST).first.wait_for(state="hidden", timeout=15000)
-                    except:
-                        pass # Se não capturou o toast, apenas segue
-                    
-                    # Desmarca o lote
-                    for cb in lote:
-                        cb.scroll_into_view_if_needed()
-                        cb.click()
+                    def acao_imprimir_lote():
+                        # Marca o lote
+                        for cb in lote:
+                            cb.scroll_into_view_if_needed()
+                            cb.click()
+                        
+                        # Abre Modal de Impressão
+                        page.click(SEL_BTN_IMPRIMIR_NFE)
+                        page.locator(SEL_INPUT_IMPRESSORA).wait_for(state="visible")
+                        
+                        # Preenche Impressora e Confirma
+                        page.fill(SEL_INPUT_IMPRESSORA, impressora)
+                        time.sleep(1)
+                        page.click(SEL_BTN_CONFIRMAR_IMPRESSAO)
+                        self.wait_busy(page)
+                        
+                        # Aguarda Toast sumir para evitar atropelo
+                        try:
+                            page.locator(SEL_TOAST).first.wait_for(state="visible", timeout=10000)
+                            page.locator(SEL_TOAST).first.wait_for(state="hidden", timeout=15000)
+                        except:
+                            pass # Se não capturou o toast, apenas segue
+                        
+                        # Desmarca o lote
+                        for cb in lote:
+                            cb.scroll_into_view_if_needed()
+                            cb.click()
+
+                    # Executa a impressão do lote encapsulada nas retentativas
+                    self.executar_com_retentativas(acao_imprimir_lote, f"Impressão do Lote {idx+1}", max_tentativas=3)
 
                 self.log(f"PROCESSO CONCLUÍDO COM SUCESSO! OC: {oc}")
                 
